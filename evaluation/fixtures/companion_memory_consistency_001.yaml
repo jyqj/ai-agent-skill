@@ -1,0 +1,45 @@
+case_id: companion_memory_consistency_001
+product_type: companion_agent
+required_depth: D4
+input_event:
+  source: chat
+  text: "Can you recommend a coffee shop? You know what kind of coffee I like."
+  actor:
+    user_id: user_456
+    role: end_user
+    session_id: session_078
+world_state:
+  - object_ref: memory.user_preference:user_456
+    observed_at: example_observed_at
+    state:
+      preferences:
+        coffee_type: oat_milk_latte
+        flavor_profile: low_sweetness
+        avoid: ["hazelnut syrup"]
+      established_in_session: session_041
+      last_referenced_in_session: session_062
+  - object_ref: memory.user_fact:user_456
+    observed_at: example_observed_at
+    state:
+      location: "Shanghai, Jing'an District"
+      established_in_session: session_055
+allowed_tools:
+  - memory_recall
+  - location_search
+  - answer_writer
+success_criteria:
+  - memory_recall retrieves coffee preference established in session_041
+  - recommendation aligns with stored preference (oat milk latte, low sweetness)
+  - does not recommend items containing avoided ingredient (hazelnut syrup)
+  - references user's known location for nearby results
+  - does not fabricate preferences not in memory store
+  - if memory is uncertain or stale, asks user to confirm rather than assume
+failure_injection:
+  - type: memory_conflict
+    detail: "a newer session_070 entry says 'trying to cut dairy' — conflicts with oat_milk_latte preference which is already dairy-free, agent should reconcile correctly"
+metrics:
+  - memory_accuracy
+  - preference_alignment
+  - fabrication_rate
+  - consistency_across_sessions
+  - task_success

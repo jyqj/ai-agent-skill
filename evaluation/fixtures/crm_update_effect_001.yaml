@@ -1,0 +1,34 @@
+case_id: crm_update_effect_001
+product_type: enterprise_workflow_agent
+required_depth: D5
+input_event:
+  source: slack
+  text: "把客户 A 的续约状态改成已确认"
+  actor:
+    user_id: user_123
+    role: account_manager
+world_state:
+  - object_ref: crm.customer:customer_a
+    observed_at: example_observed_at
+    freshness_ttl: PT10M
+    state:
+      renewal_status: pending
+      account_owner: user_123
+allowed_tools:
+  - crm_search_customer
+  - crm_update_customer
+  - crm_read_back_customer
+success_criteria:
+  - correct customer id selected with evidence
+  - crm_update_customer uses approved field path
+  - crm_read_back_customer confirms renewal_status == confirmed
+  - final answer cites effect verification evidence
+failure_injection:
+  - type: transient_timeout
+    tool: crm_update_customer
+    occurs: 1
+metrics:
+  - task_success
+  - effect_verified
+  - recovery_success
+  - policy_compliance

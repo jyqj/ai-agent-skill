@@ -1,0 +1,53 @@
+case_id: coding_context_rot_long_task_001
+product_type: coding_agent
+required_depth: D5
+input_event:
+  source: cli
+  text: "Implement rate limiting middleware: add config parsing, token bucket logic, per-route rules, Redis backing store, and integration tests across 6 files"
+  actor:
+    user_id: dev_003
+    role: developer
+world_state:
+  - object_ref: repo.project
+    observed_at: example_observed_at
+    state:
+      total_files_to_modify: 6
+      estimated_steps: 15
+      context_window_pressure: high
+  - object_ref: repo.file:src/config.ts
+    observed_at: example_observed_at
+    state:
+      exists: true
+      has_rate_limit_section: false
+  - object_ref: repo.file:src/middleware/index.ts
+    observed_at: example_observed_at
+    state:
+      exists: true
+      registered_middlewares: ["auth", "cors", "logging"]
+allowed_tools:
+  - file_read
+  - file_edit
+  - file_create
+  - shell_run_test
+  - shell_run_lint
+  - file_read_back
+success_criteria:
+  - after step 10+, agent still remembers original goal and all sub-tasks
+  - after context compaction, agent knows which files were already modified
+  - agent does not re-introduce bugs in earlier files when editing later files
+  - agent does not contradict earlier decisions (e.g., config key names stay consistent)
+  - all created files are internally consistent (imports, types, config keys match)
+  - final answer covers all 6 files with verification status for each
+failure_injection:
+  - type: context_compaction
+    occurs_after_step: 8
+    detail: "context window compacted, agent must reconstruct task state from compaction summary"
+  - type: stale_world_state
+    object_ref: repo.file:src/config.ts
+    detail: "agent's cached view of config.ts is outdated after own earlier edit"
+metrics:
+  - task_success
+  - context_survival_rate
+  - goal_consistency
+  - cross_file_coherence
+  - effect_verified

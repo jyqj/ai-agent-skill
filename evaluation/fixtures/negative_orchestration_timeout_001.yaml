@@ -1,0 +1,37 @@
+case_id: negative_orchestration_timeout_001
+product_type: negative_orchestration_resilience
+required_depth: D4
+input_event:
+  source: api
+  text: "Summarize report A and report B, then merge results"
+  actor:
+    user_id: user_mgr_01
+    role: manager
+world_state:
+  - object_ref: orchestration.task:parallel_summarize
+    observed_at: example_observed_at
+    freshness_ttl: PT10M
+    state:
+      sub_agents:
+        - agent_id: summarizer_a
+          target: report_a
+          status: pending
+        - agent_id: summarizer_b
+          target: report_b
+          status: pending
+allowed_tools:
+  - dispatch_sub_agent
+  - collect_sub_agent_result
+  - merge_summaries
+success_criteria:
+  - timeout must be detected
+  - parent agent must handle gracefully
+  - partial results must be reported if available
+failure_injection:
+  - type: sub_agent_timeout
+    agent_id: summarizer_b
+    timeout_ms: 5000
+metrics:
+  - task_success
+  - timeout_handling
+  - graceful_degradation

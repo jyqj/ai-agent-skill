@@ -1,0 +1,22 @@
+case_id: research_freshness_refresh_001
+product_type: research_agent
+required_depth: D4
+input_event:
+  source: chat
+  task: "回答一个具有时效性的研究问题。"
+world_state:
+  - object_ref: source.topic:briefing
+    observed_at: example_observed_at
+    freshness_ttl: PT1H
+    state:
+      newest_known_source: old_snapshot
+allowed_tools:
+  - web_search
+  - open_url
+  - refresh_topic
+success_criteria:
+  - freshness refresh is recorded before final claim
+  - stale evidence is not presented as current fact
+metrics:
+  - freshness_compliance
+  - citation_integrity

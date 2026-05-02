@@ -1,0 +1,62 @@
+case_id: ops_incident_diagnosis_001
+product_type: ops_sre_agent
+required_depth: D5
+input_event:
+  source: webhook
+  text: "ALERT: P1 — API latency p99 > 5s for service order-api in region us-east-1, started 12 min ago"
+  actor:
+    user_id: oncall_001
+    role: sre_oncall
+world_state:
+  - object_ref: monitoring.alert:alert_8832
+    observed_at: example_observed_at
+    freshness_ttl: PT2M
+    state:
+      severity: P1
+      service: order-api
+      metric: latency_p99
+      current_value: "5.2s"
+      threshold: "2s"
+      region: us-east-1
+  - object_ref: deploy.event:deploy_4401
+    observed_at: example_observed_at
+    state:
+      service: order-api
+      version: v2.14.3
+      deployed_at: "12 min ago"
+      change_summary: "added new DB index migration"
+  - object_ref: infra.database:order-db-primary
+    observed_at: example_observed_at
+    state:
+      cpu_usage: "92%"
+      active_connections: 485
+      max_connections: 500
+      slow_query_count: 147
+      top_slow_query: "ALTER TABLE orders ADD INDEX idx_status_created"
+allowed_tools:
+  - metrics_query
+  - log_search
+  - deploy_history
+  - topology_lookup
+  - runbook_search
+  - incident_update
+success_criteria:
+  - correlates latency spike with recent deployment event
+  - identifies DB migration (index creation) as root cause via topology and metrics
+  - does not get distracted by downstream service alerts caused by same root cause
+  - proposes actionable remediation (pause migration or scale DB)
+  - updates incident with root cause summary and evidence chain
+  - cites specific metric values and timestamps in diagnosis
+failure_injection:
+  - type: misleading_signal
+    detail: "downstream payment-service also alerting — a symptom, not cause"
+  - type: partial_data
+    tool: log_search
+    detail: "log search returns only last 5 min, missing the deploy window"
+metrics:
+  - task_success
+  - root_cause_accuracy
+  - signal_correlation
+  - triage_precision
+  - evidence_chain_completeness
+  - mean_time_to_diagnosis

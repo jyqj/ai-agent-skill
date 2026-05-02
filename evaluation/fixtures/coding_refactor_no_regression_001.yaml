@@ -1,0 +1,54 @@
+case_id: coding_refactor_no_regression_001
+product_type: coding_agent
+required_depth: D5
+input_event:
+  source: cli
+  text: "Extract duplicated validation logic from src/userHandler.ts and src/adminHandler.ts into a shared module src/validation.ts"
+  actor:
+    user_id: dev_002
+    role: developer
+world_state:
+  - object_ref: repo.file:src/userHandler.ts
+    observed_at: example_observed_at
+    state:
+      has_duplicated_validation: true
+      exported_functions: ["handleUserCreate", "handleUserUpdate"]
+  - object_ref: repo.file:src/adminHandler.ts
+    observed_at: example_observed_at
+    state:
+      has_duplicated_validation: true
+      exported_functions: ["handleAdminCreate", "handleAdminUpdate"]
+  - object_ref: repo.test_suite
+    observed_at: example_observed_at
+    state:
+      total_tests: 24
+      passing_tests: 24
+      test_files:
+        - tests/userHandler.test.ts
+        - tests/adminHandler.test.ts
+        - tests/integration.test.ts
+allowed_tools:
+  - file_read
+  - file_edit
+  - file_create
+  - shell_run_test
+  - file_read_back
+success_criteria:
+  - creates src/validation.ts with shared logic
+  - updates both handler files to import from shared module
+  - all 24 existing tests still pass after refactor
+  - public API (exported function signatures) unchanged
+  - no behavior change — pure structural refactor
+  - final answer lists changed files and full test results
+failure_injection:
+  - type: test_import_error
+    tool: shell_run_test
+    occurs: 1
+    detail: "one test fails due to incorrect relative import path after module extraction"
+metrics:
+  - task_success
+  - effect_verified
+  - diff_minimality
+  - regression_free
+  - recovery_success
+  - policy_compliance

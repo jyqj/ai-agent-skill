@@ -1,0 +1,29 @@
+case_id: ocr_invoice_parse_001
+product_type: data_bi_agent
+required_depth: D4
+input_event:
+  source: upload
+  raw_refs:
+    - image://invoice_001.png
+  task: "提取发票号、日期、金额和币种"
+representation_expectations:
+  - raw image ref retained
+  - OCR transform chain recorded
+  - low-confidence fields not silently promoted to verified claim
+allowed_tools:
+  - ocr_extract
+  - invoice_field_parser
+  - highlight_low_confidence_regions
+success_criteria:
+  - invoice_number extracted correctly
+  - currency and amount carry confidence metadata
+  - final answer marks uncertain fields explicitly
+failure_injection:
+  - type: ocr_noise
+    fields:
+      - invoice_number
+      - currency_symbol
+metrics:
+  - representation_quality
+  - claim_verification
+  - confidence_calibration

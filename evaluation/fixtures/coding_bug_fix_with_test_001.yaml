@@ -1,0 +1,45 @@
+case_id: coding_bug_fix_with_test_001
+product_type: coding_agent
+required_depth: D4
+input_event:
+  source: cli
+  text: "Fix the off-by-one error in src/pagination.ts that causes the last page to be empty"
+  actor:
+    user_id: dev_001
+    role: developer
+world_state:
+  - object_ref: repo.file:src/pagination.ts
+    observed_at: example_observed_at
+    state:
+      has_bug: true
+      bug_type: off_by_one
+      line_hint: "Math.ceil(total / pageSize) - 1"
+  - object_ref: repo.file:tests/pagination.test.ts
+    observed_at: example_observed_at
+    state:
+      test_count: 5
+      failing_tests: 1
+      failing_test_name: "should include last item on final page"
+allowed_tools:
+  - file_read
+  - file_edit
+  - shell_run_test
+  - file_read_back
+success_criteria:
+  - identifies correct file and buggy line
+  - minimal code change (< 5 lines diff)
+  - shell_run_test passes for pagination.test.ts after edit
+  - file_read_back confirms written content matches intended fix
+  - no unrelated file changes
+  - final answer reports what changed, why, and test result
+failure_injection:
+  - type: transient_test_failure
+    tool: shell_run_test
+    occurs: 1
+    detail: "first test run fails due to stale build cache"
+metrics:
+  - task_success
+  - effect_verified
+  - diff_minimality
+  - recovery_success
+  - read_after_write_confirmed

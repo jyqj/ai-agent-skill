@@ -1,0 +1,50 @@
+case_id: data_query_result_verification_001
+product_type: data_bi_agent
+required_depth: D4
+input_event:
+  source: chat
+  text: "What was the total revenue by region for Q4 2024?"
+  actor:
+    user_id: analyst_002
+    role: business_analyst
+world_state:
+  - object_ref: db.schema:analytics
+    observed_at: example_observed_at
+    state:
+      tables:
+        - name: orders
+          columns: [order_id, customer_id, amount, region, created_at, status]
+        - name: calendar
+          columns: [date, quarter, fiscal_year]
+      metric_definitions:
+        revenue: "SUM(amount) WHERE status = 'completed'"
+      data_freshness: "T+1, last update 2025-01-01"
+  - object_ref: db.query_result:expected
+    observed_at: example_observed_at
+    state:
+      row_count: 4
+      regions: ["us-east", "us-west", "eu", "apac"]
+      total_sum: 12500000
+allowed_tools:
+  - schema_lookup
+  - metric_definition_lookup
+  - sql_generate
+  - sql_execute
+  - result_validate
+  - answer_writer
+success_criteria:
+  - uses correct metric definition for revenue (status = 'completed' filter)
+  - Q4 date range is correctly bounded (2024-10-01 to 2024-12-31)
+  - sql_execute returns results and agent validates row count and region coverage
+  - result_validate confirms totals are plausible (non-negative, non-null regions)
+  - declares data freshness and cutoff date in final answer
+  - final answer presents results with region breakdown
+failure_injection:
+  - type: ambiguous_metric
+    detail: "revenue could mean gross or net; agent should check metric_definition_lookup"
+metrics:
+  - task_success
+  - sql_accuracy
+  - metric_consistency
+  - effect_verified
+  - freshness_declared

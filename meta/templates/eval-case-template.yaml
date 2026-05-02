@@ -1,0 +1,13 @@
+case_id: example_case_001
+product_type: coding_agent | research_agent | enterprise_workflow_agent | browser_desktop_agent | ops_sre_agent | agent_platform
+required_depth: D3 | D4 | D5 | D6
+input_event:
+  source: chat | cli | api | webhook | browser | upload | mcp_server
+  text: ""
+  raw_refs: []
+representation_expectations: []
+world_state: []
+allowed_tools: []
+success_criteria: []
+failure_injection: []
+metrics: []

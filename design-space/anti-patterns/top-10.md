@@ -1,0 +1,45 @@
+# Top 10 Agent Architecture Anti-Patterns
+
+> **Evidence Status** — synthesized. 本目录反模式、failure taxonomy、module boundaries、security/effects/memory/context 文档，以及 coding/research/workflow/browser 等品类中的失败模式综合。
+
+## 总览
+
+| # | 反模式 | 核心误区 | 修复入口 |
+|---:|---|---|---|
+| 1 | God Prompt | 用一个巨大 prompt 承担所有架构责任 | `god-prompt.md` |
+| 2 | Tool Soup | 工具很多但没有风险、权限、postcondition | `tool-soup.md` |
+| 3 | Tool Success = Done / Depth Without Verification | 工具成功或步骤很多就声称完成 | `depth-without-verification.md` |
+| 4 | Memory as Database | 用长期记忆当当前现实 | `memory-as-database.md` |
+| 5 | Context as State | 用当前上下文当任务状态 | `context-as-state.md` |
+| 6 | Trust Everything | 外部数据、工具输出、记忆和指令混 lane | `trust-everything.md` |
+| 7 | Infinite Retry | 失败后无新证据地重复 | `infinite-retry.md` |
+| 8 | Approval-only Interaction | 把人机交互简化为同意/拒绝 | `approval-only-interaction.md` |
+| 9 | Hidden Cost Explosion | 长上下文、多 worker、重复检索导致成本失控 | `hidden-cost-explosion.md` |
+| 10 | Eval Theater | 有 rubric 但没有可执行 trace/effect eval | `eval-theater.md` |
+
+## 使用方式
+
+设计评审时，先问三件事：
+
+```text
+这个 Agent 的完成定义是什么？
+哪些状态是可回查、可验证、可恢复的？
+如果失败，trace 能不能说明失败发生在哪里？
+```
+
+如果答案依赖“模型应该会理解”“用户可以自己检查”“工具返回成功”，通常已经落入反模式。
+
+## 对应的正向结构
+
+| 反模式 | 正向结构 |
+|---|---|
+| God Prompt | PromptContract + Policy + ToolSpec + ContextPack |
+| Tool Soup | Tool Registry + CapabilityGrant + EffectRecord |
+| Depth Without Verification | Verification Gate + Stop Gate |
+| Memory as Database | Memory / WorldState / TaskState 分离 |
+| Context as State | Checkpoint + Trace + ContextPack 可重建 |
+| Trust Everything | Trust lanes + sanitization + untrusted context boundary |
+| Infinite Retry | FailureRecord + recovery budget |
+| Approval-only Interaction | Interaction Plane + progressive disclosure |
+| Hidden Cost Explosion | ResourcePlan + routing + cache + budget gate |
+| Eval Theater | executable fixtures + trace comparator + mock world |

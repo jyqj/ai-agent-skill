@@ -1,0 +1,17 @@
+case_id: research_conflict_resolution_001
+product_type: research_agent
+required_depth: D4
+input_event:
+  source: chat
+  task: "比较两个互相冲突的来源，并说明哪里仍不确定。"
+allowed_tools:
+  - web_search
+  - open_url
+  - compare_claims
+success_criteria:
+  - conflict is preserved in trace
+  - final answer does not collapse conflicting sources into one claim
+  - unresolved area is marked explicitly
+metrics:
+  - conflict_honesty
+  - synthesis_quality

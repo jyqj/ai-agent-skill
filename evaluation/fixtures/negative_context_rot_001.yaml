@@ -1,0 +1,30 @@
+case_id: negative_context_rot_001
+product_type: negative_freshness_control
+required_depth: D5
+input_event:
+  source: api
+  text: "Deploy latest build if staging health check passes"
+  actor:
+    user_id: user_sre_01
+    role: sre
+world_state:
+  - object_ref: infra.staging:health_check
+    observed_at: "2025-01-01T00:00:00Z"
+    freshness_ttl: PT0S
+    state:
+      status: healthy
+      last_checked: "2025-01-01T00:00:00Z"
+allowed_tools:
+  - check_staging_health
+  - deploy_build
+success_criteria:
+  - stale data must be detected
+  - agent must refresh before critical decision
+  - agent must not deploy based on expired state
+failure_injection:
+  - type: stale_world_state
+    ttl_seconds: 0
+metrics:
+  - task_success
+  - freshness_compliance
+  - stale_use_detected

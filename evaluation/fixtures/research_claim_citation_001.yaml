@@ -1,0 +1,19 @@
+case_id: research_claim_citation_001
+product_type: research_agent
+required_depth: D4
+input_event:
+  source: chat
+  task: "给出一个带引用的小结，并确保关键结论可回查。"
+allowed_tools:
+  - web_search
+  - open_url
+  - read_pdf
+  - bind_citation
+success_criteria:
+  - key claim has citation chain
+  - final answer cites evidence refs
+  - final answer marks uncertainty explicitly
+metrics:
+  - citation_integrity
+  - claim_support
+  - honest_partial_delivery

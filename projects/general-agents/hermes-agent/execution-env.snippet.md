@@ -35,7 +35,7 @@ class BaseEnvironment(ABC):
             pass
 ```
 
-**洞察**：统一接口屏蔽后端差异。`__del__()` 保证资源自动清理。5 个后端实现同一接口。
+**洞察**：统一接口屏蔽后端差异。`__del__()` 保证资源自动清理。7 个后端实现同一接口。
 
 ---
 
@@ -56,11 +56,29 @@ def _create_environment(task_id: str) -> BaseEnvironment:
         return ModalEnvironment(app_name="hermes", timeout=3600)
     elif env_type == "daytona":
         return DaytonaEnvironment(workspace_id=os.getenv("DAYTONA_WORKSPACE"))
+    elif env_type == "vercel_sandbox":
+        return VercelSandboxEnvironment(timeout=timeout)
+    elif env_type == "singularity":
+        return SingularityEnvironment(image=os.getenv("SINGULARITY_IMAGE"), cwd=os.getcwd())
     else:
         raise ValueError(f"Unknown terminal environment: {env_type}")
 ```
 
-**洞察**：运行时切换，无需重启。前一个环境的 `cleanup()` 被调用释放资源。
+**洞察**：运行时切换，无需重启。7 后端按场景分类：local(1) / container-based(Docker, Singularity) / cloud-managed(Modal, Daytona, Vercel) / remote(SSH)。
+
+---
+
+## 后端对比
+
+| 后端 | 场景 | 文件同步 | 持久化 | 权限模型 |
+|------|------|---------|--------|---------|
+| local | 开发 | N/A | FS | User |
+| docker | 测试/隔离 | bind mount | Image layer | root (capped) |
+| ssh | 远程机 | SCP/rsync | Machine FS | User |
+| modal | serverless | API | Ephemeral | Sandboxed |
+| daytona | IDE 集成 | 双向 sync | Container | Sandboxed |
+| vercel_sandbox | serverless 部署 | 受限 | Ephemeral | Sandboxed |
+| singularity | HPC/cluster | bind mount | Container | User/Group |
 
 ---
 
@@ -228,3 +246,58 @@ def _call(tool_name, args):
 ```
 
 **洞察**：生成 `hermes_tools.py` 存根，让用户脚本通过 RPC 调用工具。中间结果不进入 LLM 上下文。
+
+---
+
+## Checkpoints v2（新）
+
+### 存储架构
+
+```
+# v1: per-directory shadow git repos → 磁盘膨胀（847MB / 47 repos）
+# v2: 单一共享 store → 全局对象去重（<200MB）
+
+~/.hermes/checkpoints/
+  store/             # 共享 git object DB
+  indexes/           # per-project 索引
+  metadata/          # 快照元数据
+  legacy-<ts>/       # v1 自动迁移的旧仓库
+```
+
+### 自动维护
+
+```python
+# 配置默认值变更：enabled=False, auto_prune=True
+# 新增参数：max_total_size_mb=500, max_file_size_mb=10
+
+def _prune(self):
+    """重写 ref 到最后 max_snapshots，运行 git gc --prune=now"""
+
+def _enforce_size_cap(self):
+    """超过 max_total_size_mb 时删除最旧快照"""
+
+def _drop_oversize_from_index(self):
+    """过滤超过 max_file_size_mb 的单个文件"""
+```
+
+### CLI
+
+```bash
+hermes checkpoints status    # 当前存储状态
+hermes checkpoints list      # 列出所有快照
+hermes checkpoints prune     # 手动清理
+hermes checkpoints clear     # 清空当前项目
+hermes checkpoints clear-legacy  # 清理 v1 遗留
+```
+
+### 增强排除列表
+
+```python
+DEFAULT_EXCLUDES = [
+    "target/", "*.so", "*.dylib", "*.dll",
+    "*.mp4", "*.mov", "*.zip", "*.tar.gz",
+    ".worktrees/", ".mypy_cache/", ...
+]
+```
+
+**洞察**：v2 设计的核心是共享 object DB + per-project refs，同项目的多个 worktree 成本接近零。auto_prune 默认开启确保无人工维护。

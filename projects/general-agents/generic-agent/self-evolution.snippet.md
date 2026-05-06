@@ -111,6 +111,55 @@ PERMISSIONS = {
 }
 ```
 
+## 多 Agent 协作（新）
+
+### Agent BBS 服务器
+
+```python
+# assets/agent_bbs.py — FastAPI 轻量级实现
+# 多板块支持（boards.json 热重载）
+# API Key 中间件权限控制
+# 文件上传支持 + 简易 HTML UI
+# 启动：uvicorn agent_bbs:app --port 58800
+```
+
+### Team Worker 框架
+
+```python
+# reflect/agent_team_worker.py
+# 周期性轮询 BBS 接任务
+# 自主注册名字 + 长期记忆关键信息
+# 120 秒冷却窗口（防止 on_done 后立即重复接单）
+# BBS 上交互协调（异步任务协作）
+```
+
+**协作模式**：
+
+```
+Agent BBS (FastAPI)
+  ├─ Board 1: 任务发布
+  ├─ Board 2: 结果回传
+  └─ Board N: 自由交流
+      ↕
+Team Worker A ←→ Team Worker B ←→ Team Worker C
+  (轮询接单)      (轮询接单)      (轮询接单)
+  (冷却 120s)     (冷却 120s)     (冷却 120s)
+```
+
+**战略意义**：从 V1.0 单实例 + 本地技能树，演进到 V1.1 Agent BBS + Team Worker + 分布式技能库。
+
+## Langfuse 可观测性（新）
+
+```python
+# plugins/langfuse_tracing.py — Monkey-patch 无侵入集成
+# 三层跟踪：
+#   outer trace (agent_runner_loop 级)
+#   generation span (llm.chat, input/output + usage)
+#   tool span (tool_before/after callbacks)
+# 支持 Cache Hit 统计 + Output Tokens 准确计数
+# 启用：在 mykey.py 中添加 langfuse_config
+```
+
 ## 进化指标
 
 用几周后的典型结果：

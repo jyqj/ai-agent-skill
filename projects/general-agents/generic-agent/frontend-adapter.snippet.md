@@ -11,14 +11,20 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ Layer 1: Protocol Adapter (协议适配)                           │
-│  ├─ Streamlit: st.chat_input / session_state                  │
+│ Layer 1: Protocol Adapter (协议适配) — 13 渠道                  │
+│  ├─ Streamlit: st.chat_input / session_state (stapp/stapp2)   │
+│  ├─ Qt Desktop: qtapp.py (本地桌面)                            │
 │  ├─ WeChat: WxBotClient HTTP                                   │
 │  ├─ Telegram: python-telegram-bot                              │
 │  ├─ QQ: qq-botpy WebSocket                                     │
+│  ├─ Discord: discord.py (纯异步, DM + Guild) [NEW]            │
 │  ├─ 钉钉: dingtalk-stream                                      │
 │  ├─ 企业微信: wecom_aibot_sdk                                  │
-│  └─ 飞书: lark-oapi                                            │
+│  ├─ 飞书: lark-oapi                                            │
+│  ├─ ACP Bridge: JSON-RPC 2.0 (VS Code/Cursor 兼容) [NEW]     │
+│  ├─ Hub: 本地 API 服务 (hub.pyw)                               │
+│  ├─ Launch: 启动器 (launch.pyw)                                │
+│  └─ Desktop Pet: 桌面宠物 v2 (desktop_pet_v2.pyw)             │
 └─────────────────────────────────────────────────────────────────┘
         ↓
 ┌─────────────────────────────────────────────────────────────────┐
@@ -144,6 +150,19 @@ dq = agent.put_task(
     images=[file_path, ...]
 )
 ```
+
+## ACP Bridge 集成（新）
+
+```python
+# frontends/genericagent_acp_bridge.py
+# JSON-RPC 2.0 协议适配，用于 VS Code / Cursor / Codeg 集成
+class ACPBridge:
+    # 接收 JSON-RPC 请求 → 转换为 put_task() 调用
+    # 流式输出通过 incremental streaming 返回
+    # 防止重叠：每次输出前检查上次输出完整性
+```
+
+**覆盖维度**：从社交（6 渠道）+ 企业（3 渠道）扩展到 + IDE（ACP）+ 本地 API（Hub/Launch）+ 桌面（Qt/Pet）。
 
 ## 新渠道集成清单
 

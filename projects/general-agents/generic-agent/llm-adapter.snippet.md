@@ -5,17 +5,17 @@
 
 > **Evidence Status** — grounded. 本目录下的项目分析、源码片段或专题笔记。
 
-> 文件：`llmcore.py` (~900行)
+> 文件：`llmcore.py` (~957行)
 
 ## 后端类型
 
 | 后端 | 触发条件 | 实现类 | 特性 |
 |-----|---------|-------|------|
-| Claude Native | `native` + `claude` | `NativeClaudeSession` | 原生工具调用、思维链、缓存 |
-| OpenAI Native | `native` + `oai` | `NativeOAISession` | 原生函数调用 |
+| Claude Native | `native` + `claude` | `NativeClaudeSession` | 原生工具调用、思维链、Prompt Caching、Extended Thinking |
+| OpenAI Native | `native` + `oai` | `NativeOAISession` | 原生函数调用、Prompt Caching |
 | Claude via Proxy | `claude` (无native) | `ClaudeSession` | OpenAI 兼容 |
 | OpenAI Compatible | `oai` | `LLMSession` | chat/responses API |
-| Mixin Fallback | `mixin` | `MixinSession` | 轮询重试、弹性回源 |
+| Mixin Fallback | `mixin` | `MixinSession` | 轮询重试 + 指数退避、多后端故障转移 |
 
 ## 动态后端发现
 
@@ -118,7 +118,24 @@ def trim_messages_history(history, context_win):
                 history.pop(0)
 ```
 
-## 工具库缓存
+## 上下文优化策略
+
+### Peer Hint（行为引导）
+
+```python
+# agentmain.py — agent.peer_hint = True 时启用
+# 每轮结束后追加行为建议，引导 agent 调整方向
+```
+
+### History Folding（历史折叠）
+
+```python
+# llmcore.py — 每 5 轮触发 compress_history_tags
+# 旧标签压缩 + 摘要折叠，释放上下文空间
+# 无文本输出时自动注入 thinking → tool_use 块
+```
+
+### 工具库缓存
 
 ```python
 # ToolClient._prepare_tool_instruction

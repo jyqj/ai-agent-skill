@@ -15,27 +15,32 @@
 | 模块 | 覆盖程度 | 证据文件 | 可复用模式 |
 |---|---|---|---|
 | learning | 深 | self-evolution.snippet.md | skill-crystallization |
-| memory | 深 | memory-layers.snippet.md | layered-memory |
+| memory | 深 | memory-layers.snippet.md | layered-memory (L0-L4) |
 | tools | 中 | tool-system.snippet.md | atomic tools |
-| interface | 中 | frontend-adapter.snippet.md | frontend adapter |
+| interface | 深 | frontend-adapter.snippet.md | frontend adapter (13 渠道) |
 | orchestration | 浅 | agent-loop.snippet.md | minimal loop |
+| reflect | 中 | self-evolution.snippet.md | Agent BBS + Team Worker |
+| plugins | 浅 | README.md | Langfuse observability |
 
 ## 独特贡献
 
-GenericAgent 用 9 个原子工具 + ~100 行 agent loop 证明了一个反直觉的命题：**agent 的能力上限不取决于预置了多少工具，而取决于它能否从执行中学习**。成功路径自动固化为 Skill，能力随使用有机生长——这是”最小 viable agent”的极致表达。
+GenericAgent 用 9 个原子工具 + ~100 行 agent loop 证明了一个反直觉的命题：**agent 的能力上限不取决于预置了多少工具，而取决于它能否从执行中学习**。成功路径自动固化为 Skill，能力随使用有机生长——这是”最小 viable agent”的极致表达。最新版本进一步扩展到**多 Agent 协作**（Agent BBS + Team Worker）和**全链路可观测性**（Langfuse 集成），从单实例工具走向分布式 Agent 生态。
 
 ## 关键发现
 
 - 能力边界可以动态生长：`code_run` 一个工具就能覆盖无限多的操作空间，关键在于学会后固化为 Skill。
 - “No Execution, No Memory”——记忆层只写入经过行动验证的信息，禁止存储推理过程和假设，直接避免了记忆污染。
 - 极简 runtime（~3K 行代码）也能展示完整 Agent 闭环，说明复杂性应在运行时生长而非编译时堆砌。
+- Agent BBS 分布式任务分发：多个 Agent 实例通过轻量 BBS 服务器异步协作，Team Worker 周期轮询接单 + 冷却机制防重复。
+- L4 会话归档自动化：原始日志 → 压缩摘要 → 月度 ZIP，支持跨会话长程回溯。
+- Langfuse 无侵入集成：Monkey-patch 方式实现三层跟踪（trace / generation / tool），生产环境全链路可观测。
 
 **仓库**：https://github.com/lsdefine/GenericAgent
 
 ## 核心公式
 
 ```
-GenericAgent = 9 原子工具 + ~100 行 Agent Loop + 5 层记忆系统 + 自我进化
+GenericAgent = 9 原子工具 + ~100 行 Agent Loop + 5 层记忆系统 + 自我进化 + 多 Agent 协作
 ```
 
 ## 架构亮点
@@ -43,9 +48,12 @@ GenericAgent = 9 原子工具 + ~100 行 Agent Loop + 5 层记忆系统 + 自我
 | 维度 | 设计 | 独特价值 |
 |-----|------|---------|
 | **极简工具集** | 9 个原子工具 | 能力通过 code_run 动态扩展，不预设 |
-| **分层记忆** | L0-L4 五层 | 行动验证原则，只存成功执行的信息 |
+| **分层记忆** | L0-L4 五层 + 自动归档 | 行动验证原则 + L4 会话压缩与长程回溯 |
 | **自我进化** | Skill 自动固化 | 执行路径 → 可复用 SOP/脚本 |
-| **多前端** | 7+ 渠道适配 | 统一队列协议，渠道解耦 |
+| **多前端** | 13 渠道适配 | 统一队列协议，覆盖社交/企业/IDE/本地 API |
+| **多 Agent 协作** | Agent BBS + Team Worker | 分布式任务分发，异步协作 |
+| **可观测性** | Langfuse 集成（可选） | 三层跟踪：trace / generation / tool |
+| **LLM 适配** | 5 种后端 + Mixin 故障转移 | Claude/OAI 原生 + Prompt Caching + Extended Thinking |
 
 ## 文件索引
 
@@ -56,7 +64,7 @@ GenericAgent = 9 原子工具 + ~100 行 Agent Loop + 5 层记忆系统 + 自我
 | [tool-system.snippet.md](tool-system.snippet.md) | 9 原子工具 + 动态扩展 |
 | [self-evolution.snippet.md](self-evolution.snippet.md) | Skill 固化机制 |
 | [frontend-adapter.snippet.md](frontend-adapter.snippet.md) | 多前端统一架构 |
-| [llm-adapter.snippet.md](llm-adapter.snippet.md) | 多模型适配层 |
+| [llm-adapter.snippet.md](llm-adapter.snippet.md) | 多模型适配层（5 后端 + Mixin） |
 
 ## 关键洞察
 

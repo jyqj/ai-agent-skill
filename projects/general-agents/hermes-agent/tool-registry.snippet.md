@@ -5,7 +5,7 @@
 
 > **Evidence Status** — grounded. 本目录下的项目分析、源码片段或专题笔记。
 
-> 来源：`tools/registry.py`, `model_tools.py`, `toolsets.py`
+> 来源：`tools/registry.py`, `model_tools.py`, `toolsets.py`, `mcp_tool.py`, `kanban_tools.py`
 
 ## 注册模式
 
@@ -164,6 +164,74 @@ def coerce_tool_args(tool_name: str, args: Dict) -> Dict:
 ```
 
 **洞察**：失败时保留原值避免崩溃。整数优先（`42.0` → `42`）。
+
+---
+
+## MCP 工具集成（新）
+
+```python
+# tools/mcp_tool.py (~128KB) — 完整 MCP 实现
+# tools/mcp_oauth.py, mcp_oauth_manager.py — OAuth 认证流
+# tools/schema_sanitizer.py — MCP schema 标准化
+
+# 工具发现：MCP 服务通过 schema discovery 注册
+# 与本地 self-registering 的区别：
+#   本地工具：模块加载时 register() 被调用
+#   MCP 工具：运行时通过 schema discovery 动态注册
+# schema_sanitizer 处理 Pydantic/MCP 不规范输出（类型不匹配、缺失字段等）
+```
+
+**洞察**：MCP 集成的核心挑战是 schema 标准化——上游 MCP 服务输出不一致，schema_sanitizer 是必要的适配层。
+
+---
+
+## Kanban 工具组（新）
+
+```python
+# tools/kanban_tools.py — 7 个 agent 工具
+KANBAN_TOOLS = [
+    "kanban_create",     # 创建任务
+    "kanban_update",     # 更新任务状态
+    "kanban_complete",   # 标记完成
+    "kanban_block",      # 标记阻塞
+    "kanban_list",       # 列出任务
+    "kanban_assign",     # 分配给 worker
+    "kanban_summary",    # 任务摘要
+]
+
+# 运行时 gating：检查 HERMES_KANBAN_TASK 环境变量或 toolsets 包含 "kanban"
+# Worker 通过环境变量握手获得隔离上下文：
+#   HERMES_KANBAN_TASK → 当前任务 ID
+#   HERMES_KANBAN_RUN_ID → 当前执行 ID
+
+# Dispatcher 生命周期：spawn → watch → escalate/complete
+# Diagnostics engine：检测 distress signals（任务卡住、worker 超时等）
+```
+
+**洞察**：Kanban 实现了 Agent 团队的分布式协作——Dispatcher 负责全局调度，Worker 通过环境变量获得隔离的工具集和上下文。
+
+---
+
+## 浏览器引擎切换（新）
+
+```python
+# 配置：browser.engine: lightpanda | chrome | auto
+# 环境变量：AGENT_BROWSER_ENGINE
+
+# Lightpanda：Zig 实现的无头浏览器
+#   导航速度 1.3-5.8x 快于 Chrome
+#   内存占用显著更低
+#   缺陷：无图形能力（screenshot 需回退到 Chrome）
+
+# 自动降级逻辑：
+def _needs_lightpanda_fallback(task_type):
+    """screenshot / 视觉任务自动路由到 Chrome"""
+
+def _chrome_fallback_screenshot():
+    """Lightpanda 失败时回退到 Chrome 截图"""
+```
+
+**洞察**：双引擎设计让 agent 在大多数场景使用 Lightpanda 获得速度优势，仅在需要视觉能力时回退到 Chrome。
 
 ---
 

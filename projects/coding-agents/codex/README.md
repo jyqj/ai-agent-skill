@@ -145,7 +145,7 @@ Codex 定义了 AGENTS.md 作为人机协作接口：
 ## 与知识库的关联
 
 ### 印证的概念
-- `paradigms/methodology/harness-engineering.md`: ToolOrchestrator 是 Harness 核心组件的典型实现
+- `design-space/methodology/harness-engineering.md`: ToolOrchestrator 是 Harness 核心组件的典型实现
 - `../../../architecture/planes/orchestration/overview.md`: 子代理是上下文防火墙，有深度限制
 - `../../../architecture/planes/control/overview.md`: Guardian 是护栏的 LLM 实现
 - `../../../architecture/planes/execution/overview.md`: 跨平台沙箱设计

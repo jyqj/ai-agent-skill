@@ -237,7 +237,7 @@ BlocklistAIController
 
 - `architecture/planes/control/overview.md`：带原因的权限枚举 = 可审计的控制层
 - `architecture/planes/orchestration/overview.md`：OrchestrationEventService = Agent 间通信基础设施
-- `paradigms/methodology/harness-engineering.md`：Controller 编排了完整的 Harness 组件
+- `design-space/methodology/harness-engineering.md`：Controller 编排了完整的 Harness 组件
 
 ### 独特贡献
 

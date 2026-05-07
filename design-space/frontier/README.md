@@ -15,5 +15,7 @@
 - `agent-protocols-and-boundaries.md` — MCP、A2A、Repo Instructions 是不同的边界
 - `observability-control-plane.md` — 可观测性正在从"事后看日志"变成"运行时控制面"
 - `multi-agent-governance.md` — Agent 经济学、涌现治理、Agent 宪法、跨组织治理标准化
+- `automated-harness-evolution.md` — 可观测性驱动的自动 Harness 演进（AHE），Terminal-Bench 2 实证
+- `agent-governance-frameworks.md` — 2025-2026 治理框架汇总：Microsoft Toolkit、CSA Trust Framework、OWASP Agent Top 10、EU AI Act
 
 **使用方式**：先用 `categories/` 和 `architecture/` 形成当前设计，再读 frontier 判断未来扩展点。某个做法在多个案例中复现后，再提升到 `patterns/`。

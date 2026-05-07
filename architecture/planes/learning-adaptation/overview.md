@@ -71,8 +71,40 @@ candidate_record:
 | 项目配置改变 | 使相关 convention 候选重新验证 |
 | eval 退化 | 暂停相关候选召回，进入诊断 |
 
+## 候选激活前后的验证协议
+
+候选从 `candidate` 到 `active` 不是自动晋升，必须过两道关：
+
+**激活前**：
+1. 证据充分性——至少 2 个独立 trace 或 1 个用户确认支持
+2. 安全扫描——不含 secret/PII、不固化越权路径（→ `../../cross-cutting/learning-x-safety.md`）
+3. 范围匹配——preconditions 和 scope 是否排除了不适用场景
+
+**激活后**：
+1. 监控期——新候选的前 N 次召回标记 `monitored`，自动收集 success/failure 信号
+2. 回滚触发——如果 failure_rate > threshold 或 eval 退化，自动降级为 `quarantined`
+3. 版本追踪——每次修正生成新版本，保留旧版本回滚路径
+
+```yaml
+activation_gate:
+  min_evidence_count: 2
+  safety_scan: required
+  scope_validation: required
+  monitoring_window: 10_uses
+  auto_quarantine_threshold: 0.3  # 30% 失败率
+```
+
 ## 与 architecture/learning 的关系
 
-`architecture/learning/` 是学习机制的专题库；本 plane 是运行时入口，说明学习如何接入 State、Memory、Evaluation、Operations 和 Security。
+`architecture/learning/` 是学习机制的专题库（反馈循环、知识蒸馏、在线适应、安全护栏、技能治理、事故驱动演化）。本 plane 是运行时入口，说明学习如何接入 State、Memory、Evaluation、Operations 和 Security。
 
-相关文件：`../../learning/overview.md`、`../../learning/knowledge-distillation.md`、`../../learning/skill-governance.md`、`../../learning/safety-guardrails.md`、`../../../design-space/patterns/skill-crystallization.md`。
+| 专题 | 文件 | 解决什么 |
+|---|---|---|
+| 反馈循环 | `../../learning/feedback-loops.md` | 从哪些信号中学习 |
+| 知识蒸馏 | `../../learning/knowledge-distillation.md` | 如何从 trace 提炼可复用经验 |
+| 在线适应 | `../../learning/online-adaptation.md` | 运行时参数调整 |
+| 安全护栏 | `../../learning/safety-guardrails.md` | 学习过程中的安全约束 |
+| 技能治理 | `../../learning/skill-governance.md` | 技能版本管理与供应链防护 |
+| 事故驱动 | `../../learning/incident-driven-evolution.md` | 从故障中固化 eval fixture |
+
+相关 pattern：`../../../design-space/patterns/skill-crystallization.md`。

@@ -42,8 +42,9 @@ projects/                   真实项目中的实现证据
 | 工具使用范式 | `tool-paradigms.md` | 静态工具、动态发现、MCP、code-as-tool、原子工具和丰富工具如何组合？ |
 | 协作范式 | `collaboration-paradigms.md` | 单 Agent、Coordinator-Worker、Peer、Event-driven、Human-in-loop 如何选择？ |
 | 控制范式 | `control-paradigms.md` | rule、LLM judge、hook、sandbox、verification gate 如何互补？ |
-| 方法论 | `methodology/` | Harness、产品画布、自治等级、执行深度、决策矩阵、MVA 阶梯 |
+| 方法论 | `../design-space/methodology/` | Harness、产品画布、自治等级、执行深度、决策矩阵、MVA 阶梯 |
 | 决策树 | `decision-trees.md` | 把范式选择从列表升级为可执行选择过程 |
+| 自适应范式 | `adaptive-paradigm.md` | 运行时参数动态调整：模型路由、策略自适应、自改进闭环 |
 
 ## 范式选择总流程
 

@@ -88,4 +88,4 @@ Review：优先 evidence-bound critique，不默认直接修改。
 4. 审查入口：diff、关键文件、测试结果
 ```
 
-相关：`../../evaluation/coding-agent-evals.md`、`../../evaluation/failure-taxonomy.md`、`../../paradigms/methodology/autonomy-and-depth.md`。
+相关：`../../evaluation/coding-agent-evals.md`、`../../evaluation/failure-taxonomy.md`、`../../design-space/methodology/autonomy-and-depth.md`。

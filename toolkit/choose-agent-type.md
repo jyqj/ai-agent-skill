@@ -40,6 +40,19 @@ first_blueprint: ../categories/coding-agent/README.md
 | 同时要浏览器和业务系统 | Browser/Desktop Agent，如果最终写业务系统则叠加 Workflow |
 | 想做通用平台 | 先选最核心第一个品类，不要一开始选 Agent Platform |
 
+## 推理模型是否改变了品类选择？
+
+推理模型（o1/o3、Claude extended thinking 等）增强了每步推理的深度和规划质量，但 **不改变品类边界**。
+
+| 品类 | 推理模型带来什么 | 推理模型不替代什么 |
+|---|---|---|
+| Research Agent | 提升分析深度、假设推演质量 | 不替代引用验证——模型仍会编造来源 |
+| Coding Agent | 提升规划能力、复杂重构的一次性成功率 | 不替代测试验证——推理正确 ≠ 代码正确 |
+| Enterprise Workflow Agent | 提升审批逻辑理解、边界条件覆盖 | 不替代业务规则的外部校验 |
+| Browser/Desktop Agent | 提升多步操作规划 | 不替代 UI 状态的实际回读 |
+
+**关键结论：品类由用户 JTBD（Jobs To Be Done）决定，不由模型能力决定。** 推理模型让每个品类内部做得更好，但不会把 Research Agent 变成 Coding Agent，也不会让你跳过 Effects 验证。选品类时忽略模型能力差异，聚焦交付物。
+
 ## 下一步
 
 1. `mva-planner.md`

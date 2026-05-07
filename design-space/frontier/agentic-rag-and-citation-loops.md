@@ -100,7 +100,7 @@ Agentic RAG 的四大增强（Agents Companion 2025）：
 | 数据动态变化 + 需要自主检索 | Agentic RAG |
 | 知识来自 Agent 自身经验 | Agent Memory |
 
-详见 `../../paradigms/methodology/performance-optimization.md`。
+详见 `../../design-space/methodology/performance-optimization.md`。
 
 ## 仍在演进的问题
 

@@ -2,7 +2,7 @@
 
 > **Evidence Status** — synthesized. 核心概念归纳与跨模块一致性整理。
 
-> **完整版**见 `../paradigms/methodology/decision-frameworks.md`。本文保留核心决策矩阵供快速查阅。
+> **完整版**见 `../design-space/methodology/decision-frameworks.md`。本文保留核心决策矩阵供快速查阅。
 
 ## 1. 何时选择自治等级
 

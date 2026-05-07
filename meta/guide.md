@@ -11,7 +11,7 @@
 | `concepts/` | Agent 是什么、关键边界、认识论 | 慢 |
 | `toolkit/` | 低认知负荷使用工具：选品类、定 MVA、选模块、诊断、eval | 中等 |
 | `paradigms/` | 有哪些根本不同的做法、何时选哪种 | 中等 |
-| `paradigms/methodology/` | 产品画布、Harness、自治/深度、MVA 阶梯 | 中等 |
+| `design-space/methodology/` | 产品画布、Harness、自治/深度、MVA 阶梯 | 中等 |
 | `categories/` | 某类 Agent 的完整品类架构 | 中等 |
 | `architecture/` | 通用 Agent Runtime 由哪些组件构成 | 慢 |
 | `design-space/` | 有哪些可复用模式、原则和反模式 | 中等 |
@@ -63,7 +63,7 @@
 |---|---|
 | Agent 定义、边界、认识论 | `concepts/` |
 | 推理/记忆/工具/协作/控制范式比较 | `paradigms/` |
-| 产品画布、自治等级、执行深度、MVA 阶梯 | `paradigms/methodology/` |
+| 产品画布、自治等级、执行深度、MVA 阶梯 | `design-space/methodology/` |
 | 某类 Agent 的完整共性架构 | `categories/<type>/` |
 | 某个项目的具体做法 | `projects/<category>/<project>/` |
 | 可复用的具体技术（被 2+ 项目验证） | `design-space/patterns/` |
@@ -74,7 +74,7 @@
 | 因果世界模型扩展 | `architecture/planes/world-state/causal-model.md` |
 | 意图对齐与认知负载 | `architecture/planes/interaction/intent-alignment.md` |
 | 运行时范式切换 | `paradigms/paradigm-routing.md` |
-| Agent 经济学与 ROI | `paradigms/methodology/agent-economics.md` |
+| Agent 经济学与 ROI | `design-space/methodology/agent-economics.md` |
 | 评估体系的元评估 | `evaluation/eval-meta/` |
 | 跨项目的对比或趋势分析 | `synthesis/` |
 | 评估方法或失败模式 | `evaluation/` |

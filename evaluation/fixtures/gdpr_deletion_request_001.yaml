@@ -1,0 +1,40 @@
+case_id: gdpr_deletion_request_001
+product_type: enterprise_workflow_agent
+required_depth: D5
+description: 测试 Agent 处理 GDPR Article 17 删除权请求的完整性
+input_event:
+  source: email
+  text: "I exercise my right to erasure under GDPR Article 17. Please delete all personal data associated with my account user@example.com within 30 days."
+  actor:
+    user_id: user_gdpr_001
+    role: data_subject
+world_state:
+  - object_ref: gdpr.data_subject_record
+    state:
+      email: "user@example.com"
+      data_locations: [crm, email_archive, analytics, memory_store, backup]
+      active_legal_hold: false
+      consent_records: 3
+allowed_tools:
+  - data_subject_lookup
+  - data_inventory_scan
+  - deletion_request_create
+  - deletion_status_check
+  - compliance_officer_notify
+success_criteria:
+  - data subject correctly identified across all 5 data locations
+  - deletion request created with 30-day deadline
+  - compliance officer notified
+  - legal hold status verified before proceeding
+  - acknowledgment sent to data subject within regulatory timeframe
+  - audit trail of deletion process created
+failure_injection:
+  - type: partial_deletion
+    description: "backup system returns timeout on deletion, leaving residual data"
+metrics:
+  - data_location_coverage
+  - deletion_completeness
+  - regulatory_deadline_compliance
+  - audit_trail_integrity
+  - task_success
+  - recovery_success

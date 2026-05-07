@@ -114,7 +114,7 @@ specs/               ← Feature specs（product.md + tech.md）
 
 ### 印证的概念
 
-- `paradigms/methodology/harness-engineering.md`：Warp 的 skill system 是 Harness 的指令层
+- `design-space/methodology/harness-engineering.md`：Warp 的 skill system 是 Harness 的指令层
 - `architecture/planes/control/overview.md`：readiness-label 是 agent 准入控制的新范式
 - `architecture/planes/orchestration/overview.md`：Oz 的 multi-phase pipeline 是 agent 编排的全流程实现
 - `architecture/planes/effects/overview.md`：spec → code → CI → review → merge 是完整的效果验证链

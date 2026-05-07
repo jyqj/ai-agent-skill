@@ -170,7 +170,7 @@ timestamp: datetime
 | `../explainability/overview.md` | 对齐失败时需要 Decision Explanation |
 | `../memory/overview.md` | 意图调整记录可以进入长期记忆 |
 | `../control/overview.md` | 安全/合规冲突由 Control 策略裁决 |
-| `../../../paradigms/methodology/autonomy-and-depth.md` | 自治等级决定对齐的频率和深度 |
+| `../../../design-space/methodology/autonomy-and-depth.md` | 自治等级决定对齐的频率和深度 |
 | `../../../concepts/agent-epistemics.md` | 意图对齐的目标是减少 Agent 关于用户意图的 Unknown |
 
 ## Evidence Status

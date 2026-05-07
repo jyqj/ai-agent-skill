@@ -1,33 +1,36 @@
 # Toolkit
 
-> **Evidence Status** — synthesized. 为降低开发者和 AI 使用本 skill 的认知负荷而设置的操作层 facade；它不替代深层知识库，只负责把问题路由到最少必要文件。
+> **Evidence Status** — synthesized. 降低开发者和 AI 使用本 skill 的认知负荷；把问题路由到最少必要文件。
 
-## 设计原则
-
-每个工具页只回答一个问题，并给出：
+## 使用流程
 
 ```text
-30 秒判断 → 最小产出 → 何时升级 → 3 个以内深入入口
+你要做什么？
+│
+├─ 构建新 Agent ──→ choose-agent-type → mva-planner → module-picker → eval-planner → review-checklist
+│
+├─ 诊断已有 Agent ──→ failure-router → 命中的 plane overview → pattern 或 anti-pattern
+│
+├─ 升级已有 Agent ──→ upgrade-planner → module-picker → pattern-migration
+│
+└─ 做架构评审 ──→ review-checklist → ../index/design-checklist.md
 ```
 
 ## 工具列表
 
 | 工具 | 用途 |
 |---|---|
-| `choose-agent-type.md` | 快速选择 Agent 品类 |
-| `mva-planner.md` | 规划第一个可交付版本 |
+| `choose-agent-type.md` | 选择 Agent 品类（30 秒决策） |
+| `mva-planner.md` | 定最小版本 + 判断风险与深度 |
 | `module-picker.md` | 从 5 域 / 25 plane 中选最小模块集 |
-| `risk-depth-calculator.md` | 按风险和执行深度决定复杂度 |
 | `failure-router.md` | 从症状定位架构边界与修复入口 |
-| `pattern-picker.md` | 从场景选择 pattern 与反模式 |
 | `eval-planner.md` | 把设计转成验收和回归 |
 | `review-checklist.md` | 做轻量架构 review |
+| `upgrade-planner.md` | 从当前 MVA 级别规划增量升级路径 |
+| `pattern-migration.md` | 已有系统渐进引入 pattern 的迁移指南 |
 
-## 推荐顺序
+## 设计原则
 
-```text
-choose-agent-type → mva-planner → module-picker → risk-depth-calculator
-                 → pattern-picker → eval-planner → review-checklist
-```
+每个工具只回答一个问题，给出：30 秒判断 → 最小产出 → 3 个以内的深入入口。
 
-如果是已有系统出问题，直接从 `failure-router.md` 开始。
+选择设计模式不需要单独的工具——用 `../index/category-pattern-matrix.md` 从品类出发选择，或用 `../design-space/patterns/README.md` 按场景浏览。

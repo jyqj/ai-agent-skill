@@ -105,6 +105,30 @@ recovery_budget:
 [ ] 失败 trace 是否能转化成 regression fixture？
 ```
 
+## Checkpoint 恢复协议
+
+从 checkpoint 恢复时，Task State 和 World State 的处理策略不同：
+
+| 对象 | 恢复策略 | 原因 |
+|---|---|---|
+| Task State（plan、completed_steps、open_steps） | **保留** checkpoint 中的值 | 任务进度是 Agent 自己的记录，不会被外部改变 |
+| World State（world_refs） | **强制刷新**全部引用 | 外部对象在 Agent 中断期间可能已变化 |
+| Pending Effects | **逐一重验证** | 中断前的待验证效果可能已过期或已被确认 |
+| Environment State（workspace、git status） | **校验**后决定是否重建 | 执行环境可能被其他进程修改 |
+| Artifacts（diff、文件、报告） | **保留**并校验存在性 | 产物一般不会被外部删除，但需确认 |
+
+```text
+恢复流程：
+1. Load checkpoint → 恢复 Task State
+2. 刷新全部 world_refs → 对比 checkpoint 中的旧快照
+3. 如有 world_ref 不一致 → 标记受影响的 open_steps 为 needs_revalidation
+4. 重验证 pending_effects → 更新 EffectRecord 状态
+5. 校验 environment → 不一致则修复或请求人工
+6. 从第一个 safe step 继续
+```
+
+关键规则：**不得跳过 world_refs 刷新直接继续执行。** checkpoint 是时间胶囊，恢复时必须解冻。详见 `../../cross-cutting/state-x-world-state.md`。
+
 FailureRecord 由 Recovery Plane 生成并记录，由 [Learning Plane](../../learning/incident-driven-evolution.md) 消费，用于驱动 Harness 演化和 eval fixture 扩张。
 
 相关文件：`../../lifecycle.md`、`../effects/overview.md`、`../execution/overview.md`、`../operations/incident-response.md`、`../../../evaluation/failure-taxonomy.md`、`../../../design-space/anti-patterns/infinite-retry.md`。

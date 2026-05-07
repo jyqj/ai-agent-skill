@@ -45,5 +45,5 @@ review_result:
 ## 深入入口
 
 1. `../index/design-checklist.md`
-2. `../index/principle-obligation-eval-map.md`
+2. `../concepts/foundations/principle-obligation-eval-map.md`
 3. `../architecture/plane-interaction-matrix.md`

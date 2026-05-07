@@ -2,7 +2,7 @@
 
 > **Evidence Status** — synthesized. 核心概念归纳与跨模块一致性整理。
 
-> **完整版**见 `../paradigms/methodology/autonomy-and-depth.md`。本文保留核心概念供快速查阅。
+> **完整版**见 `../design-space/methodology/autonomy-and-depth.md`。本文保留核心概念供快速查阅。
 
 | 等级 | 名称 | Agent 行为 | 人类角色 | 典型产品 |
 |---|---|---|---|---|

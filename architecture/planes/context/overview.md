@@ -63,6 +63,15 @@ context_pack:
 | Browser/Desktop Agent | DOM + 截图 + UI 状态 | 多 lane：DOM / screenshot / user goal |
 | Companion Agent | 人格定义不可压缩 | persona frozen；关系层 compaction |
 
+## 与 Prompting / Memory 的边界
+
+Context 负责"当前窗口放什么"。Prompting 负责"指令和输出 schema 怎么组织"。Memory 负责"跨会话信息怎么存取"。三者的操作职责矩阵和流转协议见 `../../cross-cutting/context-engineering-x-memory.md`。
+
+关键区分：
+- **few-shot 示例**：Prompting 定义选择策略（`few_shot_policy`），Memory 提供历史候选，Context 按预算装配进窗口。
+- **compaction**：Context 负责执行，Memory 不参与；compaction 结果如果要持久化，走 Context→Memory 写入协议。
+- **trust lane**：Context 在装配时标记每个片段的来源和信任等级，Prompting 层内容默认 Trusted，Memory 注入内容默认 Semi-trusted。
+
 ## 参考实现
 
 - **Claude Code**：4 阶段压缩（snip → micro → collapse → auto），见 `projects/coding-agents/claude-code/control-layer.md`

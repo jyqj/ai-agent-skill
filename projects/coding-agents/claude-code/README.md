@@ -85,7 +85,7 @@
 - `./hooks-system.md` - Hook 机制
 
 ## 与知识库的关联
-- 印证了 `paradigms/methodology/harness-engineering.md` 的 11 组件模型
+- 印证了 `design-space/methodology/harness-engineering.md` 的 11 组件模型
 - 补充了 `../../../design-space/patterns/compaction.md` 的实际实现（多层策略）
 - 补充了 `../../../architecture/kernel/agent-loop.md` 的生产级实现
 - 验证了 `../../../architecture/planes/orchestration/overview.md` 的子代理是上下文防火墙

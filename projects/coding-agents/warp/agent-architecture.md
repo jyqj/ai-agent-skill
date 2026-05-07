@@ -163,7 +163,7 @@ implement-specs
 
 ### 印证
 
-- `paradigms/methodology/harness-engineering.md`：skills 是 harness 的指令层，指令是工程化的知识资产
+- `design-space/methodology/harness-engineering.md`：skills 是 harness 的指令层，指令是工程化的知识资产
 - `architecture/planes/tools/overview.md`：skills 作为 agent 的高层工具，每个 skill 是一个"元工具"
 - `design-space/patterns/progressive-disclosure.md`：三层加载是 progressive disclosure 在 agent 知识管理中的落地
 

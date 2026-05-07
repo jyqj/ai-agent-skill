@@ -1,6 +1,6 @@
 # Agent Categories
 
-> **Evidence Status** — synthesized. 品类索引，覆盖 11 个 Agent 品类。
+> **Evidence Status** — synthesized. 品类索引，覆盖 14 个 Agent 品类。
 
 ## 品类层在主干中的位置
 
@@ -42,6 +42,9 @@ projects/       真实项目怎么实现
 | Personal Memory Agent | `personal-memory-agent/README.md` | CC3 | 已升级：三层存储/矛盾检测/隐私控制 |
 | Embodied Robot Agent | `embodied-robot-agent/README.md` | CC2-CC3 | 已升级：安全层级/LLM+控制分离/Sim-to-Real |
 | Agent Platform | `agent-platform/README.md` | CC3 | 已升级：协议栈/多租户/版本管理 |
+| Creative Agent | `creative-agent/README.md` | CC3 | 新增：风格一致性/创意评估/版权边界/多模态工作流 |
+| Financial Agent | `financial-agent/README.md` | CC2 | 金融交易、风险管理和合规监控 |
+| Education Agent | `education-agent/README.md` | CC2 | 个性化教学、练习、评估和学习路径规划 |
 
 ## 品类模板
 

@@ -112,4 +112,4 @@ python3 main.py task.json /path/to/workspace --no-resume
 - `../../architecture/planes/world-state/causal-model.md` — 因果世界模型扩展
 - `../../architecture/planes/recovery/overview.md` — 恢复策略
 - `../../architecture/planes/context/overview.md` — 上下文管理
-- `../../paradigms/methodology/minimum-viable-agent.md` — MVA 阶梯
+- `../../design-space/methodology/minimum-viable-agent.md` — MVA 阶梯

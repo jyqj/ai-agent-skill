@@ -54,3 +54,43 @@ Research Agent 非常适合 shadow mode：
 → 人类 reviewer 标注 citation drift / missed source / unresolved conflict
 → 转回 fixture 和 regression suite
 ```
+
+## 最新评估数据（2026 更新）
+
+> 来源：Deep Research Agents 综述 (arXiv 2506.18096)、DRACO Benchmark (Perplexity)、GAIA Benchmark
+
+### GAIA 基准
+
+GAIA 是专家级多轮推理的核心基准。当前最佳表现：
+
+| 系统 | GAIA 分数 | 备注 |
+|---|---|---|
+| Claude Sonnet 4.5 | 74.6% | 当前公开最高 |
+| 人类基线 | ~77% | 仍有差距 |
+
+其他关键基准：HotpotQA（2 跳推理，113k samples）、2WikiMultihopQA（2+ 跳推理，192k samples）、DeepResearch Bench（报告保真度 + 引用准确度）、DRACO（Perplexity 跨域深度研究基准）。
+
+### 引用验证作为核心评估维度
+
+传统 eval 偏重答案正确性，2026 年的共识是引用验证应提升为一等评估维度：
+
+| 评估层级 | 检查内容 |
+|---|---|
+| 引用存在性 | 关键 claim 是否绑定到至少一个 source |
+| 引用支撑性 | source 内容是否真的支撑对应 claim（而非仅主题相关） |
+| 引用归因正确性 | 引用是否附加到正确的 claim 上（防止"正确引用，错误主张"） |
+| 引用新鲜度 | 时间敏感 claim 的 source 是否足够新 |
+
+Perplexity 平均 21.87 条引用/响应（所有主要平台最高），但数量不等于质量——"正确引用附加到不被支持的主张上"的细微错误仍是行业共性问题。
+
+### 冲突检测评估方法
+
+Research Agent 在面对矛盾来源时的行为是关键质量指标：
+
+| Case | 期望行为 | 失败模式 |
+|---|---|---|
+| 两个高权威来源结论相反 | 保留冲突，标注差异来源 | 静默选择一方，丢弃另一方 |
+| 同一来源内部前后矛盾 | 标注内部不一致 | 仅引用支持结论的部分 |
+| 旧来源 vs 新来源 | 标注时间差异，偏向新来源但保留旧来源上下文 | 完全忽略旧来源 |
+
+FutureHouse Falcon 的做法值得参考：分析跨数百篇论文的矛盾证据，标识额外实验可以解决冲突之处，将冲突转化为研究方向而非简单压平。

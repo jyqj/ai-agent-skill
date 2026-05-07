@@ -11,11 +11,11 @@
 | 品类 | 项目 |
 |------|------|
 | Coding Agents | [Claude Code](coding-agents/claude-code/) · [Codex](coding-agents/codex/) · [OpenCode](coding-agents/opencode/) · [Augment](coding-agents/augment/) · [Warp](coding-agents/warp/) |
-| Research Agents | [OpenAI Deep Research](research-agents/openai-deep-research/) |
-| Browser/Desktop Agents | [Anthropic Computer Use](browser-desktop-agents/anthropic-computer-use/) |
-| Memory Systems | [MemPalace](memory-systems/mempalace/) · [Nocturne Memory](memory-systems/nocturne-memory/) |
+| Research Agents | [OpenAI Deep Research](research-agents/openai-deep-research/) · [Perplexity](research-agents/perplexity-analysis.md) |
+| Browser/Desktop Agents | [Anthropic Computer Use](browser-desktop-agents/anthropic-computer-use/) · [Browser Use](browser-desktop-agents/browser-use/) · [Stagehand](browser-desktop-agents/stagehand/) |
+| Memory Systems | [MemPalace](memory-systems/mempalace/) · [Nocturne Memory](memory-systems/nocturne-memory/) · [Letta](memory-systems/letta/) · [Mem0](memory-systems/mem0/) |
 | Companion Agents | [NagaAgent](companion-agents/naga-agent/) |
-| General Agents | [Generic Agent](general-agents/generic-agent/) · [Hermes Agent](general-agents/hermes-agent/) |
+| General Agents | [Generic Agent](general-agents/generic-agent/) · [Hermes Agent](general-agents/hermes-agent/) · [OpenAI Agents SDK](general-agents/openai-agents-sdk/) · [Google ADK](general-agents/google-adk/) · [LangGraph](general-agents/langgraph/) · [CrewAI](general-agents/crewai/) |
 | Tool Platforms | [VCPToolBox](tool-platforms/vcptoolbox/) |
 
 ## 阅读建议

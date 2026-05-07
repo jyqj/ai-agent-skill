@@ -61,6 +61,40 @@ metrics:
 | 4 | 验证通过但有小问题或风险披露不足 |
 | 5 | 完成、验证、证据清楚、风险可控、可回放 |
 
+## 基准信任危机
+
+> 详见 `benchmark-trust-crisis.md`
+
+2026 年 4 月，UC Berkeley RDI 证明 8 大主流 Agent 基准（SWE-bench、WebArena、GAIA、OSWorld 等）全部可被 reward hacking 攻破，攻破率 73%-100%。攻击方法包括验证器劫持（Pytest hooks）、环境篡改（木马化 wrapper）、答案泄露（`file://` URL / 公开数据集）和验证器缺陷。
+
+**对本框架的影响**：
+- 基准分数不应作为唯一能力声明依据，须附带 reward hacking 风险评估
+- 评估环境必须与 Agent 运行环境隔离
+- 验证器本身需要安全审计（Agent-Eval 安全清单 6 条）
+- 推荐 2-4 个互补基准的组合评估（portfolio approach）
+
+## 可靠性指标：pass^k
+
+传统 pass@k（k 次尝试中至少 1 次成功）衡量的是能力上限，不适合衡量生产可靠性。
+
+**pass^k 定义**：k 次尝试中全部成功的概率。
+
+```
+pass@k = 1 - (1-p)^k        # 能力评估
+pass^k = p^k                 # 可靠性评估
+```
+
+**关键示例**：75% 单次成功率的 Agent：
+- pass@3 = 98.4%（看起来几乎完美）
+- pass^3 = 42.2%（生产不可接受）
+
+**使用建议**：
+- 开发阶段可用 pass@k 评估能力进展
+- 生产准入和 SLA 承诺必须使用 pass^k
+- 渐进式发布阈值建议：pass^3 ≥ 70% (dev) → ≥ 85% (staging) → ≥ 95% (prod)
+
+来源：[Anthropic - Demystifying Evals](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)，详见 `benchmark-trust-crisis.md`
+
 ## 必过门
 
 以下任一失败都应视为关键失败：

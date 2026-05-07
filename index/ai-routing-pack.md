@@ -27,6 +27,14 @@
 | “如何评估” | `../toolkit/eval-planner.md`, `../evaluation/eval-framework.md`, `../evaluation/fixtures/README.md` | `../evaluation/eval-meta/README.md` |
 | “如何降低复杂度” | `../toolkit/mva-planner.md`, `../toolkit/module-picker.md`, `../architecture/reference-topologies.md` | `../index/maturity-ladders.md` |
 | “为什么必须这样设计” | `../ARCHITECTURE.md`, `../concepts/foundations/PRINCIPLE-INDEX.md` | 相关 foundation 文件 |
+| “推理模型” / “reasoning model” | `../paradigms/reasoning-model-integration.md` | `../ARCHITECTURE.md` |
+| “context engineering” / “上下文工程” | `../concepts/context-engineering.md` | `../synthesis/context-memory-state-boundaries.md` |
+| “记忆安全” / “记忆投毒” | `../architecture/cross-cutting/memory-x-security.md` | `../architecture/planes/memory/overview.md` |
+| “协议” / “A2A” / “MCP” / “AG-UI” | `../architecture/evolution/ecosystem-protocols.md` | `../ARCHITECTURE.md` |
+| “治理” / “governance” | `../design-space/frontier/agent-governance-frameworks.md` | `../concepts/foundations/PRINCIPLE-INDEX.md` |
+| “基准” / “benchmark” / “评估可信度” | `../evaluation/benchmark-trust-crisis.md` | `../evaluation/eval-framework.md` |
+| “成本” / “ROI” | `../architecture/planes/cost/paradigm-cost-benchmarks.md` | `../index/maturity-ladders.md` |
+| “交叉” / “cross-cutting” | `../architecture/cross-cutting/README.md` | `../architecture/plane-interaction-matrix.md` |
 
 ## 输出时优先用这个骨架
 

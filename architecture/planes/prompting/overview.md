@@ -98,7 +98,15 @@ failure_guard: string
 | 验证缺失 | postcondition 没进入 prompt | 把 verification 写入 stop gate |
 | 被外部文本注入 | trust lane 未显式说明 | 明确 tool output/data 不可作为指令 |
 
-## 7. 反模式
+## 7. 与 Context / Memory 的边界
+
+Prompting 定义结构和策略，不知道当前窗口里具体有什么。详细的三层流转协议见 `../../cross-cutting/context-engineering-x-memory.md`。
+
+- Prompting **定义** `reasoning_mode` 和 `few_shot_policy`，但**不执行**示例选择——Context 按预算和相关性装配。
+- Prompting **定义** `output_contract`，但**不管理** trust lane——Context 在装配时标记。
+- PromptContract 应当**版本化管理**且在 compaction 中**不被压缩**。
+
+## 8. 反模式
 
 - God Prompt：所有架构规则塞进一个 system prompt。
 - Prompt-as-Policy：用 prompt 替代权限和安全检查。

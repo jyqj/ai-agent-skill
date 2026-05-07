@@ -14,6 +14,7 @@
 | Verified Tool Agent | `verified-tool-agent/README.md` | EffectRecord、ToolRegistry、Verification、FailureRecord、TraceEvent、Stop Gate |
 | React LLM Agent | `react-llm-agent/README.md` | ReAct 循环、LLM 决策、intended_effect、独立验证（readback/test） |
 | Stateful Agent | `stateful-agent/README.md` | Checkpoint 持久化、WorldStateSnapshot TTL、中断恢复、上下文压缩 |
+| Multi-Model Agent | `multi-model-agent/README.md` | ModelRouter、Planner-Executor 分离、Budget 约束、TaskComplexity 路由 |
 
 ## 使用方式
 
@@ -23,6 +24,16 @@
   → 若要落地，走 guides/ 的端到端指南
   → 落地时必须重新设计权限、安全、测试和运维
 ```
+
+## 与主流 SDK 的映射
+
+| 知识库概念 | OpenAI SDK | Anthropic SDK | Google ADK |
+|---|---|---|---|
+| TaskEnvelope | Agent instructions | System prompt + tools | Agent config |
+| EffectRecord | Tool result | Tool result | Tool result |
+| ModelRouter | 手动模型选择 | model 参数 | ModelConfig |
+| Handoff | Handoff 原语 | 子 Agent 作为 Tool | Agent-to-Agent |
+| Guardrail | Guardrail 原语 | 手动实现 | Safety settings |
 
 ## 与知识库其他部分的关系
 

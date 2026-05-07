@@ -99,6 +99,8 @@
 [ ] Guard Model 是否独立于主模型部署（避免同时被注入攻击）？
 [ ] Agent 是否被防止自我提权（权限动态对齐意图，不能自我升级）？
 [ ] 是否有持续性安全验证（regression testing + variant analysis + red team）？
+[ ] 记忆写入是否有来源验证和投毒防护？（→ cross-cutting/memory-x-security.md）
+[ ] 工具/技能供应链是否有注册验证？（→ lessons-learned/clawhavoc-supply-chain-poisoning.md）
 ```
 
 ## 9. 编排与状态
@@ -124,6 +126,8 @@
 [ ] model / prompt / tool schema / policy 是否有配置指纹？
 [ ] 是否有 eval regression、canary rollout、incident trace？
 [ ] 是否有轨迹评估（precision/recall/order match/tool coverage）？
+[ ] 评估基准是否有对抗测试防护？（→ evaluation/benchmark-trust-crisis.md）
+[ ] 是否使用 pass^k 而非 pass@k 作为可靠性指标？
 [ ] 是否有 AgentOps 指标分层（北极星→目标完成→关键步骤→遥测→人类反馈→trace）？
 [ ] 是否有 readiness / spec / review / escalation 等运营门控？
 ```
@@ -169,6 +173,8 @@
 [ ] token 预算是否保留输出、工具和验证空间？
 [ ] OCR / embedding / read-only tool result 是否有缓存策略？
 [ ] 成本接近阈值时是否触发 budget_choice？
+[ ] 成本是否使用全载模型（token + 工具 + 基础设施 + 人工审核）？
+[ ] 推理模型是否有显式 budget 管理？
 ```
 
 ## Multi-Agent / Concurrency / Dataflow

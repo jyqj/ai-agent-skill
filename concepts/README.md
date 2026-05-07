@@ -35,4 +35,4 @@
 
 ## 方法论已迁移
 
-历史上本目录混入了方法论文档（如 Harness 工程、自治等级、决策框架等）。为保持层级清晰，`harness-engineering.md`、`autonomy-levels.md`、`decision-frameworks.md` 和 `agent-product-model.md` 已迁移到 `../paradigms/methodology/` 目录，`design-principles.md` 迁移到 `../design-space/principles/core-design-principles.md`。历史文件仍保留以兼容旧链接，但新内容应优先写入迁移后的位置。
+历史上本目录混入了方法论文档（如 Harness 工程、自治等级、决策框架等）。为保持层级清晰，`harness-engineering.md`、`autonomy-levels.md`、`decision-frameworks.md` 和 `agent-product-model.md` 已迁移到 `../design-space/methodology/` 目录，`design-principles.md` 迁移到 `../design-space/principles/core-design-principles.md`。历史文件仍保留以兼容旧链接，但新内容应优先写入迁移后的位置。

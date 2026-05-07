@@ -18,19 +18,28 @@
 | NagaAgent | Memory ★★★, Context ★★, Interface ★★ | 分层 Prompt、GRAG、Voice / Avatar |
 | VCPToolBox | Tools ★★★, Platform ★★★, Memory ★★ | 插件系统、分布式工具、TagMemo |
 | Warp | Tools ★★★, Orchestration ★★★, Control ★★★, Operations ★★★, Interface ★★ | Skills 系统、Oz Pipeline、Spec-Driven、Readiness Label |
+| Browser Use | Tools ★★★, Execution ★★★, Interface ★★, Control ★★ | 81K stars 开源 Browser Agent、DOM 操作、多步浏览器任务 |
+| Stagehand | Tools ★★★, Interface ★★★, Execution ★★ | Vercel DOM-first Browser Agent、结构化 DOM 抽取 |
+| Perplexity | Orchestration ★★★, Context ★★★, Representation ★★ | 19 模型编排、搜索 + 生成流水线、引用链 |
+| OpenAI Agents SDK | Orchestration ★★★, Tools ★★★, Control ★★, Execution ★★ | OpenAI 官方 Agent 框架、Handoff、Guardrails |
+| Google ADK | Orchestration ★★★, Tools ★★★, Memory ★★, Execution ★★ | Google Agent Development Kit、多 Agent 编排、工具生态 |
+| LangGraph | Orchestration ★★★, State ★★★, Concurrency ★★★, Tools ★★ | 有向图状态机、Superstep 并行、持久化 Checkpointer、中间件模式 |
+| CrewAI | Orchestration ★★★, Interaction ★★★, Memory ★★, Tools ★★ | 角色驱动多 Agent、Flows 事件管道、四层记忆、团队隐喻 |
+| Letta | Memory ★★★, Context ★★★, State ★★ | OS 风格记忆层级、自编辑记忆工具、V1 原生推理转型 |
+| Mem0 | Memory ★★★, Economics ★★★, Security ★★ | 三层存储(Vector+Graph+KV)、选择性记忆、actor-aware、90%+ 成本降低 |
 
 ## 模块 → 项目（想学某个模块，看哪些项目）
 
 | 模块 | 首选项目 | 次选项目 |
 |---|---|---|
-| Representation | Nocturne（disclosure） | MemPalace（原文 + 结构） |
-| Context | Claude Code（4 阶段压缩） | OpenCode（压缩联动） |
-| Memory | Nocturne（审计 + disclosure） | MemPalace（KG + benchmark） |
-| Tools | Claude Code（60+ 工具） | Augment（分层 host） |
-| Execution | Codex（完全沙箱） | Hermes（多 backend） |
-| Control | Claude Code（Hook） | Codex（Guardian） |
-| Orchestration | Augment（Worker） | Claude Code（子代理）/ Warp（Oz Pipeline） |
-| State | Augment（Checkpoint） | Claude Code（git-based） |
-| Interface | Hermes（multi-platform） | Naga（多模态）/ Warp（terminal-native） |
+| Representation | Nocturne（disclosure） | MemPalace（原文 + 结构）/ Perplexity（引用链） |
+| Context | Claude Code（4 阶段压缩） | OpenCode（压缩联动）/ Perplexity（搜索上下文）/ Letta（自管理分页） |
+| Memory | Nocturne（审计 + disclosure） | MemPalace（KG + benchmark）/ Google ADK（Agent 记忆）/ Letta（OS 式记忆层级）/ Mem0（选择性记忆平台） |
+| Tools | Claude Code（60+ 工具） | Augment（分层 host）/ Browser Use（浏览器工具）/ Stagehand（DOM 工具）/ OpenAI Agents SDK / Google ADK |
+| Execution | Codex（完全沙箱） | Hermes（多 backend）/ Browser Use（浏览器执行）/ OpenAI Agents SDK / Google ADK |
+| Control | Claude Code（Hook） | Codex（Guardian）/ Browser Use（浏览器控制）/ OpenAI Agents SDK（Guardrails） |
+| Orchestration | Augment（Worker） | Claude Code（子代理）/ Warp（Oz Pipeline）/ Perplexity（19 模型编排）/ OpenAI Agents SDK（Handoff）/ Google ADK（多 Agent）/ LangGraph（图状态机）/ CrewAI（Flows 事件管道） |
+| State | Augment（Checkpoint） | Claude Code（git-based）/ LangGraph（持久化 Checkpointer） |
+| Interface | Hermes（multi-platform） | Naga（多模态）/ Warp（terminal-native）/ Browser Use（浏览器 UI）/ Stagehand（DOM-first） |
 | Operations | Warp（Oz triage/review） | Hermes（multi-platform） |
 | Learning | Generic（self-evolution） | VCPToolBox（TagMemo） |

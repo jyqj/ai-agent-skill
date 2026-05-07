@@ -42,6 +42,31 @@ excluded_for_now:
 reason: "single-user MVA-3; no platform or continuous learning yet"
 ```
 
+## 可选增强模块
+
+以下模块不在 5 域基础 plane 内，但在特定场景下应主动引入。
+
+### Reasoning Model Integration
+
+| 何时需要 | 典型配置 |
+|---|---|
+| 复杂规划（>5 步、有条件分支） | 规划阶段调用推理模型，执行阶段用标准模型 |
+| 多步推理（证据链、因果分析） | 推理模型做深度分析，再交由 agent 执行 |
+| 高价值决策（金融、安全、不可逆操作） | 推理模型做 pre-flight check，标准模型做日常循环 |
+
+注意：推理模型调用成本显著高于标准模型，需配合 Cost plane 做预算控制。
+
+### Cross-cutting 模块
+
+跨 plane 边界问题需要专门的交叉模块处理，详见 `../architecture/cross-cutting/README.md`。
+
+| 交叉模块 | 解决什么 | 何时需要 |
+|---|---|---|
+| memory-x-security | 记忆被外部内容投毒、篡改 | Agent 接收不可信输入并写入长期记忆时 |
+| protocol-x-security | 工具协议层的信任边界 | Agent 通过 MCP 等协议调用外部工具时 |
+| tool-x-effects | 工具调用成功 ≠ 效果达成 | Agent 写外部系统且需要验证时 |
+| cost-x-orchestration | 多 Agent 编排的成本爆炸 | 多 Agent 循环调用、递归子任务时 |
+
 ## 常见减负规则
 
 - 不改外部世界：先不要 Effects / Recovery 的完整实现，但 Research 仍需要 claim verification。
@@ -51,6 +76,6 @@ reason: "single-user MVA-3; no platform or continuous learning yet"
 
 ## 下一步
 
-1. `risk-depth-calculator.md`
-2. `pattern-picker.md`
+1. `eval-planner.md`
+2. `../index/category-pattern-matrix.md`
 3. `../architecture/README.md`

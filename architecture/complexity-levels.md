@@ -59,4 +59,4 @@ C6 Learning candidate unsafe → quarantine + eval fixture
 [ ] 学习机制是否已有 C6 所需的验证和失效条件？
 ```
 
-相关文件：`reference-topologies.md`、`../paradigms/methodology/minimum-viable-agent.md`、`planes/effects/overview.md`、`planes/recovery/overview.md`。
+相关文件：`reference-topologies.md`、`../design-space/methodology/minimum-viable-agent.md`、`planes/effects/overview.md`、`planes/recovery/overview.md`。

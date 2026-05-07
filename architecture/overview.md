@@ -98,7 +98,7 @@ required_depth reached
 
 ## 5. 各模块入口
 
-见 `../index/architecture-map.md`。
+见 `../index/mainline-map.md`。
 
 
 ## 6. 复杂度与交互矩阵

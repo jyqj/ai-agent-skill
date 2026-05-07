@@ -2,7 +2,7 @@
 
 > **Evidence Status** — synthesized. 核心概念归纳与跨模块一致性整理。
 
-> **完整版**见 `../paradigms/methodology/agent-product-model.md`。本文保留核心概念供快速查阅。
+> **完整版**见 `../design-space/methodology/agent-product-model.md`。本文保留核心概念供快速查阅。
 
 ## 核心公式
 

@@ -17,7 +17,7 @@
 
 ## Step 1: 用户任务定义
 
-> 参考：`paradigms/methodology/agent-product-model.md`（产品画布）、`categories/research-agent/task-model.md`（任务模型）
+> 参考：`design-space/methodology/agent-product-model.md`（产品画布）、`categories/research-agent/task-model.md`（任务模型）
 
 ### 1.1 填写产品画布
 
@@ -92,7 +92,7 @@ task_envelope:
 
 ## Step 2: 自治等级和执行深度选择
 
-> 参考：`paradigms/methodology/autonomy-and-depth.md`（自治等级 + 执行深度）、`paradigms/methodology/minimum-viable-agent.md`（MVA 阶梯）
+> 参考：`design-space/methodology/autonomy-and-depth.md`（自治等级 + 执行深度）、`design-space/methodology/minimum-viable-agent.md`（MVA 阶梯）
 
 ### 2.1 自治等级选择
 
@@ -108,7 +108,7 @@ Research Agent 的动作风险分析：
 | Synthesize（综合报告） | 中 | 可逆 | L4 — bounded autonomy |
 | Publish / Send（对外发送） | 高 | 不可逆 | L3 — 需审批 |
 
-**设计决策**：Research Agent 默认 **L3-L4**。搜索、读取、提取在规则内自动执行（L4），但最终报告发布需要用户确认（L3）。这与 `paradigms/methodology/autonomy-and-depth.md` 中 Research Agent 的默认建议一致。
+**设计决策**：Research Agent 默认 **L3-L4**。搜索、读取、提取在规则内自动执行（L4），但最终报告发布需要用户确认（L3）。这与 `design-space/methodology/autonomy-and-depth.md` 中 Research Agent 的默认建议一致。
 
 ### 2.2 执行深度选择
 
@@ -277,6 +277,63 @@ paradigm_selection:
 [ ] 未验证部分被明确标注
 ```
 
+### 4.4 架构参考：生产系统的编排模式
+
+> 基于语料 `corpus/agent-category-corpus-2025-2026.md` 中的 Research Agent 架构分析。
+
+#### Egnyte 五 Agent + DAG 编排
+
+Egnyte 的 Deep Research Agent 是当前最完整的公开多 Agent 研究架构参考。五个专业化 Agent + 主编排器：
+
+```text
+[用户查询] → Master Agent → Planner Agent → [DAG 研究计划]
+                                                    |
+                              Master Agent (调度循环)
+                              +- Schedule: DAG 拓扑遍历，找到依赖已满足的节点
+                              +- Dispatch: 并行启动多个 Researcher Agent (map/reduce)
+                              +- Synchronize: 收集结构化 Question Analysis
+                              +- Loop: 直到所有 DAG 节点处理完毕
+                                                    |
+                              Writer Agent → [最终报告]
+```
+
+**关键设计决策**：
+
+| Agent | 职责 | 设计要点 |
+|---|---|---|
+| Planner Agent | 生成 DAG 研究计划 | 探索性搜索 → 关键角度 → 有向无环图建模依赖 |
+| Searcher Agent | 搜索-精炼循环 | 策略性查询构造 + 并行多源搜索 + Cross-encoder 重排序 + MMR 多样性选择 |
+| Researcher Agent | 多实例并行分析 | 输出结构化 Question Analysis（发现 + 引用 + 缺口标识） |
+| Writer Agent | 元分析 + 报告生成 | 切换到更强 LLM + 跨全部 Analysis 识别涌现主题 + 并行按主题写作 |
+| Master Agent | 编排调度 | LangGraph 编排 + checkpointing 状态持久化 |
+
+**与 MVA 阶梯的对应**：Egnyte 架构约等于 MVA-4（Stateful Multi-Agent），MVA-1 不需要这个复杂度。但其 DAG 依赖建模和缺口驱动的迭代精炼是值得在 MVA-3 引入的模式。
+
+#### Perplexity 19 模型编排
+
+Perplexity Computer 展示了多模型编排在 Research Agent 中的应用——不是选一个最好的模型，而是让每个子任务路由到最优模型：
+
+```text
+目标输入 → 任务分解 → 模型选择 → 并行执行 → 持续优化
+  - Claude Opus 4.6 → 推理和软件工程
+  - Gemini → 深度研究和视觉输出
+  - GPT-5.2 → 长上下文召回
+```
+
+参考数据：2025.01 超 90% 企业 AI 任务通过仅两个模型运行；到 2025.12，单一模型处理不超过 25% 的使用量。
+
+**设计启示**：MVA-1 使用单模型，MVA-3+ 可考虑按子任务类型（搜索查询生成 / 文档分析 / 报告写作）路由到不同模型或不同 temperature/prompt 配置。
+
+#### 规划策略三分法
+
+| 策略 | 机制 | 代表 | MVA 适用 |
+|---|---|---|---|
+| Planning-Only | 直接从用户提示生成计划 | Grok, Manus | MVA-1 |
+| Intent-to-Planning | 先通过定向提问澄清意图，再生成计划 | OpenAI Deep Research | MVA-2 |
+| Unified Intent-Planning | 生成初步计划 + 交互式用户确认 | Gemini DR | MVA-3 |
+
+**设计决策**：MVA-1 采用 Planning-Only（最简），MVA-2 引入 Intent-to-Planning（关键歧义时中断用户），MVA-3 引入 Unified（计划共创）。
+
 ---
 
 ## Step 5: 表示层设计
@@ -380,6 +437,63 @@ Layer 5: 压缩历史和预算状态
 
 这种分层策略既保证模型看到最相关的信息，又避免上下文溢出导致的 Context Rot（`architecture/planes/context/overview.md`）。
 
+### 5.4 引用链设计（Evidence-Claim-Citation 三层）
+
+Research Agent 的引用链不是简单的脚注，而是三层结构化对象：
+
+```text
+Evidence Layer:  EvidenceSnippet — 来源原文片段 + 位置
+    |
+Claim Layer:    ClaimRecord — 可验证主张 + 支撑证据列表 + 状态
+    |
+Citation Layer: CitationRecord — 绑定 claim 到 evidence + source
+```
+
+**引用验证流水线**：
+
+```text
+1. Orphan Check: 每个 final claim 是否绑定了 EvidenceSnippet？
+2. Source Alive: 每个 SourceRecord.raw_ref 是否可访问？
+3. Snippet Fidelity: EvidenceSnippet 是否忠实于 raw source？（lossy 标记）
+4. Claim-Evidence Alignment: claim 文本是否被 evidence 支撑？
+```
+
+**已知缺陷**（行业共识）：引用完整性仍有持续性问题——"正确引用附加到不被支持的主张上"等细微错误持续存在。Perplexity 平均每响应 21.87 条引用，相比 Google 幻觉率低 10%，但事实核查仍被多篇论文标识为**关键开放挑战**。
+
+### 5.5 多源冲突处理
+
+#### 冲突保留 vs 压平
+
+**核心原则**：冲突是对象不是错误。Research Agent 的默认行为应该是**保留冲突**，而非静默选择一方。
+
+```text
+错误做法（Conflict Flattening）：
+  来源 A 说市场份额 30%
+  来源 B 说市场份额 45%
+  → Agent 选择 A 因为来源更权威 → 丢失 B 的信息
+
+正确做法（Conflict Preservation）：
+  → ConflictRecord: {claims: [A, B], type: factual_disagreement}
+  → 报告中明确说明两个数据点、各自来源、可能原因（时间窗/统计口径/定义域）
+  → 如果有足够信息判断哪个更可靠，标注为 preferred + 理由
+```
+
+#### Angel-Devil 对抗辩论
+
+Profile-Then-Plan 范式引入的冲突解决机制：
+
+```text
+Angel Agent: 为 Claim A 辩护，收集支持证据
+Devil Agent: 为 Claim B 辩护，收集反对证据
+Judge: 综合双方论点，判断冲突是否可解决
+  → 可解决：标注 preferred claim + 理由 + 保留 minority claim
+  → 不可解决：标注 unresolved + 双方论点摘要 + 后续研究建议
+```
+
+**FutureHouse Falcon** 的进阶实践：分析跨数百篇论文的矛盾证据，标识额外实验可以解决冲突之处——将冲突转化为后续研究问题。
+
+**设计决策**：MVA-1 不实现对抗辩论，但必须实现 ConflictRecord 和冲突保留。MVA-3 可引入 Angel-Devil 模式处理高价值冲突。
+
 ---
 
 ## Step 6: 效果验证设计
@@ -480,11 +594,32 @@ Research Agent 的默认原则是 **少打扰，关键时刻精准澄清**。定
 
 > 参考：`evaluation/fixtures/README.md`（fixture 编写原则）、`evaluation/eval-framework.md`（评估框架）、`categories/research-agent/task-model.md`（成功维度）
 
-### 8.1 Fixture 设计原则
+### 8.1 外部基准对标
+
+Research Agent 领域的主流 benchmark 覆盖从单跳事实到专家级多轮推理的能力梯度：
+
+| 基准 | 类型 | 当前 SOTA | 适用阶段 |
+|---|---|---|---|
+| TriviaQA, SimpleQA | 单跳事实检索 | 高（接近饱和） | MVA-1 基础能力验证 |
+| HotpotQA (113k) | 2 跳推理 | — | MVA-2 多源综合 |
+| 2WikiMultihopQA (192k) | 2+ 跳推理 | — | MVA-2 多源综合 |
+| GAIA | 专家级多轮推理 | 74.6%（Manus, 2025.03） | MVA-3 目标 |
+| Humanity's Last Exam | 极限推理 | — | 长期目标 |
+| DeepResearch Bench | 报告保真度 + 引用准确度 | — | MVA-2 引用质量 |
+| DRACO (Perplexity) | 跨域深度研究 | — | MVA-3 综合能力 |
+
+参考数据：
+- Perplexity Deep Research 引用 100-300 个来源（vs 竞品 20-50），平均每响应 21.87 条引用
+- 2-4 分钟内完成（vs 竞品 20+ 分钟），但引用验证仍是开放挑战
+- GAIA 74.6% 是当前公开最高成绩，对应的是完整多 Agent + 工具链系统
+
+**设计建议**：MVA-1 用 SimpleQA 子集验证基础检索能力，MVA-2 用自定义 fixture 验证引用链和冲突处理，MVA-3 接入 GAIA 子集验证端到端能力。
+
+### 8.2 内部 Fixture 设计原则
 
 Fixture 是评估的最小可复现输入。每个 fixture 固定一个场景的输入、工具、世界状态和验收条件。Research Agent 的 fixture 必须显式说明 citation / conflict / freshness 的断言。
 
-### 8.2 示例 Fixture：Comparative Brief with Conflict
+### 8.3 示例 Fixture：Comparative Brief with Conflict
 
 ```yaml
 case_id: research_comparative_brief_conflict_001
@@ -541,7 +676,7 @@ metrics:
   - time_window_noted: boolean
 ```
 
-### 8.3 建议的 Fixture 覆盖矩阵
+### 8.4 建议的 Fixture 覆盖矩阵
 
 | Fixture | 验证目标 | 对应 task-model 中的失败类型 |
 |---|---|---|
@@ -558,7 +693,7 @@ metrics:
 
 ## Step 9: MVA 路线图
 
-> 参考：`paradigms/methodology/minimum-viable-agent.md`（MVA 阶梯）
+> 参考：`design-space/methodology/minimum-viable-agent.md`（MVA 阶梯）
 
 ### 9.1 核心原则
 
@@ -646,6 +781,51 @@ metrics:
 - 中断后恢复，不重复已完成的搜索
 - Literature Review 能处理 50+ 来源
 - Ongoing Briefing 能区分新旧来源
+
+---
+
+## 模块选择
+
+> 参考：`toolkit/module-picker.md`
+
+```yaml
+selected_domains:
+  - input_and_understanding    # 多源感知、引用链表示
+  - action_and_effect          # 搜索/检索工具、citation 验证
+  - control_and_collaboration  # citation gate、freshness gate、quality judge
+
+required_planes:
+  - representation   # SourceRecord, ClaimRecord, CitationRecord, ConflictRecord
+  - context          # claim-centered ContextPack
+  - tools            # search, fetch, read_pdf, extract
+  - control          # citation gate + freshness gate + quality judge
+  - interaction      # 澄清 + 进度报告 + 部分交付
+
+recommended_planes:
+  - cost             # query budget + read budget
+  - observability    # source coverage + trace
+  - recovery         # retry budget（搜索失败）
+
+excluded_for_now:
+  - security         # MVA-2 补充（搜索结果 prompt injection 防御）
+  - orchestration    # MVA-3 引入多 Agent（Egnyte 模式）
+  - memory           # MVA-3 引入跨任务来源评价积累
+reason: "MVA-1 single agent + 只读工具；安全和编排在后续阶段引入"
+```
+
+---
+
+## 常见陷阱
+
+| 陷阱 | 表现 | 防护 |
+|---|---|---|
+| **引用幻觉** | 生成看似合理但不存在的引用 | Citation Gate 强制验证 + raw_ref 回查 |
+| **冲突压平** | 静默选择一方，丢失冲突信息 | ConflictRecord 强制保留 + 报告中显式呈现 |
+| **Freshness 盲区** | 引用过期来源但不标注 | Freshness Gate + 时间敏感 claim 的 TTL 检查 |
+| **搜索发散** | 无限搜索但不收敛到结论 | query budget 硬上限 + 覆盖度评估 |
+| **单源依赖** | 关键结论仅依赖一个来源 | 多源交叉验证 + 单源 claim 降级标注 |
+| **权威偏见** | 盲信 first_party 来源而忽视矛盾证据 | authority 作为参考而非绝对判断 + 保留 minority claim |
+| **搜索结果注入** | 恶意网页在搜索结果中注入对抗性内容 | 搜索结果标记为 untrusted_context + MVA-2 补充分类器 |
 
 ---
 
@@ -746,7 +926,7 @@ metrics:
   → 检查清单核验（design-checklist.md）
 ```
 
-关键收获：
+收获：
 
 1. **先定义交付物和效果，再定义 Agent**——产品画布是起点，不是 prompt 工程
 2. **范式选择是结构化过程**——用决策树而不是直觉

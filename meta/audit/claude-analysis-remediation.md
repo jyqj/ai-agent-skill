@@ -9,12 +9,12 @@
 |---|---|---|
 | 第 2 层范式论缺失 | 新增 `paradigms/`，覆盖推理、记忆、工具、协作、控制和方法论 | `paradigms/README.md`、`paradigms/*-paradigms.md` |
 | `categories/` 只有配方清单 | 将 Coding Agent 升级为完整品类架构样板 | `categories/coding-agent/` |
-| `concepts/` 混杂本体论和方法论 | 新增 `concepts/README.md` 明确边界，并将方法论主入口迁至 `paradigms/methodology/` | `concepts/README.md`、`paradigms/methodology/` |
+| `concepts/` 混杂本体论和方法论 | 新增 `concepts/README.md` 明确边界，并将方法论主入口迁至 `design-space/methodology/` | `concepts/README.md`、`design-space/methodology/` |
 | 通用模块与品类特化断开 | Coding Agent 文档显式引用 architecture planes，并给出品类特化配置 | `categories/coding-agent/README.md`、`representation.md`、`action-model.md` |
 | projects 与 categories 连接弱 | 新增实现映射，把品类模块映射到 Claude Code/Codex/OpenCode/Augment | `categories/coding-agent/implementation-map.md` |
 | design-space 横切关系不明确 | 新增品类 × 模式矩阵 | `index/category-pattern-matrix.md` |
 | 主干导航不清 | 新增主干地图、范式地图，并更新 SKILL/ARCHITECTURE | `index/mainline-map.md`、`index/paradigm-map.md`、`SKILL.md`、`ARCHITECTURE.md` |
-| 轻量级 Agent 空间不足 | 新增 MVA 阶梯，定义从最小闭环到生产级的升级路径 | `paradigms/methodology/minimum-viable-agent.md` |
+| 轻量级 Agent 空间不足 | 新增 MVA 阶梯，定义从最小闭环到生产级的升级路径 | `design-space/methodology/minimum-viable-agent.md` |
 
 ## 保留的兼容性
 

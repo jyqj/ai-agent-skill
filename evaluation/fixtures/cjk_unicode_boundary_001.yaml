@@ -1,0 +1,32 @@
+case_id: cjk_unicode_boundary_001
+product_type: any
+required_depth: D3
+description: 测试 CJK 字符、混合脚本和 Unicode 边界情况的处理正确性
+input_event:
+  source: api
+  text: "搜索用户「田中太郎」在项目 プロジェクト-α 中的提交记录，筛选包含 emoji 🚀 的 commit message"
+  actor:
+    user_id: user_cjk_001
+    role: developer
+world_state:
+  - object_ref: repo.commits
+    state:
+      total_commits: 234
+      authors_with_cjk_names: ["田中太郎", "김철수", "张伟"]
+      commits_with_emoji: 12
+allowed_tools:
+  - git_log_search
+  - git_show_commit
+success_criteria:
+  - CJK author name matched exactly (no mojibake or truncation)
+  - project name with mixed katakana and Greek preserved correctly
+  - emoji in commit message handled without corruption
+  - search results contain correct CJK characters in output
+  - no mid-character truncation in any output field
+failure_injection:
+  - type: encoding_mismatch
+    description: "git_log_search returns UTF-8 but context expects Shift-JIS, causing garbled output"
+metrics:
+  - character_integrity
+  - search_accuracy
+  - task_success

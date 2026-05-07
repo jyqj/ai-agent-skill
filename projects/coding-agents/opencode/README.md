@@ -77,7 +77,7 @@ SimpleReplacer → LineTrimmedReplacer → BlockAnchorReplacer → WhitespaceNor
 - `./control-memory.md` - 权限系统、会话状态、持久化存储
 
 ## 与知识库的关联
-- 印证了 `paradigms/methodology/harness-engineering.md` 的 Harness = Context + Execution + Control + Orchestration 分层
+- 印证了 `design-space/methodology/harness-engineering.md` 的 Harness = Context + Execution + Control + Orchestration 分层
 - 补充了 `../../../design-space/patterns/compaction.md` 的三层策略实现（修剪→压缩→截断）
 - 补充了 `../../../design-space/patterns/subagent.md` 的 Task 工具子代理模式
 - 印证了 `../../../architecture/planes/control/overview.md` 的权限模型设计（deny > ask > allow）

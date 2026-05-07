@@ -34,6 +34,12 @@ architecture/            → 运行时 plane 的工程实现
 | Agent 的注意力如何在大量信息中分配权重？ | `attention-and-salience.md` |
 | Agent 如何从新手到专家？技能发展路径如何映射？ | `skill-acquisition.md` |
 | Agent 何时该反思、何时该行动？ | `metacognitive-control.md` |
+| Agent 的情绪和内驱力如何设计？ | `emotion-and-motivation.md` |
+| Agent 如何产生新方案和创意？ | `creative-cognition.md` |
+| 不同品类 Agent 的认知需求差异？ | `category-cognitive-profiles.md` |
+| 认知需求如何驱动范式选择？ | `cognitive-to-paradigm-routing.md` |
+| 认知模块如何映射到运行时 Plane？ | `cognitive-to-plane-mapping.md` |
+| 各品类 Agent 如何组装认知模块？ | `category-cognitive-assembly.md` |
 
 ## 阅读建议
 

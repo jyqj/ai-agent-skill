@@ -39,7 +39,28 @@ Observe → Represent → Decide → Act → Sense / Verify → Update
 - lossy / replayable
 
 ### 3. Decide
-结合目标、状态、预算、约束、world state 和记忆决定下一步：继续读取、规划、执行、回滚、请求审批或停止。
+结合目标、状态、预算、约束、world state 和记忆，决定下一步。Decide 的输入包含 PromptContract 中指定的 `reasoning_mode`，输出是一个结构化 Decision：
+
+```yaml
+decision:
+  type: tool_call | tool_call_batch | plan_step | reflection | delegation | ask_human | finalize | stop_with_evidence
+  reasoning_mode: direct | react | plan_execute | reflection | critique
+  payload: {}          # 按 type 不同携带不同内容
+  confidence: float
+  rationale: string
+```
+
+不同范式产生不同的 decision type 分布：
+
+| 范式 | 主要 decision types | Kernel 行为差异 |
+|---|---|---|
+| Direct | tool_call, finalize | 单步决策，无中间状态 |
+| ReAct | tool_call, tool_call（嵌套） | 每次 tool_call 结果重新进入 Decide |
+| Plan-Execute | plan_step → tool_call（逐步） | 先输出 plan，再逐步执行 |
+| Reflection | tool_call → reflection → tool_call | Verify 后回到 Decide 做自检修正 |
+| Delegation | delegation | 创建子任务，等待子 Agent 返回 |
+
+Kernel 本身不实现范式逻辑——它根据 decision.type 调度到对应的执行路径，范式选择由 Prompting Plane 的 `reasoning_mode` 驱动。
 
 ### 4. Act
 通过 Tool Runtime 和 Execution Host 发起动作，并显式声明：
@@ -86,9 +107,11 @@ def agent_loop(task_envelope: dict, runtime: Any, max_steps: int) -> dict:
     state = runtime.bootstrap(task_envelope)
 
     for step in range(max_steps):
+        # ── Observe & Represent ──
         raw_inputs = runtime.observe(state)
         observations = runtime.representation.build(raw_inputs)
 
+        # ── Governance Pre-check ──
         verdict = runtime.control.precheck(
             observations=observations,
             world_state=state.world_state,
@@ -100,6 +123,7 @@ def agent_loop(task_envelope: dict, runtime: Any, max_steps: int) -> dict:
         if verdict == "blocked":
             return runtime.finish_blocked(state)
 
+        # ── Build Context ──
         context_pack = runtime.context.build(
             task=state.task,
             observations=observations,
@@ -107,34 +131,50 @@ def agent_loop(task_envelope: dict, runtime: Any, max_steps: int) -> dict:
             world_state=state.world_state,
         )
 
+        # ── Decide（范式无关：reasoning_mode 由 PromptContract 指定）──
         decision = runtime.kernel.decide(context_pack)
+
+        # ── 按 decision.type 分发 ──
         if decision.type == "finalize":
             if runtime.control.stop_gate(state):
                 return runtime.finish_success(state)
-            # 不满足 stop gate 时不能直接结束
+            # stop gate 不满足时，要求补充验证而非直接结束
             decision = runtime.kernel.plan_next_verification(context_pack)
 
-        if decision.type == "tool_call":
-            tool_result = runtime.tools.execute(decision.tool_call)
-            effect_record = runtime.effects.record(decision.tool_call, tool_result)
-            runtime.observability.emit(tool_result, effect_record)
+        if decision.type in ("tool_call", "tool_call_batch"):
+            calls = decision.tool_calls if decision.type == "tool_call_batch" else [decision.tool_call]
+            for call in calls:
+                tool_result = runtime.tools.execute(call)
+                effect_record = runtime.effects.record(call, tool_result)
+                runtime.observability.emit(tool_result, effect_record)
+                verification = runtime.control.verify(
+                    tool_result=tool_result,
+                    effect_record=effect_record,
+                    verification_method=call.get("verification_method"),
+                )
+                state = runtime.state.update(
+                    state=state, observations=observations,
+                    tool_result=tool_result, effect_record=effect_record,
+                    verification=verification,
+                )
+                if verification.needs_recovery:
+                    state = runtime.controllers.recover(state, verification)
+                    break  # 恢复后重新进入主循环
 
-            verification = runtime.control.verify(
-                tool_result=tool_result,
-                effect_record=effect_record,
-                verification_method=decision.tool_call.get("verification_method"),
-            )
-            state = runtime.state.update(
-                state=state,
-                observations=observations,
-                tool_result=tool_result,
-                effect_record=effect_record,
-                verification=verification,
-            )
+        elif decision.type == "plan_step":
+            # Plan-Execute 范式：将计划存入 task_state，下一轮执行第一步
+            state.task_state["plan"] = decision.plan
+            state.task_state["current_step"] = 0
 
-            if verification.needs_recovery:
-                state = runtime.controllers.recover(state, verification)
-                continue
+        elif decision.type == "reflection":
+            # Reflection 范式：自检后修正策略，不产生外部效果
+            state.task_state["reflection_log"] = decision.reflection
+            # 下一轮 Decide 会看到 reflection_log 并调整行为
+
+        elif decision.type == "delegation":
+            # 多 Agent：创建子任务并等待
+            sub_result = runtime.orchestration.delegate(decision.sub_task, state)
+            state = runtime.state.merge_sub_result(state, sub_result)
 
         elif decision.type == "ask_human":
             return runtime.finish_waiting_approval(state, decision)

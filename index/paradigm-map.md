@@ -11,10 +11,10 @@
 | 原子工具和 Rich Tool 什么时候用？ | `../paradigms/tool-paradigms.md` | `../design-space/patterns/tool-registry.md` |
 | 单 Agent、Subagent、Worker 怎么选？ | `../paradigms/collaboration-paradigms.md` | `../architecture/planes/orchestration/overview.md` |
 | rule、LLM judge、hook、sandbox 如何组合？ | `../paradigms/control-paradigms.md` | `../architecture/planes/control/overview.md` |
-| 轻量级 Agent 要不要全量 plane？ | `../paradigms/methodology/minimum-viable-agent.md` | `../architecture/reference-topologies.md` |
-| 自治等级和执行深度怎么定？ | `../paradigms/methodology/autonomy-and-depth.md` | `../architecture/controllers/execution-depth/overview.md` |
-| 如何把产品需求变成 Agent 架构？ | `../paradigms/methodology/agent-product-model.md` | `../index/design-checklist.md` |
-| 性能优化和成本控制怎么选技术？ | `../paradigms/methodology/performance-optimization.md` | `../architecture/planes/cost/model-routing.md` |
+| 轻量级 Agent 要不要全量 plane？ | `../design-space/methodology/minimum-viable-agent.md` | `../architecture/reference-topologies.md` |
+| 自治等级和执行深度怎么定？ | `../design-space/methodology/autonomy-and-depth.md` | `../architecture/controllers/execution-depth/overview.md` |
+| 如何把产品需求变成 Agent 架构？ | `../design-space/methodology/agent-product-model.md` | `../index/design-checklist.md` |
+| 性能优化和成本控制怎么选技术？ | `../design-space/methodology/performance-optimization.md` | `../architecture/planes/cost/model-routing.md` |
 | 高 stakes 任务如何标准化契约？ | `../design-space/patterns/contract-agent.md` | `../paradigms/collaboration-paradigms.md` |
 | 安全该用规则还是 AI 检测？ | `../design-space/patterns/guard-model.md` | `../paradigms/control-paradigms.md` |
 | 记忆该用什么形态承载？ | `../design-space/frontier/memory-forms-and-dynamics.md` | `../paradigms/memory-paradigms.md` |

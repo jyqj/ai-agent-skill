@@ -50,8 +50,8 @@ concepts/foundations/bounded-rationality.md（可选：理解为什么需要 Har
   → concepts/what-is-agent.md
   → concepts/representation-and-effects.md
   → cognitive-architecture/goal-hierarchy.md（可选：理解目标分解）
-  → paradigms/methodology/agent-product-model.md
-  → paradigms/methodology/autonomy-and-depth.md
+  → design-space/methodology/agent-product-model.md
+  → design-space/methodology/autonomy-and-depth.md
   → paradigms/decision-trees.md
   → paradigms/<relevant>-paradigms.md
   → categories/<type>/README.md
@@ -67,10 +67,11 @@ concepts/foundations/bounded-rationality.md（可选：理解为什么需要 Har
 
 ```text
 architecture/planes/<module>/overview.md（注意顶部的"所属域"标注）
+  → architecture/planes/<module>/*.md（深入文件：如 prompting/ 的 instruction-layering、reasoning-mode-selection、prompt-security）
   → architecture/plane-interaction-matrix.md
   → architecture/runtime-data-flow.md
   → paradigms/<related>-paradigms.md
-  → cognitive-architecture/<related>.md（可选：认知层解释）
+  → cognitive-architecture/<related>.md（可选：认知层解释，含桥接文件 cognitive-to-plane-mapping）
   → design-space/patterns/<pattern>.md
   → design-space/frontier/<topic>.md
   → projects/<category>/<project>/README.md

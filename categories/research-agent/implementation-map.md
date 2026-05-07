@@ -9,9 +9,9 @@
 | Report Artifact | ★★★ `README.md` | ★ | ★ |
 | Citation / Evidence Binding | ★★★ `citation-loop.md` | ★ | ★ |
 | Raw Ref vs Summary | ★★ | ★★★ `README.md` | ★★ |
-| Long-Horizon Loop | ★★★ `README.md` | ★★ | ★★ `agent-loop.snippet.md` |
-| Memory / Skill Growth | ★ | ★★ | ★★★ `self-evolution.snippet.md` |
-| Tool Orchestration | ★★ | ★★ | ★★★ `tool-system.snippet.md` |
+| Long-Horizon Loop | ★★★ `README.md` | ★★ | ★★ `agent-loop.md` |
+| Memory / Skill Growth | ★ | ★★ | ★★★ `self-evolution.md` |
+| Tool Orchestration | ★★ | ★★ | ★★★ `tool-system.md` |
 
 ## 品类模块 → 项目证据
 
@@ -46,7 +46,7 @@
 
 ```text
 ../../projects/general-agents/generic-agent/README.md
-../../projects/general-agents/generic-agent/self-evolution.snippet.md
+../../projects/general-agents/generic-agent/self-evolution.md
 ../../architecture/learning/overview.md
 ```
 

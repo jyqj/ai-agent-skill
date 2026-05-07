@@ -49,5 +49,5 @@ next_action: refresh | verify | ask_user | preserve_in_output
 ## 关联文档
 
 - `citation-chain.md`
-- `../../../categories/research-agent/closed-loop.md`
-- `../../../architecture/planes/world-state/overview.md`
+- `../../categories/research-agent/closed-loop.md`
+- `../../architecture/planes/world-state/overview.md`

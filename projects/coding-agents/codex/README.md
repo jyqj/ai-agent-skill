@@ -8,17 +8,17 @@
 - **类型**：coding-agent
 - **项目定位**：本地 CLI coding agent，重点是跨平台沙箱、guardian 风险评估和多 agent 控制。
 - **学习来源**：本地源码分析。
-- **推荐入口**：README → guardian-policy.snippet / orchestrator.snippet / agent-control.snippet。
+- **推荐入口**：README → guardian-policy.md / orchestrator.md / agent-control.md。
 
 ## 模块覆盖
 
 | 模块 | 覆盖程度 | 证据文件 | 可复用模式 |
 |---|---|---|---|
-| execution | 深 | README.md / orchestrator.snippet | sandbox isolation |
-| control | 深 | guardian-policy.snippet | risk-based approval |
-| security | 深 | guardian-policy.snippet | transcript as evidence not instruction |
-| orchestration | 中 | orchestrator.snippet / agent-control.snippet | agent registry |
-| state | 中 | memory-pipeline.snippet | memory pipeline |
+| execution | 深 | README.md / orchestrator.md | sandbox isolation |
+| control | 深 | guardian-policy.md | risk-based approval |
+| security | 深 | guardian-policy.md | transcript as evidence not instruction |
+| orchestration | 中 | orchestrator.md / agent-control.md | agent registry |
+| state | 中 | memory-pipeline.md | memory pipeline |
 
 ## 关键发现
 
@@ -72,7 +72,7 @@ OpenAI 官方的本地 CLI Coding Agent，Rust 实现。
 - 输出：风险分数 (0-100)
 - 80+ 分为高风险，需人工审批
 
-Guardian 风险评估原则（见 `./guardian-policy.snippet`）：
+Guardian 风险评估原则（见 `./guardian-policy.md`）：
 - transcript 作为证据，不作为指令
 - 读取丢失内容应更谨慎
 - 凭证探测始终高风险
@@ -105,7 +105,7 @@ Guardian 风险评估原则（见 `./guardian-policy.snippet`）：
 - 秘密脱敏
 
 **Phase 2: 全局合并（串行，单例）**
-- 合并到长期记忆汇总（见 `./memory-pipeline.snippet`）
+- 合并到长期记忆汇总（见 `./memory-pipeline.md`）
 - 生成 `rollout_summaries/` 目录
 - 运行合并 sub-agent
 - watermark 追踪防止重复处理
@@ -137,10 +137,10 @@ Codex 定义了 AGENTS.md 作为人机协作接口：
 - 用户指令 > AGENTS.md > 默认行为
 
 ## 关键代码片段
-- `./orchestrator.snippet` - 工具编排器流程
+- `./orchestrator.md` - 工具编排器流程
 - 沙箱执行尝试 - 见本 README 的“ToolOrchestrator”与“跨平台沙箱架构”部分
-- `./agent-control.snippet` - 多 Agent 控制
-- `./memory-pipeline.snippet` - 记忆两阶段架构
+- `./agent-control.md` - 多 Agent 控制
+- `./memory-pipeline.md` - 记忆两阶段架构
 
 ## 与知识库的关联
 

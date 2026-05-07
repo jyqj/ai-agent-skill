@@ -88,6 +88,6 @@ source_authority: first_party | third_party | unknown
 
 ## 参考实现
 
-- **Hermes Agent**：Multi-platform Gateway（CLI / Discord / Telegram / Web），见 `projects/general-agents/hermes-agent/gateway.snippet.md`
-- **Generic Agent**：Frontend Adapter 模式，见 `projects/general-agents/generic-agent/frontend-adapter.snippet.md`
+- **Hermes Agent**：Multi-platform Gateway（CLI / Discord / Telegram / Web），见 `projects/general-agents/hermes-agent/gateway.md`
+- **Generic Agent**：Frontend Adapter 模式，见 `projects/general-agents/generic-agent/frontend-adapter.md`
 - **NagaAgent**：Chat / Voice / Avatar / MCP 多入口，见 `projects/companion-agents/naga-agent/README.md`

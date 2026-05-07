@@ -47,5 +47,5 @@ citations:
 ## 配套模式
 
 - `conflict-preserving-synthesis.md`
-- `../../../categories/research-agent/representation.md`
-- `../../../evaluation/research-agent-evals.md`
+- `../../categories/research-agent/representation.md`
+- `../../evaluation/research-agent-evals.md`

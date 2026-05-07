@@ -223,6 +223,6 @@ required_depth reached
 
 ## 参考实现
 
-- `projects/coding-agents/claude-code/query-loop.snippet` — 生产系统主循环观察
-- `projects/coding-agents/opencode/orchestration.snippet.md` — Effect.js 循环 + Doom Loop 检测
-- `projects/coding-agents/codex/orchestrator.snippet` — 编排与受控执行
+- `projects/coding-agents/claude-code/query-loop.md` — 生产系统主循环观察
+- `projects/coding-agents/opencode/orchestration.md` — Effect.js 循环 + Doom Loop 检测
+- `projects/coding-agents/codex/orchestrator.md` — 编排与受控执行

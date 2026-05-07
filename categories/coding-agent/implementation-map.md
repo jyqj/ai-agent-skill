@@ -6,13 +6,13 @@
 
 | 设计问题 | Claude Code | Codex | OpenCode | Augment | Warp |
 |---|---|---|---|---|---|
-| Context/Compaction | ★★★ `context-layer.md` | ★ | ★★★ `context-engineering.snippet.md` | ★★ | ★★ `agent-architecture.md` |
-| Tool System | ★★★ `execution-layer.md` | ★★ | ★★★ `tool-system.snippet.md` | ★★★ `README.md` | ★★★ `agent-architecture.md` |
-| Execution/Sandbox | ★★ | ★★★ `guardian-policy.snippet` | ★★ | ★★ | ★★ `terminal-ai-integration.md` |
-| Control/Permission | ★★★ `control-layer.md` | ★★★ | ★★ `control-memory.snippet.md` | ★★ | ★★★ `contribution-workflow.md` |
-| Orchestration | ★★ `orchestration-layer.md` | ★★ `orchestrator.snippet` | ★★ `orchestration.snippet.md` | ★★★ `patterns.md` | ★★★ `contribution-workflow.md` |
+| Context/Compaction | ★★★ `context-layer.md` | ★ | ★★★ `context-engineering.md` | ★★ | ★★ `agent-architecture.md` |
+| Tool System | ★★★ `execution-layer.md` | ★★ | ★★★ `tool-system.md` | ★★★ `README.md` | ★★★ `agent-architecture.md` |
+| Execution/Sandbox | ★★ | ★★★ `guardian-policy.md` | ★★ | ★★ | ★★ `terminal-ai-integration.md` |
+| Control/Permission | ★★★ `control-layer.md` | ★★★ | ★★ `control-memory.md` | ★★ | ★★★ `contribution-workflow.md` |
+| Orchestration | ★★ `orchestration-layer.md` | ★★ `orchestrator.md` | ★★ `orchestration.md` | ★★★ `patterns.md` | ★★★ `contribution-workflow.md` |
 | State/Checkpoint | ★★ `state-ui-layer.md` | ★ | ★★ | ★★★ `patterns.md` | ★★ |
-| Memory/Learning | ★ | ★★ `memory-pipeline.snippet` | ★★ | ★ | ★ |
+| Memory/Learning | ★ | ★★ `memory-pipeline.md` | ★★ | ★ | ★ |
 | UI/Interaction | ★★★ `state-ui-layer.md` | ★ | ★ | ★ | ★★★ `terminal-ai-integration.md` |
 | Operations/Workflow | ★ | ★ | ★ | ★ | ★★★ `contribution-workflow.md` |
 
@@ -36,8 +36,8 @@
 
 ```text
 ../../projects/coding-agents/claude-code/context-layer.md
-../../projects/coding-agents/claude-code/compaction.snippet
-../../projects/coding-agents/opencode/context-engineering.snippet.md
+../../projects/coding-agents/claude-code/compaction.md
+../../projects/coding-agents/opencode/context-engineering.md
 ../../design-space/patterns/compaction.md
 ```
 
@@ -45,8 +45,8 @@
 
 ```text
 ../../projects/coding-agents/claude-code/execution-layer.md
-../../projects/coding-agents/claude-code/tool-orchestration.snippet
-../../projects/coding-agents/opencode/tool-system.snippet.md
+../../projects/coding-agents/claude-code/tool-orchestration.md
+../../projects/coding-agents/opencode/tool-system.md
 ../../projects/coding-agents/augment/README.md
 ../../architecture/planes/tools/overview.md
 ```
@@ -55,8 +55,8 @@
 
 ```text
 ../../projects/coding-agents/claude-code/control-layer.md
-../../projects/coding-agents/codex/guardian-policy.snippet
-../../projects/coding-agents/opencode/control-memory.snippet.md
+../../projects/coding-agents/codex/guardian-policy.md
+../../projects/coding-agents/opencode/control-memory.md
 ../../architecture/planes/control/overview.md
 ../../architecture/planes/security/overview.md
 ```
@@ -66,7 +66,7 @@
 ```text
 ../../projects/coding-agents/claude-code/orchestration-layer.md
 ../../projects/coding-agents/claude-code/state-ui-layer.md
-../../projects/coding-agents/codex/orchestrator.snippet
+../../projects/coding-agents/codex/orchestrator.md
 ../../projects/coding-agents/augment/patterns.md
 ../../architecture/planes/orchestration/overview.md
 ```

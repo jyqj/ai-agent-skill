@@ -46,8 +46,8 @@ trace → skill candidate → verification → governance → activation → mon
 
 ## 参考实现
 
-- **Generic Agent**：Self-evolution 系统，见 `projects/general-agents/generic-agent/self-evolution.snippet.md`
-- **VCPToolBox**：TagMemo 自动记忆标签算法，见 `projects/tool-platforms/vcptoolbox/tagmemo-algorithm.snippet.md`
+- **Generic Agent**：Self-evolution 系统，见 `projects/general-agents/generic-agent/self-evolution.md`
+- **VCPToolBox**：TagMemo 自动记忆标签算法，见 `projects/tool-platforms/vcptoolbox/tagmemo-algorithm.md`
 
 ## 关联文档
 

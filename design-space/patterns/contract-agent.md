@@ -121,6 +121,30 @@ Contractor 按契约规格执行。关键行为：
 | 验证 | 结构验证 | 业务语义验证 |
 | 生命周期 | 无 | 完整生命周期状态机 |
 
+## 来自真实项目的强化：Spec-as-Contract
+
+Warp 的 agentic development workflow 说明，Contract 不一定只存在于运行时消息里，也可以落为仓库中的 spec artifact：
+
+```text
+Issue → readiness label → product spec → tech spec → implementation → CI / Oz review → SME review
+```
+
+这给 Agent Contract 增加了三条工程约束：
+
+1. **Readiness Gate**：不是所有任务都应该立刻交给 Agent；需要先判断规格是否足够、风险是否可控、验收是否可定义。
+2. **Spec Artifact**：需求应落成可审查文件或结构化对象，而不是只留在对话上下文中。
+3. **Review Escalation**：Agent 自检通过后仍可能需要自动 review、人类 SME review 或 owner approval。
+
+因此在 coding / ops / enterprise workflow 中，Contract 的最小实现不应只是 YAML，而应能回答：
+
+```text
+where_is_the_spec?
+who_accepted_it?
+what_invariants_must_hold?
+what_tests_or_review_gates_close_it?
+when_should_agent_escalate?
+```
+
 ## 反模式
 
 | 反模式 | 表现 | 修复 |
@@ -134,3 +158,4 @@ Contractor 按契约规格执行。关键行为：
 - Google "Agents Companion" (2025): From Agents to Contractors
 - Google Co-Scientist: Generate-Debate-Evolve 模式
 - AlphaCode: 验证驱动的迭代生成
+- `projects/coding-agents/warp/README.md`：readiness label、spec-driven workflow、Oz review / SME escalation

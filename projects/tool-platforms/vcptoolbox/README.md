@@ -8,16 +8,16 @@
 - **类型**：tool-platform
 - **项目定位**：AI 中间层 / 工具平台，强调 manifest 插件系统、分布式工具执行和记忆增强。
 - **学习来源**：本地项目分析文档。
-- **推荐入口**：README → plugin-system.snippet.md / distributed-tools.snippet.md / tagmemo-algorithm.snippet.md。
+- **推荐入口**：README → plugin-system.md / distributed-tools.md / tagmemo-algorithm.md。
 
 ## 模块覆盖
 
 | 模块 | 覆盖程度 | 证据文件 | 可复用模式 |
 |---|---|---|---|
-| tools | 深 | plugin-system.snippet.md | plugin registry |
-| platform | 深 | README.md / distributed-tools.snippet.md | distributed execution |
-| memory | 中 | tagmemo-algorithm.snippet.md / rag-diary.snippet.md | time-aware RAG |
-| orchestration | 中 | distributed-tools.snippet.md | star topology |
+| tools | 深 | plugin-system.md | plugin registry |
+| platform | 深 | README.md / distributed-tools.md | distributed execution |
+| memory | 中 | tagmemo-algorithm.md / rag-diary.md | time-aware RAG |
+| orchestration | 中 | distributed-tools.md | star topology |
 | operations | 中 | README.md | manifest-driven platform ops |
 
 ## 独特贡献
@@ -70,20 +70,20 @@ server.js (HTTP/SSE 入口)
 
 ### 3. 可复用模式
 
-- `./plugin-system.snippet.md` - 6 种插件类型架构
-- `./tagmemo-algorithm.snippet.md` - 浪潮 RAG 算法
-- `./distributed-tools.snippet.md` - 分布式工具执行
-- `./dream-introspection.snippet.md` - AI 内省与审批
-- `./rag-diary.snippet.md` - 时间感知 RAG
+- `./plugin-system.md` - 6 种插件类型架构
+- `./tagmemo-algorithm.md` - 浪潮 RAG 算法
+- `./distributed-tools.md` - 分布式工具执行
+- `./dream-introspection.md` - AI 内省与审批
+- `./rag-diary.md` - 时间感知 RAG
 
 ## 文件索引
 
 | 文件 | 内容 |
 |------|------|
-| `./plugin-system.snippet.md` | 插件系统完整架构 |
-| `./tagmemo-algorithm.snippet.md` | TagMemo V8.1 算法 |
-| `./distributed-tools.snippet.md` | 分布式工具执行 |
-| `./dream-introspection.snippet.md` | AgentDream 梦系统 |
-| `./rag-diary.snippet.md` | RAG 日记系统 |
+| `./plugin-system.md` | 插件系统完整架构 |
+| `./tagmemo-algorithm.md` | TagMemo V8.1 算法 |
+| `./distributed-tools.md` | 分布式工具执行 |
+| `./dream-introspection.md` | AgentDream 梦系统 |
+| `./rag-diary.md` | RAG 日记系统 |
 | 服务器架构概览（已合并在本 README） | 核心服务器架构 |
 

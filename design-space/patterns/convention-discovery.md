@@ -59,5 +59,5 @@ class BaseHandler:
 
 ## 参考实现
 
-- `projects/general-agents/generic-agent/agent-loop.snippet.md` — dispatch 方法
-- `projects/general-agents/generic-agent/tool-system.snippet.md` — do_* 工具实现
+- `projects/general-agents/generic-agent/agent-loop.md` — dispatch 方法
+- `projects/general-agents/generic-agent/tool-system.md` — do_* 工具实现

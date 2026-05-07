@@ -1,6 +1,6 @@
 ---
 name: ai-agent-architecture
-description: AI Agent 产品架构、哲学基础（有界理性/意向立场/BDI/元认知/价值对齐/具身认知）、认知架构（工作记忆/目标层级/推理模式/心智理论/元认知控制）、范式选择、运行时模块（9域24plane）、多模型异构架构、品类架构、表示层、现实接口、外部效果闭环、Research Agent、Coding Agent、多模态与 Computer Use、协议边界、引用链、交互设计、成本工程、多 Agent 协议、并发数据流、Prompt 与 Harness 集成、设计模式、反模式、经验教训、前沿专题、跨框架对照、演化机制（协同演化/价值漂移/退役）、主观性评估、starter kit、参考项目与评估知识库。当用户讨论 Agent 架构、Agent 哲学、认知架构、Agent 范式、Harness 工程、Agent Runtime、Research/Coding/Workflow/Browser/Companion/Creative Agent、工具设计、记忆系统、上下文压缩、执行深度、多 Agent 编排、多模型架构、MCP/A2A/AGENTS.md 边界、现实接口、效果验证、安全边界、交互体验、成本优化、并发调度、价值对齐、Agent 演化、评估回归时使用此 skill。
+description: AI Agent 产品架构、哲学基础（有界理性/意向立场/BDI/元认知/价值对齐/具身认知）、认知架构（工作记忆/目标层级/推理模式/心智理论/元认知控制）、范式选择、运行时模块（9域25plane）、多模型异构架构、品类架构、表示层、现实接口、外部效果闭环、Research Agent、Coding Agent、多模态与 Computer Use、协议边界、引用链、交互设计、成本工程、多 Agent 协议、并发数据流、Prompt 与 Harness 集成、设计模式、反模式、经验教训、前沿专题、跨框架对照、演化机制（协同演化/价值漂移/退役）、主观性评估、starter kit、参考项目与评估知识库。当用户讨论 Agent 架构、Agent 哲学、认知架构、Agent 范式、Harness 工程、Agent Runtime、Research/Coding/Workflow/Browser/Companion/Creative Agent、工具设计、记忆系统、上下文压缩、执行深度、多 Agent 编排、多模型架构、MCP/A2A/AGENTS.md 边界、现实接口、效果验证、安全边界、交互体验、成本优化、并发调度、价值对齐、Agent 演化、评估回归时使用此 skill。
 ---
 
 # AI Agent Architecture
@@ -11,20 +11,35 @@ description: AI Agent 产品架构、哲学基础（有界理性/意向立场/BD
 
 > **Evidence Status** — mixed. 内容来自参考项目分析、跨项目综合与架构抽象，部分经过实践验证，部分为理论框架。
 
-> **Skill 定位**：这是知识型 skill，不是框架仓库。`starter-kit/`、`evaluation/eval-runner/` 和项目 `*.snippet*` 中的代码都只作为架构对象、边界和闭环的参考映射；不要求直接运行，也不代表生产实现。
+> **Skill 定位**：这是 Agent 开发过程中的工具包与参照物，不是需要从头读完的教材，也不是框架仓库。`toolkit/` 和 `index/ai-routing-pack.md` 是低认知负荷入口；`starter-kit/`、`evaluation/eval-runner/` 和项目分析文件中的代码都只作为架构对象、边界和闭环的参考映射；不要求直接运行，也不代表生产实现。
 
-## 两条主路径
+## 默认入口
 
-### 我要设计一个 Agent
+先读 `START-HERE.md`。如果你是 AI，优先读 `index/ai-routing-pack.md`，不要一次性展开完整知识库。
+
+## 开发工具包入口
+
+| 我现在要做什么 | 先读 | 产出 |
+|---|---|---|
+| 快速定型 Agent | `toolkit/choose-agent-type.md` | 品类 + 默认蓝图 |
+| 规划第一个版本 | `toolkit/mva-planner.md` | MVA 级别 + 最小闭环 |
+| 选择模块 | `toolkit/module-picker.md` | 必选 / 可选 / 暂缓 plane set |
+| 判断风险和深度 | `toolkit/risk-depth-calculator.md` | required_depth + control policy |
+| 诊断故障 | `toolkit/failure-router.md` | 症状 → plane → pattern |
+| 选择设计模式 | `toolkit/pattern-picker.md` | pattern + 反模式 |
+| 设计验收 | `toolkit/eval-planner.md` | eval case / trace 要求 |
+| 做架构评审 | `toolkit/review-checklist.md` | must-fix / should-fix / deferred |
+
+## 经典设计路径
 
 1. **明确用户任务** → `categories/README.md`（选择品类）
-2. **确定运行时深度** → `paradigms/methodology/autonomy-depth.md`（自治等级）+ `paradigms/methodology/mva-ladder.md`（MVA 阶梯）
+2. **确定运行时深度** → `paradigms/methodology/autonomy-and-depth.md`（自治等级）+ `paradigms/methodology/minimum-viable-agent.md`（MVA 阶梯）
 3. **选择品类蓝图** → `categories/<品类>/README.md`（完整架构模板）
-4. **设计运行时域** → `architecture/ARCHITECTURE.md`（25 plane 总览）→ 相关 plane overview
+4. **设计运行时域** → `architecture/README.md`（25 plane 总览）→ 相关 plane overview
 5. **实现效果验证** → `architecture/planes/effects/overview.md` + `design-space/lessons-learned/tool-success-as-completion.md`
 6. **接入评估** → `evaluation/README.md` → `evaluation/eval-runner/README.md`
 
-### 我要诊断一个 Agent
+## 经典诊断路径
 
 1. **描述症状** → `design-space/anti-patterns/README.md`（匹配反模式）
 2. **定位违反的边界** → `architecture/module-boundaries.md`（常见混淆）
@@ -52,6 +67,8 @@ Closed Loop   = Observe → Represent → Decide → Act → Verify → Update
 
 | 我只想…… | 直接看 |
 |---|---|
+| 知道怎么使用这个 skill | `START-HERE.md` → `toolkit/README.md` |
+| 让 AI 帮我路由文档 | `index/ai-routing-pack.md` |
 | 搭一个最小原型 | `paradigms/methodology/minimum-viable-agent.md` → `starter-kit/verified-tool-agent/README.md` |
 | 跟着做一个完整 Agent | `guides/build-research-agent.md` |
 | 做架构评审 | `index/design-checklist.md` |
@@ -81,6 +98,8 @@ Closed Loop   = Observe → Represent → Decide → Act → Verify → Update
 | 品类架构 | 某类 Agent 的完整设计是什么？ | `categories/README.md` → `categories/coding-agent/README.md` |
 | 运行时 | 模块如何设计、交互、流转？ | `architecture/README.md` → `architecture/plane-interaction-matrix.md` |
 | 证据与评估 | 真实项目、设计模式、评估验收 | `projects/README.md` → `evaluation/eval-framework.md` |
+| 根目录项目反思 | 对照本地真实参考项目修正架构规则 | `synthesis/local-reference-systems-reflection.md` → `index/project-module-map.md` |
+| 工具包 facade | 降低开发者和 AI 使用时的认知负荷 | `START-HERE.md` → `toolkit/README.md` |
 
 ## 按意图导航
 

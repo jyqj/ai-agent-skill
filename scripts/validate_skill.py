@@ -23,8 +23,30 @@ REQUIRE_EVIDENCE_IN = {
     'index',
     'meta',
     'starter-kit',
+    'toolkit',
 }
 LINK_RE = re.compile(r'\[[^\]]+\]\(([^)]+)\)')
+CODE_PATH_RE = re.compile(r'`([^`\n]+)`')
+KNOWN_PATH_ROOTS = {
+    'AGENTS.md',
+    'ARCHITECTURE.md',
+    'SKILL.md',
+    'START-HERE.md',
+    'architecture',
+    'categories',
+    'cognitive-architecture',
+    'concepts',
+    'design-space',
+    'evaluation',
+    'guides',
+    'index',
+    'meta',
+    'paradigms',
+    'projects',
+    'starter-kit',
+    'synthesis',
+    'toolkit',
+}
 
 EVIDENCE_RE = re.compile(
     r'(>\s*\*\*证据\*\*|>\s*\*\*Evidence Status\*\*|##\s*Evidence Status)'
@@ -139,6 +161,54 @@ def check_links(path: Path) -> List[str]:
     return errors
 
 
+def _looks_like_repo_path(candidate: str) -> bool:
+    """Return True for inline-code path references that should resolve in this repo."""
+    if any(ch in candidate for ch in ['*', '<', '>', '{', '}', '|', '$', ':', '#']):
+        return False
+    if ' ' in candidate:
+        return False
+    if not (
+        candidate.endswith('.md')
+        or candidate.endswith('.yaml')
+        or candidate.endswith('/')
+        or '/' in candidate
+    ):
+        return False
+    if candidate.startswith(('../', './')):
+        return True
+    return candidate.split('/', 1)[0] in KNOWN_PATH_ROOTS
+
+
+def resolve_code_path(path: Path, candidate: str) -> Tuple[bool, str]:
+    candidate = candidate.strip()
+    clean_candidate = candidate.split('#', 1)[0].rstrip('/')
+    if candidate.startswith(('../', './')):
+        resolved = (path.parent / clean_candidate).resolve()
+    else:
+        resolved = (ROOT / clean_candidate).resolve()
+    return resolved.exists(), str(resolved)
+
+
+def check_code_span_paths(path: Path) -> List[str]:
+    """Check path-like inline code spans that are used as navigational references.
+
+    Markdown links are already checked by check_links(). This catches common
+    skill navigation references written as `architecture/foo.md`, where a stale
+    path would otherwise be invisible to the validator.
+    """
+    text = path.read_text(encoding='utf-8')
+    clean_text = '\n'.join(_strip_code_blocks(text.splitlines()))
+    errors: List[str] = []
+    for match in CODE_PATH_RE.finditer(clean_text):
+        candidate = match.group(1).strip()
+        if not _looks_like_repo_path(candidate):
+            continue
+        ok, _ = resolve_code_path(path, candidate)
+        if not ok:
+            errors.append(f'broken inline path: {relative_to_root(path)} -> {candidate}')
+    return errors
+
+
 def main() -> int:
     errors: List[str] = []
     total_files = 0
@@ -168,12 +238,13 @@ def main() -> int:
 
         evidence_errors, level = check_evidence_status(path)
         link_errors = check_links(path)
+        code_path_errors = check_code_span_paths(path)
 
         if level is not None:
             valid_evidence += 1
             level_counts[level] += 1
 
-        file_errors = evidence_errors + link_errors
+        file_errors = evidence_errors + link_errors + code_path_errors
         if file_errors:
             files_with_errors.add(path)
             errors.extend(file_errors)

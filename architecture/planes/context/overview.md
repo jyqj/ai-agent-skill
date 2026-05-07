@@ -66,5 +66,5 @@ context_pack:
 ## 参考实现
 
 - **Claude Code**：4 阶段压缩（snip → micro → collapse → auto），见 `projects/coding-agents/claude-code/control-layer.md`
-- **OpenCode**：Doom Loop 检测与上下文压缩联动，见 `projects/coding-agents/opencode/context-engineering.snippet.md`
+- **OpenCode**：Doom Loop 检测与上下文压缩联动，见 `projects/coding-agents/opencode/context-engineering.md`
 - **Nocturne Memory**：Disclosure Routing 决定信息披露策略，见 `projects/memory-systems/nocturne-memory/context-engineering.md`

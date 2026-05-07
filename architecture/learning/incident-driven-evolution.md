@@ -76,4 +76,4 @@ Fixture 集会随时间膨胀。定期审查是必要的：环境已变化的场
 - `overview.md` — 学习模块总览
 - `feedback-loops.md` — 反馈回路分类
 - `safety-guardrails.md` — 变更的安全约束
-- `../../planes/recovery/` — Recovery Plane 与 FailureRecord
+- `../planes/recovery/` — Recovery Plane 与 FailureRecord

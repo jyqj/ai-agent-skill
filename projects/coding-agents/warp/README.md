@@ -106,9 +106,9 @@ specs/               ← Feature specs（product.md + tech.md）
 
 | 片段 | 源码路径 | 核心内容 |
 |------|---------|---------|
-| [feature-flags.snippet.md](feature-flags.snippet.md) | `crates/warp_features/src/lib.rs` (1188行) | 150+ Feature Flags、三层状态优先级、RAII 测试隔离、四阶段渐进发布 |
-| [skill-system.snippet.md](skill-system.snippet.md) | `crates/ai/src/skills/` + `app/src/ai/skills/` | 10 种 Provider 兼容、ParsedSkill 解析、SkillManager 生命周期、条件激活 |
-| [agent-controller.snippet.md](agent-controller.snippet.md) | `app/src/ai/blocklist/controller.rs` (2870行) + `permissions.rs` (1197行) | BlocklistAIController 编排、带原因的权限枚举、多模型路由、Orchestration 事件系统 |
+| [feature-flags.md](feature-flags.md) | `crates/warp_features/src/lib.rs` (1188行) | 150+ Feature Flags、三层状态优先级、RAII 测试隔离、四阶段渐进发布 |
+| [skill-system.md](skill-system.md) | `crates/ai/src/skills/` + `app/src/ai/skills/` | 10 种 Provider 兼容、ParsedSkill 解析、SkillManager 生命周期、条件激活 |
+| [agent-controller.md](agent-controller.md) | `app/src/ai/blocklist/controller.rs` (2870行) + `permissions.rs` (1197行) | BlocklistAIController 编排、带原因的权限枚举、多模型路由、Orchestration 事件系统 |
 
 ## 与知识库的关联
 

@@ -62,5 +62,5 @@ observation_bundle:
 ## 相关文档
 
 - `overview.md`
-- `../../../../design-space/patterns/dual-channel-gui-verification.md`
-- `../../../../design-space/frontier/multimodal-and-computer-use.md`
+- `../../../design-space/patterns/dual-channel-gui-verification.md`
+- `../../../design-space/frontier/multimodal-and-computer-use.md`

@@ -79,5 +79,5 @@ Agent 应在以下情况请求输入：
 ## 参考实现
 
 - **Claude Code**：25 种 Hook 事件类型、权限决策树，见 `projects/coding-agents/claude-code/control-layer.md`
-- **Codex**：Guardian Policy 系统，见 `projects/coding-agents/codex/guardian-policy.snippet`
-- **OpenCode**：deny > ask > allow 与 doom loop 检测，见 `projects/coding-agents/opencode/control-memory.snippet.md`
+- **Codex**：Guardian Policy 系统，见 `projects/coding-agents/codex/guardian-policy.md`
+- **OpenCode**：deny > ask > allow 与 doom loop 检测，见 `projects/coding-agents/opencode/control-memory.md`

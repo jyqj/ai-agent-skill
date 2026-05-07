@@ -227,7 +227,7 @@ paradigm_selection:
 
 ## Step 4: 品类架构实例化
 
-> 参考：`categories/research-agent/README.md`（品类模板）、`architecture/ARCHITECTURE.md`（plane 总览）
+> 参考：`categories/research-agent/README.md`（品类模板）、`../ARCHITECTURE.md`（plane 总览）
 
 ### 4.1 从品类模板出发
 

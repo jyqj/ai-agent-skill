@@ -30,7 +30,7 @@ Plane 覆盖  = 有 fixture 的 Plane 数 / 总 Plane 数
 | 维度 | 已覆盖 | 缺失 | 覆盖率 |
 |---|---|---|---|
 | 品类（11 类） | coding, research, browser, enterprise, memory, security | ops, data, companion, embodied, platform | 55% |
-| Plane（24 个） | representation, effects, security, tools, memory | world-state, interaction, orchestration, cost, recovery... | ~25% |
+| Plane（25 个） | representation, effects, security, tools, memory | world-state, interaction, orchestration, cost, recovery... | ~25% |
 | 失败类型 | tool_error, effect_failed, injection, ocr_parse | stale_snapshot, plan_expired, context_rot, budget_exceeded... | ~30% |
 | 执行深度 | D2, D3, D4 | D0, D1, D5, D6 | 43% |
 
@@ -168,8 +168,8 @@ reviewed_by: string
 | `eval-runner/` | 需要增加结果快照和漂移检测功能 |
 | `failure-taxonomy.md` | 失败类型覆盖率的基准 |
 | `fixtures/` | 被评估的对象 |
-| `../architecture/planes/operations/` | 模型升级和环境变更的信号来源 |
-| `../architecture/planes/observability/` | 生产指标的来源，用于有效性回测 |
+| `../../architecture/planes/operations/` | 模型升级和环境变更的信号来源 |
+| `../../architecture/planes/observability/` | 生产指标的来源，用于有效性回测 |
 
 ## Evidence Status
 

@@ -57,5 +57,5 @@ gui_verification:
 ## 关联文档
 
 - `overview.md`
-- `../../../../design-space/patterns/dual-channel-gui-verification.md`
-- `../../../../evaluation/fixtures/browser_gui_grounding_001.yaml`
+- `../../../design-space/patterns/dual-channel-gui-verification.md`
+- `../../../evaluation/fixtures/browser_gui_grounding_001.yaml`

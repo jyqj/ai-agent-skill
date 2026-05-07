@@ -79,4 +79,4 @@ Memory Engine 管理跨会话、跨任务的持续性。记忆是产品特性，
 - **Nocturne Memory**：第一人称记忆、审计链、Disclosure Routing，见 `projects/memory-systems/nocturne-memory/`
 - **MemPalace**：Knowledge Graph 记忆、宫殿架构、MCP 工具、Benchmarks，见 `projects/memory-systems/mempalace/`
 - **NagaAgent**：GRAG 记忆（Graph-RAG 混合），见 `projects/companion-agents/naga-agent/memory-grag.md`
-- **Generic Agent**：从成功任务提炼 Skill，见 `projects/general-agents/generic-agent/self-evolution.snippet.md`
+- **Generic Agent**：从成功任务提炼 Skill，见 `projects/general-agents/generic-agent/self-evolution.md`

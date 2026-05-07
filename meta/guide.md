@@ -9,6 +9,7 @@
 | 目录 | 回答什么 | 增长节奏 |
 |---|---|---|
 | `concepts/` | Agent 是什么、关键边界、认识论 | 慢 |
+| `toolkit/` | 低认知负荷使用工具：选品类、定 MVA、选模块、诊断、eval | 中等 |
 | `paradigms/` | 有哪些根本不同的做法、何时选哪种 | 中等 |
 | `paradigms/methodology/` | 产品画布、Harness、自治/深度、MVA 阶梯 | 中等 |
 | `categories/` | 某类 Agent 的完整品类架构 | 中等 |
@@ -40,8 +41,7 @@
 ### 3. 放分析文件
 
 - `<topic>.md`：长篇分析
-- `<topic>.snippet.md`：带源码片段的分析
-- `<topic>.snippet`：纯源码片段
+- `<topic>.md`：带源码片段的专题分析
 
 ### 4. 沉淀设计知识
 

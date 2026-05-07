@@ -62,8 +62,8 @@ worker_output:
 
 - **Claude Code**：Fork vs Spawn 子代理模式，见 `projects/coding-agents/claude-code/orchestration-layer.md`
 - **Augment**：Worker Agent 编排 + Checkpoint，见 `projects/coding-agents/augment/patterns.md`
-- **Codex**：Orchestrator 调度，见 `projects/coding-agents/codex/orchestrator.snippet`
-- **OpenCode**：编排层实现，见 `projects/coding-agents/opencode/orchestration.snippet.md`
+- **Codex**：Orchestrator 调度，见 `projects/coding-agents/codex/orchestrator.md`
+- **OpenCode**：编排层实现，见 `projects/coding-agents/opencode/orchestration.md`
 
 ## 协议补强
 

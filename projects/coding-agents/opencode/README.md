@@ -8,16 +8,16 @@
 - **类型**：coding-agent
 - **项目定位**：多形态 AI agent 框架，强调函数式 runtime、权限模型和多代理编排。
 - **学习来源**：本地源码分析。
-- **推荐入口**：README → context-engineering.snippet.md / tool-system.snippet.md / orchestration.snippet.md。
+- **推荐入口**：README → context-engineering.md / tool-system.md / orchestration.md。
 
 ## 模块覆盖
 
 | 模块 | 覆盖程度 | 证据文件 | 可复用模式 |
 |---|---|---|---|
-| context | 深 | context-engineering.snippet.md | prune / compact / truncate |
-| tools | 深 | tool-system.snippet.md | schema validation / registry |
-| control | 深 | control-memory.snippet.md | deny > ask > allow |
-| orchestration | 中 | orchestration.snippet.md | task subagent |
+| context | 深 | context-engineering.md | prune / compact / truncate |
+| tools | 深 | tool-system.md | schema validation / registry |
+| control | 深 | control-memory.md | deny > ask > allow |
+| orchestration | 中 | orchestration.md | task subagent |
 | operations | 中 | README.md | framework-style rollout readiness |
 
 ## 独特贡献
@@ -71,10 +71,10 @@ SimpleReplacer → LineTrimmedReplacer → BlockAnchorReplacer → WhitespaceNor
 - 优先级：响应头 retry-after-ms > 指数退避（2^n 秒，最多 30s）
 
 ## 关键代码
-- `./context-engineering.snippet.md` - System Prompt 构建、溢出检测、压缩策略
-- `./tool-system.snippet.md` - 工具定义、注册、执行、权限控制
-- `./orchestration.snippet.md` - Agent 循环、多代理、状态机
-- `./control-memory.snippet.md` - 权限系统、会话状态、持久化存储
+- `./context-engineering.md` - System Prompt 构建、溢出检测、压缩策略
+- `./tool-system.md` - 工具定义、注册、执行、权限控制
+- `./orchestration.md` - Agent 循环、多代理、状态机
+- `./control-memory.md` - 权限系统、会话状态、持久化存储
 
 ## 与知识库的关联
 - 印证了 `paradigms/methodology/harness-engineering.md` 的 Harness = Context + Execution + Control + Orchestration 分层

@@ -8,6 +8,9 @@
 ```text
 [ ] 是否定义了用户的 Job to be Done？
 [ ] 是否定义了交付物（不只是对话）？
+[ ] 任务是否先经过 readiness gate（适不适合 Agent 做）？
+[ ] 是否有可测试的 spec / acceptance criteria？
+[ ] 是否明确 out-of-scope 和失败时的降级交付？
 [ ] 是否为不同 intent 设置了 required_depth？
 [ ] 是否区分了 autonomy level 和 execution depth？
 [ ] 是否定义了任务完成证据？
@@ -122,6 +125,18 @@
 [ ] 是否有 eval regression、canary rollout、incident trace？
 [ ] 是否有轨迹评估（precision/recall/order match/tool coverage）？
 [ ] 是否有 AgentOps 指标分层（北极星→目标完成→关键步骤→遥测→人类反馈→trace）？
+[ ] 是否有 readiness / spec / review / escalation 等运营门控？
+```
+
+## 10.5 参考项目落地校验
+
+```text
+[ ] 是否至少对照 2 个同品类真实项目，而不是只用抽象框架？
+[ ] 是否说明借鉴的是 interface / memory / tools / control / operations 中哪一层？
+[ ] 借鉴的模式是否有本项目适用条件，而不是照搬？
+[ ] 是否识别了参考项目没有覆盖的风险区？
+[ ] 若要固化为 skill / pattern，是否有 replay、eval 或人工审查证据？
+[ ] 是否记录了 do_not_use_when / expiry / invalidation trigger？
 ```
 
 ## 11. 交付

@@ -60,4 +60,4 @@ Registry 模式的主要风险在**模块加载顺序**：工具通过 `register
 ## 参考实现
 
 - Hermes Agent: `tools/registry.py`, `model_tools.py`, `toolsets.py`
-- `projects/coding-agents/opencode/tool-system.snippet.md` -- Effect.js 工具系统
+- `projects/coding-agents/opencode/tool-system.md` -- Effect.js 工具系统

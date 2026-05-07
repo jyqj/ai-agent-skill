@@ -70,5 +70,5 @@
 ## 关联文档
 
 - `overview.md`
-- `../../../../design-space/patterns/progressive-disclosure.md`
-- `../../../../categories/research-agent/closed-loop.md`
+- `../../../design-space/patterns/progressive-disclosure.md`
+- `../../../categories/research-agent/closed-loop.md`

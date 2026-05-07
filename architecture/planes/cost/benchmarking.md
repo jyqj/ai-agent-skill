@@ -52,5 +52,5 @@ Cost Plane 只有框架还不够，还需要 benchmark 方法，回答：
 ## 关联文档
 
 - `overview.md`
-- `../../../../evaluation/cost-evals.md`
-- `../../../../design-space/anti-patterns/hidden-cost-explosion.md`
+- `../../../evaluation/cost-evals.md`
+- `../../../design-space/anti-patterns/hidden-cost-explosion.md`

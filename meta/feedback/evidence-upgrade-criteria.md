@@ -12,6 +12,17 @@ production-validated > prototype-validated > grounded > synthesized > mixed > th
 
 本文档定义每次升降级所需的**最低证据门槛**。证据来源包括：项目分析（`projects/`）、用户反馈（`meta/feedback/reports/`）、外部文献、代码审计。
 
+## 1.1 使用态度：不要把生产验证当作唯一价值来源
+
+本 skill 的定位是 Agent 开发工具包与架构参照物，不是只收录生产定论的标准库。因此：
+
+- `theoretical` / `synthesized` 可以用于启发、草案、review checklist；
+- `grounded` 可以作为项目观察和设计参考，但仍需检查上下文差异；
+- fixture、starter-kit、synthetic trace 属于 **simulated-eval 证据**，能证明不变量和机制可表达，不证明真实 Agent 能力；
+- `prototype-validated` / `production-validated` 是更强证据，但不是所有内容进入知识库的门槛。
+
+写文档时应明确“这个内容能支持什么决策”，而不是简单把未生产验证的内容视为低价值。
+
 ## 2. 升级标准
 
 ### speculative → theoretical

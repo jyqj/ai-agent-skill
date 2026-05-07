@@ -13,9 +13,10 @@
 
 建议阅读顺序：
 
-1. `representation-and-effect-boundaries.md` — 品类间的关键差异
-2. `context-memory-state-boundaries.md` — 四种容易混淆的对象
-3. `execution-depth-across-agent-types.md` — 不同品类需要做到多深
-4. `runtime-vs-world-state.md` — 任务状态与外部状态的分离
-5. `tool-effect-verification.md` — 工具成功与任务完成的鸿沟
-6. `framework-comparison.md` — 本知识库如何补充主流框架
+1. `local-reference-systems-reflection.md` — 对照根目录真实项目后的设计修正
+2. `representation-and-effect-boundaries.md` — 品类间的关键差异
+3. `context-memory-state-boundaries.md` — 四种容易混淆的对象
+4. `execution-depth-across-agent-types.md` — 不同品类需要做到多深
+5. `runtime-vs-world-state.md` — 任务状态与外部状态的分离
+6. `tool-effect-verification.md` — 工具成功与任务完成的鸿沟
+7. `framework-comparison.md` — 本知识库如何补充主流框架

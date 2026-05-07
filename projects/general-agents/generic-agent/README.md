@@ -8,18 +8,18 @@
 - **类型**：general-agent
 - **项目定位**：极简自进化 agent 框架，强调少工具、强记忆、技能固化。
 - **学习来源**：仓库 README 与专题 snippet。
-- **推荐入口**：README → agent-loop.snippet.md / memory-layers.snippet.md / self-evolution.snippet.md。
+- **推荐入口**：README → agent-loop.md / memory-layers.md / self-evolution.md。
 
 ## 模块覆盖
 
 | 模块 | 覆盖程度 | 证据文件 | 可复用模式 |
 |---|---|---|---|
-| learning | 深 | self-evolution.snippet.md | skill-crystallization |
-| memory | 深 | memory-layers.snippet.md | layered-memory (L0-L4) |
-| tools | 中 | tool-system.snippet.md | atomic tools |
-| interface | 深 | frontend-adapter.snippet.md | frontend adapter (13 渠道) |
-| orchestration | 浅 | agent-loop.snippet.md | minimal loop |
-| reflect | 中 | self-evolution.snippet.md | Agent BBS + Team Worker |
+| learning | 深 | self-evolution.md | skill-crystallization |
+| memory | 深 | memory-layers.md | layered-memory (L0-L4) |
+| tools | 中 | tool-system.md | atomic tools |
+| interface | 深 | frontend-adapter.md | frontend adapter (13 渠道) |
+| orchestration | 浅 | agent-loop.md | minimal loop |
+| reflect | 中 | self-evolution.md | Agent BBS + Team Worker |
 | plugins | 浅 | README.md | Langfuse observability |
 
 ## 独特贡献
@@ -59,12 +59,12 @@ GenericAgent = 9 原子工具 + ~100 行 Agent Loop + 5 层记忆系统 + 自我
 
 | 文件 | 主题 |
 |-----|------|
-| [agent-loop.snippet.md](agent-loop.snippet.md) | 核心循环 (~100行) |
-| [memory-layers.snippet.md](memory-layers.snippet.md) | L0-L4 五层记忆系统 |
-| [tool-system.snippet.md](tool-system.snippet.md) | 9 原子工具 + 动态扩展 |
-| [self-evolution.snippet.md](self-evolution.snippet.md) | Skill 固化机制 |
-| [frontend-adapter.snippet.md](frontend-adapter.snippet.md) | 多前端统一架构 |
-| [llm-adapter.snippet.md](llm-adapter.snippet.md) | 多模型适配层（5 后端 + Mixin） |
+| [agent-loop.md](agent-loop.md) | 核心循环 (~100行) |
+| [memory-layers.md](memory-layers.md) | L0-L4 五层记忆系统 |
+| [tool-system.md](tool-system.md) | 9 原子工具 + 动态扩展 |
+| [self-evolution.md](self-evolution.md) | Skill 固化机制 |
+| [frontend-adapter.md](frontend-adapter.md) | 多前端统一架构 |
+| [llm-adapter.md](llm-adapter.md) | 多模型适配层（5 后端 + Mixin） |
 
 ## 关键洞察
 

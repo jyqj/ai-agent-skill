@@ -79,10 +79,10 @@
 | [state-ui-layer.md](state-ui-layer.md) | state/, ink/, components/ | AppState 状态树、Ink 渲染管道、性能优化 |
 
 ## 关键代码片段
-- `./query-loop.snippet` - Agent 主循环
-- `./compaction.snippet` - 多层压缩策略
-- `./tool-orchestration.snippet` - 工具执行编排
-- `./hooks-system.snippet` - Hook 机制
+- `./query-loop.md` - Agent 主循环
+- `./compaction.md` - 多层压缩策略
+- `./tool-orchestration.md` - 工具执行编排
+- `./hooks-system.md` - Hook 机制
 
 ## 与知识库的关联
 - 印证了 `paradigms/methodology/harness-engineering.md` 的 11 组件模型

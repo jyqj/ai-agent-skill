@@ -131,6 +131,6 @@ risk_level: safe | check | approval | irreversible
 
 - **Claude Code**：60+ 工具、并发控制、MCP 客户端，见 `projects/coding-agents/claude-code/execution-layer.md`
 - **Codex**：审批 + 沙箱 + orchestrator，见 `projects/coding-agents/codex/`
-- **OpenCode**：schema 验证、权限上下文、7 个内置 agent，见 `projects/coding-agents/opencode/tool-system.snippet.md`
+- **OpenCode**：schema 验证、权限上下文、7 个内置 agent，见 `projects/coding-agents/opencode/tool-system.md`
 - **Augment**：Remote / Local / Sidecar / MCP 四层 host，见 `projects/coding-agents/augment/README.md`
-- **VCPToolBox**：插件系统和分布式工具，见 `projects/tool-platforms/vcptoolbox/plugin-system.snippet.md`
+- **VCPToolBox**：插件系统和分布式工具，见 `projects/tool-platforms/vcptoolbox/plugin-system.md`

@@ -81,6 +81,7 @@
 | 看已知失败的设计教训 | `design-space/lessons-learned/` |
 | 看真实项目怎么做 | `projects/` 下按品类选项目 |
 | 跨项目对比分析 | `synthesis/` |
+| 对照根目录真实项目反思架构 | `synthesis/local-reference-systems-reflection.md` → `index/project-module-map.md` |
 | 对照主流框架 | `synthesis/framework-comparison.md` |
 | 看前沿协议 / agentic RAG / computer use | `design-space/frontier/README.md` |
 | 从参考代码骨架开始 | `starter-kit/verified-tool-agent/README.md` |

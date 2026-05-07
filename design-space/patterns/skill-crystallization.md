@@ -66,4 +66,4 @@ status: candidate | active | deprecated | rolled_back
 
 ## 参考实现
 
-- `projects/general-agents/generic-agent/self-evolution.snippet.md`
+- `projects/general-agents/generic-agent/self-evolution.md`

@@ -65,4 +65,4 @@ cost_report:
 ## 参考实现
 
 - **Claude Code**：usage tracking 和 cost reporting，见 `projects/coding-agents/claude-code/state-ui-layer.md`
-- **OpenCode**：runtime 级别 trace，见 `projects/coding-agents/opencode/orchestration.snippet.md`
+- **OpenCode**：runtime 级别 trace，见 `projects/coding-agents/opencode/orchestration.md`

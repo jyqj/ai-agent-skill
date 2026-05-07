@@ -18,7 +18,10 @@
 ## 默认阅读顺序
 
 ```text
-SKILL.md
+START-HERE.md
+  → toolkit/README.md
+  → index/ai-routing-pack.md（如果是 AI 在使用）
+  → SKILL.md
   → index/mainline-map.md
   → categories/README.md
   → architecture/README.md
@@ -50,7 +53,7 @@ implementation-map.md
 - 新增品类时，不要只写模块清单；至少补齐任务、表示、行动、闭环、设计决策、评估和实现映射。
 - 新增项目笔记时，优先写 README，再补专题文件。
 - 具体代码默认是 reference-only：用于展示架构对象、边界、闭环或测试夹具；不要把它包装成生产实现。
-- 新增或修改 `starter-kit/`、`evaluation/eval-runner/`、`*.snippet*` 中的代码时，必须在 README 或文件头说明参考性、限制和不可直接生产使用。
+- 新增或修改 `starter-kit/`、`evaluation/eval-runner/` 或项目分析文件中的代码时，必须在 README 或文件头说明参考性、限制和不可直接生产使用。
 
 ## 必跑自检
 

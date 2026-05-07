@@ -4,6 +4,19 @@
 
 > **代码定位**：本 skill 中的 starter-kit、eval-runner 和 snippet 是参考性代码资产，用于解释架构对象如何衔接；它们不是生产框架，也不是使用本 skill 的必要依赖。
 
+## 使用层：先工具包，后知识树
+
+为了降低开发者和 AI 的认知负荷，本 skill 在知识树之上增加了一层轻量使用 facade：
+
+```text
+START-HERE.md
+  → toolkit/                 # 选品类、定 MVA、选模块、诊断、选 pattern、做 eval
+  → index/ai-routing-pack.md # AI 的最小读取路由
+  → 深层知识库               # categories / architecture / design-space / projects / evaluation
+```
+
+完整知识树仍然存在，但默认不要从 25 plane 或哲学层开始。设计时先用 `toolkit/` 得到最小模块集合，再按风险展开到 `architecture/planes/`。
+
 ## 核心命题
 
 Agent 不是直接处理现实的系统。Agent 接收的是现实的**表示**，输出的是结构化的**意图**，再通过接口、工具、执行环境、传感器和验证机制作用于外部世界。
@@ -72,7 +85,7 @@ Delivery Quality = Evaluation(Observed Effects, Required Depth, User Job)
 | L1.5 认知架构 | `cognitive-architecture/` | Agent 的认知应该如何组织——工作记忆、目标层级、推理模式、心智理论、元认知控制 |
 | L2 范式 | `paradigms/` | 有哪些根本不同的构建思路，何时选哪种 |
 | L3 品类 | `categories/` | 某类 Agent（Coding、Research、Browser...）的完整设计 |
-| L4 运行时 | `architecture/` | 通用运行时模块（9 域 24 plane）、多模型架构、演化机制、数据流和拓扑 |
+| L4 运行时 | `architecture/` | 通用运行时模块（9 域 25 plane）、多模型架构、演化机制、数据流和拓扑 |
 | L5 证据 | `projects/`、`synthesis/`、`evaluation/` | 真实项目、跨项目综合、可执行评估、主观性评估 |
 
 横切资产：`design-space/`（模式/反模式/经验教训）、`index/`（地图/成熟度阶梯/意图导航/checklist）、`starter-kit/`（参考代码骨架）、`meta/`（维护规则和模板）。
@@ -139,7 +152,7 @@ External Reality
 
 ## 域分组（Domain Grouping）
 
-24 个 plane 按 9 个域分组，收敛入口、降低导航负担。每个域内的 plane 保持独立文档，但通过域入口统一索引：
+25 个 plane 按 9 个域分组，收敛入口、降低导航负担。每个域内的 plane 保持独立文档，但通过域入口统一索引：
 
 | 域 | 包含的 Plane | 主要问题 |
 |---|---|---|

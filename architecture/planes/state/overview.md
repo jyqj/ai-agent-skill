@@ -83,4 +83,4 @@ Load checkpoint
 
 - **Claude Code**：Git-based state tracking，见 `projects/coding-agents/claude-code/state-ui-layer.md`
 - **Augment**：Checkpoint 系统，见 `projects/coding-agents/augment/patterns.md`
-- **Codex**：任务与 memory pipeline 的状态化处理，见 `projects/coding-agents/codex/memory-pipeline.snippet`
+- **Codex**：任务与 memory pipeline 的状态化处理，见 `projects/coding-agents/codex/memory-pipeline.md`

@@ -62,5 +62,5 @@ OpenCode 采用了不同的分层策略，更强调可恢复性：
 
 ## 参考实现
 
-- `projects/coding-agents/claude-code/compaction.snippet` -- 多层策略实现
-- `projects/coding-agents/opencode/context-engineering.snippet.md` -- 三层策略（修剪 -> 压缩 -> 截断）
+- `projects/coding-agents/claude-code/compaction.md` -- 多层策略实现
+- `projects/coding-agents/opencode/context-engineering.md` -- 三层策略（修剪 -> 压缩 -> 截断）

@@ -12,7 +12,7 @@
 | L1.5 认知架构 | Agent 的认知应该如何组织？ | `../cognitive-architecture/` | 工作记忆、目标层级、推理模式、心智理论、元认知控制 |
 | L2 范式论 | 有哪些根本不同的做法？ | `../paradigms/` | 选择矩阵和方法论 |
 | L3 品类架构 | 某类 Agent 的完整设计？ | `../categories/` | 任务、表示、行动、闭环、eval |
-| L4 运行时 | 模块如何设计、交互、流转？ | `../architecture/` | 9 域 24 plane、多模型架构、演化机制 |
+| L4 运行时 | 模块如何设计、交互、流转？ | `../architecture/` | 9 域 25 plane、多模型架构、演化机制 |
 | L5 证据与评估 | 真实项目怎么做？怎么验收？ | `../projects/` + `../evaluation/` | 项目证据、评估框架、主观性评估 |
 | 横切 设计空间 | 可复用模式/反模式/经验教训/前沿观察？ | `../design-space/` | patterns / anti-patterns / lessons-learned / frontier |
 | 横切 综合 | 跨项目与跨框架趋势？ | `../synthesis/` | 对比分析 |
@@ -33,7 +33,7 @@ L2  paradigms/                  用什么做法（范式选择）
      ↓
 L3  categories/                 某类 Agent 怎么设计（品类架构）
      ↓
-L4  architecture/               模块怎么实现（运行时 9 域 24 plane）
+L4  architecture/               模块怎么实现（运行时 9 域 25 plane）
      ├── planes/                各域各 plane 的深入设计
      ├── multi-model/           多模型异构架构
      └── evolution/             长期演化机制

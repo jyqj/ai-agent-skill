@@ -38,5 +38,5 @@ L1 有膨胀风险。如果不定期审视和精简，它会从"索引"退化为
 
 ## 参考实现
 
-- `projects/general-agents/generic-agent/memory-layers.snippet.md` -- 参考实现观察
+- `projects/general-agents/generic-agent/memory-layers.md` -- 参考实现观察
 - GenericAgent L0-L4 架构：公理 -> 索引 -> 事实 -> 技能 -> 历史

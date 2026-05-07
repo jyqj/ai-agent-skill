@@ -62,5 +62,5 @@ Execution 层负责的是**把动作送进宿主环境**，不是替任务宣布
 
 - **Claude Code**：进程隔离、超时控制，见 `projects/coding-agents/claude-code/execution-layer.md`
 - **Codex**：完全沙箱化的执行环境，见 `projects/coding-agents/codex/`
-- **Hermes Agent**：多 backend 执行环境，见 `projects/general-agents/hermes-agent/execution-env.snippet.md`
+- **Hermes Agent**：多 backend 执行环境，见 `projects/general-agents/hermes-agent/execution-env.md`
 - **Augment**：Sidecar 进程隔离，见 `projects/coding-agents/augment/README.md`

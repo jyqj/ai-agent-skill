@@ -8,20 +8,20 @@
 - **类型**：general-agent
 - **项目定位**：生产级通用 agent，重点是内置学习循环、多平台 gateway 和多 backend 执行。
 - **学习来源**：仓库分析与 snippet 文件。
-- **推荐入口**：README → gateway.snippet.md / memory-skills.snippet.md / execution-env.snippet.md。
+- **推荐入口**：README → gateway.md / memory-skills.md / execution-env.md。
 
 ## 模块覆盖
 
 | 模块 | 覆盖程度 | 证据文件 | 可复用模式 |
 |---|---|---|---|
-| interface | 深 | gateway.snippet.md | platform adapter |
-| tools | 深 | tool-registry.snippet.md | tool registry / toolset / MCP / Kanban |
-| execution | 深 | execution-env.snippet.md | 7 后端执行 + Checkpoints v2 |
-| memory | 中 | memory-skills.snippet.md | frozen snapshot / skills |
-| learning | 中 | memory-skills.snippet.md | self-improvement loop |
+| interface | 深 | gateway.md | platform adapter |
+| tools | 深 | tool-registry.md | tool registry / toolset / MCP / Kanban |
+| execution | 深 | execution-env.md | 7 后端执行 + Checkpoints v2 |
+| memory | 中 | memory-skills.md | frozen snapshot / skills |
+| learning | 中 | memory-skills.md | self-improvement loop |
 | control | 中 | README.md | three-layer approval |
-| browser | 中 | tool-registry.snippet.md | Lightpanda + Chrome 双引擎 |
-| kanban | 中 | tool-registry.snippet.md | 任务分派 + Worker 隔离 |
+| browser | 中 | tool-registry.md | Lightpanda + Chrome 双引擎 |
+| kanban | 中 | tool-registry.md | 任务分派 + Worker 隔离 |
 
 ## 独特贡献
 
@@ -82,11 +82,11 @@ Agent = AIAgent (run_agent.py) + Harness (everything else)
 
 | 文件 | 内容 |
 |------|------|
-| `./agent-loop.snippet.md` | 核心循环、迭代预算、压缩触发 |
-| `./tool-registry.snippet.md` | 工具注册、dispatch、MCP/Kanban/Lightpanda |
-| `./memory-skills.snippet.md` | 记忆持久化、技能系统、学习循环 |
-| `./execution-env.snippet.md` | 7 后端执行环境、Checkpoints v2、沙箱策略 |
-| `./gateway.snippet.md` | 多平台网关、会话管理、Cron |
+| `./agent-loop.md` | 核心循环、迭代预算、压缩触发 |
+| `./tool-registry.md` | 工具注册、dispatch、MCP/Kanban/Lightpanda |
+| `./memory-skills.md` | 记忆持久化、技能系统、学习循环 |
+| `./execution-env.md` | 7 后端执行环境、Checkpoints v2、沙箱策略 |
+| `./gateway.md` | 多平台网关、会话管理、Cron |
 
 ## 可复用洞察
 

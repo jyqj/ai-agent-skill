@@ -1,4 +1,6 @@
-# Controllers
+# Controllers (Deprecated)
+
+> **本目录已降级。** Execution Depth Controller 已迁移至 [`../kernel/execution-depth-controller/`](../kernel/execution-depth-controller/overview.md)。其余 controller 概念（Recovery Controller、Cost Controller、Freshness Controller）保留为 frontier 方向，待未来有实质内容时再独立建模。
 
 > **Evidence Status** — synthesized. 基于 coding-agent、research-agent、workflow-agent 参考项目中控制逻辑的共性抽取；结合本知识库的 D0-D6 深度框架。
 
@@ -91,4 +93,4 @@ def controller_decide(task_state, policy) -> ControlDecision:
 
 | 路径 | 内容 |
 |---|---|
-| [`execution-depth/overview.md`](execution-depth/overview.md) | D0-D6 分级、Controller 职责、Task State Schema、预算体系、9 个瓶颈 |
+| ~~`execution-depth/overview.md`~~ | 已迁移至 [`../kernel/execution-depth-controller/overview.md`](../kernel/execution-depth-controller/overview.md) |

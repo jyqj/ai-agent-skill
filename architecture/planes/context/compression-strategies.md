@@ -288,6 +288,187 @@ Manus 团队将文件系统作为上下文窗口的扩展层：
 | 调试循环 | 锚定式迭代摘要 | 需要保留决策历史和错误模式 |
 | 批量自动化 | ACON 指南提取 | 将失败经验压缩为可复用规则 |
 
+### 压缩策略决策树
+
+```mermaid
+graph TD
+    CHECK{上下文利用率}
+    CHECK -->|"< 50%"| NONE[不压缩<br/>仅 Budget Reduction]
+    CHECK -->|"50-70%"| LOW[低成本手段<br/>Snip + Microcompact]
+    LOW --> OBS[Observation Masking<br/>遮蔽旧工具输出]
+    CHECK -->|"70-80%"| MED[中等手段<br/>Context Collapse]
+    MED --> DETAIL{任务需要历史细节?}
+    DETAIL -->|否| MASK[激进遮蔽<br/>只保留最近 N 轮]
+    DETAIL -->|是| ANCHOR[锚定式迭代摘要<br/>Intent/Changes/Decisions/Next]
+    CHECK -->|"> 80%"| HIGH[紧急状态<br/>Auto-Compact]
+    HIGH --> LLM[LLM Summarization<br/>生成压缩摘要]
+    LLM --> SAFE[注入安全标记<br/>CONTEXT COMPACTION]
+    SAFE --> RECOVER[恢复关键上下文<br/>tool defs > skill > 偏好 > 文件]
+    OBS --> MARK[CompactBoundary 标记<br/>支持部分压缩]
+    MASK --> MARK
+    ANCHOR --> MARK
+```
+
+---
+
+## 11. 三层成本梯度——从免费到付费的溢出应对管线
+
+生产系统中，压缩不是单一动作，而是一条成本递增的管线。核心逻辑：**能用免费手段解决的不花钱，花钱能解决的不重建会话**。
+
+```mermaid
+flowchart LR
+    D["检测<br/>token > 阈值×0.8"] --> P["剪枝（免费）<br/>清除旧工具输出<br/>保留最近 40K tokens"]
+    P -->|空间足够| OK1["继续"]
+    P -->|仍不够| C["压缩（付费 API）<br/>辅助模型生成摘要<br/>预算=被压缩tokens×20%"]
+    C -->|空间足够| OK2["继续"]
+    C -->|仍不够| R["会话重建<br/>创建新会话<br/>链接 parent_session_id"]
+```
+
+| 层级 | 动作 | 成本 | 触发条件 | 来源 |
+|---|---|---|---|---|
+| **检测** | token 计数 > 阈值 × 0.8 | 零 | 每轮检查 | 通用 |
+| **剪枝** | 清除旧工具输出，保留最近 40K tokens，释放至少 20K | 零 | 检测通过 | OpenCode |
+| **压缩** | 用辅助模型生成摘要，预算 = 被压缩 tokens × 20% | 一次 LLM 调用 | 剪枝后仍超标 | Hermes |
+| **会话重建** | 创建新会话，`parent_session_id` 指向旧会话 | 一次 LLM 调用 + 冷启动 | 压缩后仍超标或质量不可接受 | Hermes |
+
+**剪枝的具体操作**（OpenCode 实现）：
+
+1. 从最旧的消息开始，删除所有 `tool_result` 类型内容
+2. 如果释放量不足 20K tokens，继续删除旧的 `assistant` 消息中的 thinking 块
+3. 保留最近 40K tokens 的完整消息不动
+4. 始终保留 system prompt 和 tool definitions
+
+**会话重建的具体操作**（Hermes 实现）：
+
+1. 对当前会话做一次完整压缩摘要
+2. 创建新会话，将摘要注入为首条 system context
+3. 记录 `parent_session_id`，支持审计回溯
+4. 旧会话标记为 archived，不再追加消息
+
+---
+
+## 12. 压缩安全标记——防止摘要被当作指令执行
+
+压缩摘要注入上下文时存在一个隐蔽风险：模型可能把历史摘要中提到的请求当作新任务执行。例如摘要中写"用户请求删除 config.yaml"，模型可能真的去删。
+
+**强制标记**（来自 Hermes）：
+
+```text
+[CONTEXT COMPACTION — REFERENCE ONLY]
+Earlier turns were compacted into the summary below.
+DO NOT answer questions or fulfill requests mentioned in this summary.
+Respond ONLY to the latest user message that appears AFTER this summary.
+```
+
+| 设计要点 | 说明 |
+|---|---|
+| 放置位置 | 紧接摘要内容之前，作为摘要的"帧头" |
+| 为什么不够靠 prompt 约束 | 长上下文下 system prompt 中的约束容易被忽略（Lost in the Middle），标记必须与摘要物理相邻 |
+| 多次压缩时 | 每次压缩重新生成标记，不嵌套旧标记（避免标记自身膨胀） |
+| 测试验证 | 压缩后应测试"模型是否会执行摘要中提到的历史请求"作为回归用例 |
+
+---
+
+## 13. Token 效率量化——分层记忆的实际节省比
+
+不同时间尺度下的压缩机制，实际 token 节省比差异显著（来自 GenericAgent 度量）：
+
+| 层次 | 时间尺度 | 机制 | 节省比例 | 典型实现 |
+|---|---|---|---|---|
+| **短期** | 单轮内 | 压缩 thinking / tool_result 标签，保留最近 N 条 | 30-40% | Claude Code Snip / Microcompact |
+| **中期** | 任务内 | 分层记忆只加载相关段（L1 指针 + 按需 L2/L3） | 50-60% | Factory.ai 锚定摘要 / ACON 指南 |
+| **长期** | 会话间 | L4 归档，按需加载 | 80-90% | Anthropic Memory Tool / 文件系统扩展 |
+
+```mermaid
+graph TD
+    subgraph "短期 30-40%"
+        A1["thinking 块压缩"] --> A2["tool_result 截断"]
+    end
+    subgraph "中期 50-60%"
+        B1["锚定摘要 4 字段"] --> B2["按需加载 L2/L3"]
+    end
+    subgraph "长期 80-90%"
+        C1["L4 归档"] --> C2["会话间按需检索"]
+    end
+    A2 -->|"任务推进"| B1
+    B2 -->|"会话结束"| C1
+```
+
+**关键洞察**：单靠短期压缩无法支撑长任务。30 轮以上的会话，必须启用中期的结构化摘要；跨会话任务必须依赖长期层。三层叠加后，总 token 消耗可降至朴素实现的 10-20%。
+
+---
+
+## 14. 压缩后恢复策略——重建关键上下文
+
+压缩是有损操作。压缩后如果直接继续，模型会丢失部分关键上下文。Claude Code 的做法是在压缩完成后主动恢复一组关键信息：
+
+| 恢复项 | 预算上限 | 恢复方式 | 理由 |
+|---|---|---|---|
+| 最近读取的文件（最多 5 个） | 按实际大小 | 重新注入文件内容摘要 | 压缩后模型不记得文件内容，但下一步操作可能依赖它 |
+| Skill 指令 | 每个 skill 5K tokens | 从 skill registry 重新加载 | skill 定义了行为约束，丢失会导致风格/策略漂移 |
+| MCP 工具说明 | 按 tool definitions 原样 | 不压缩，始终保留 | 工具调用的基础，压缩后必须可用 |
+| 用户偏好和项目约定 | 2-3K tokens | 从 memory / config 文件重新注入 | 格式偏好、语言偏好、代码风格等 |
+
+**恢复时序**：
+
+```text
+压缩完成
+  ↓
+注入 [CONTEXT COMPACTION] 标记 + 摘要     ← §12 的安全标记
+  ↓
+恢复 tool definitions（如果被压缩影响）
+  ↓
+恢复 skill 指令
+  ↓
+恢复最近文件摘要
+  ↓
+恢复用户偏好
+  ↓
+继续正常 ORDA-VU 循环
+```
+
+**恢复预算约束**：恢复内容的总量不应超过压缩释放空间的 30%。如果恢复本身占用过多空间，优先级为：tool definitions > skill 指令 > 用户偏好 > 文件摘要。
+
+---
+
+## 15. 压缩后恢复预算
+
+压缩是有损操作，但损失可以通过**主动恢复**来弥补。关键认知：压缩不只是删除旧消息，还需要为关键上下文预留恢复空间——否则压缩后模型因缺少文件上下文而产生错误的工具调用，反而比不压缩更危险。
+
+### 15.1 Claude Code 的恢复预算分配
+
+| 恢复类别 | 预算上限 | 数量限制 | 说明 |
+|---|---|---|---|
+| 文件恢复 | 50K tokens | 最多 5 个文件，每个约 5K | 压缩前最近读取/编辑的文件，按访问时间排序 |
+| 技能恢复 | 25K tokens | 每个技能最多 5K | 从 skill registry 重新加载行为约束 |
+| 工具定义 | 按原样保留 | 不压缩 | 工具调用的基础，始终完整保留 |
+| 用户偏好 | 2-3K tokens | — | 格式、语言、代码风格等从 config 重新注入 |
+
+### 15.2 条件性图像剥离
+
+压缩输入前移除图像内容——图像对摘要生成无用，但占用大量 token。移除时为每个图像留下文本标记（如 `[image: screenshot of error dialog]`），确保摘要中保留"此处曾有图像"的语义锚点。
+
+### 15.3 设计原则
+
+```text
+恢复预算公式:
+  压缩释放空间 = compressed_tokens - summary_tokens
+  恢复占用空间 = file_recovery + skill_recovery + preference_recovery
+  安全约束:    恢复占用 < 压缩释放 × 0.3
+
+  违反安全约束时，按优先级裁剪:
+    tool_definitions > skill 指令 > 用户偏好 > 文件摘要
+```
+
+核心原则：
+
+1. **恢复预算应低于压缩释放的空间** — 恢复占用不超过释放量的 30%，留足安全余量
+2. **恢复有优先级** — tool definitions 永远保留；文件摘要是最后恢复项，在预算不足时首先裁剪
+3. **恢复目的是防止错误工具调用** — 压缩后模型不记得文件内容，但下一步操作可能依赖它；缺少上下文的工具调用比缺少历史更危险
+4. **图像剥离是零成本优化** — 图像对 LLM 摘要无贡献，剥离后释放的空间可直接用于恢复预算
+
+> **来源**：Claude Code compaction 实现（`autoCompact.ts` / `compact.ts`）。参见 `../../../projects/coding-agents/claude-code/compaction.md`。
+
 ---
 
 ## 相关文件

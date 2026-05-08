@@ -486,6 +486,113 @@ export namespace SessionProcessor {
 
 ---
 
+## 9. Effect.js 三段式桥接架构
+
+### 来源
+`tool/*.ts`, `session/prompt.ts`, `provider/index.ts`
+
+### 架构
+```text
+Interface 层 (Zod Schema + 类型定义)
+    ↓
+Layer 层 (Effect Service + 依赖注入)
+    ↓
+静态门面 (namespace 导出的 Effect.fn)
+```
+
+### 注释
+- **Interface 层**：每个模块用 `z.object()` 定义数据结构和 `namespace` 暴露类型，不含副作用。
+- **Layer 层**：用 `Effect.Service` + `Layer.effect` 包装实际实现，声明依赖（DB、Bus、Config 等），由 Effect Runtime 自动注入。
+- **静态门面**：用 `Effect.fn("Module.method")` 封装，调用方不感知 Effect 内部，直接 `yield*` 即可。
+- 这种三段式让每一层可独立测试和替换——Interface 做 mock、Layer 做 stub、门面做集成。
+
+---
+
+## 10. Doom Loop 实际匹配逻辑
+
+### 来源
+`session/processor.ts`
+
+### 补充
+上文第 6 节的 Doom Loop 检测，实际匹配逻辑更严格：
+
+```typescript
+// 比较的是「工具名 + 参数 JSON」全等，而非仅工具名
+const serialize = (call: ToolCall) => `${call.toolName}:${JSON.stringify(call.args)}`
+const currentKey = toolCalls.map(serialize).sort().join("|")
+
+// 范围：单条 assistant message 内的全部 tool_calls
+// 如果最近 DOOM_LOOP_THRESHOLD 条 assistant message 的 serialized key 完全相同，触发
+```
+
+### 注释
+- 仅按工具名检测会误报（同一工具不同参数是正常行为）。
+- 全等匹配 + 参数序列化确保只在 agent 真正"原地打转"时触发。
+- 作用域是单条 assistant message 内的 tool_calls 集合，跨 message 的相同调用不触发。
+
+---
+
+## 11. Snapshot 独立 Git
+
+### 来源
+`session/snapshot.ts`
+
+### 代码
+```typescript
+export namespace Snapshot {
+  // 每个会话维护独立的 git snapshot
+  export const create = Effect.fn("Snapshot.create")(function* (sessionID) {
+    const dir = yield* Instance.directory
+    // 在 .opencode/snapshots/{sessionID}/ 下初始化独立 git repo
+    // 记录当前工作区状态
+    yield* Git.init(snapshotDir)
+    yield* Git.addAll(snapshotDir)
+    yield* Git.commit(snapshotDir, `snapshot at ${Date.now()}`)
+  })
+
+  // FileDiff 结构
+  export const FileDiff = z.object({
+    path: z.string(),
+    type: z.enum(["added", "modified", "deleted", "renamed"]),
+    additions: z.number(),
+    deletions: z.number(),
+  })
+}
+```
+
+### 注释
+- Snapshot 使用独立 git repo，不污染用户工作区的 git 历史。
+- 每次会话可生成文件级 diff 摘要（additions/deletions/type）。
+- 支持会话级的 revert 操作：回退到 snapshot 记录的工作区状态。
+
+---
+
+## 12. Batch Tool（用户态并行）
+
+### 来源
+`tool/batch.ts`
+
+### 注释
+- OpenCode 支持 Batch Tool：单次调用可并行执行最多 25 个工具。
+- 与 Provider 级的 `parallel_tool_calls` 不同，Batch Tool 是**用户态编排**——由 agent 显式发起一组工具调用，框架侧并行执行。
+- 内部使用 `Effect.all(..., { concurrency: 25 })` 控制并发上限。
+- 每个子工具独立权限检查、独立截断、独立错误处理，单个失败不阻塞其他。
+
+---
+
+## 13. Plan Mode
+
+### 来源
+`agent/agent.ts`
+
+### 注释
+- Plan Agent 是内置的 primary agent，system prompt 强调"只分析不执行"。
+- 权限规则集：`{ "*": "deny", "read": "allow", "glob": "allow", "grep": "allow" }` —— 禁止所有写操作。
+- 用户可随时切换 build ↔ plan 模式，切换时保持会话上下文不变。
+- Plan Mode 生成的计划可被后续 build agent 直接消费——计划结果作为上下文注入。
+
+---
+
 ## 设计模式总结
 
 | 模式 | 实现 | 效果 |
@@ -494,5 +601,9 @@ export namespace SessionProcessor {
 | 子任务优先 | subtask > compaction > normal | 确保子任务及时处理 |
 | 递归子代理 | Task Tool → SessionPrompt.prompt | 独立上下文执行 |
 | 三状态机 | idle → busy → retry → idle | 清晰的状态管理 |
-| Doom Loop 检测 | 连续 3 次相同工具 | 防止无限循环 |
+| Doom Loop 检测 | 工具名+参数 JSON 全等，3 次连续匹配 | 精准防止无限循环 |
 | 智能重试 | 响应头 > 指数退避 | 优雅处理临时错误 |
+| Effect 三段式 | Interface → Layer → 静态门面 | 可测试可替换的依赖注入 |
+| Snapshot Git | 独立 git repo 记录工作区 | 不污染用户 git 历史 |
+| Batch Tool | 用户态 25 并发 | 显式并行工具编排 |
+| Plan Mode | 只读权限 + 分析 prompt | 安全的规划阶段 |

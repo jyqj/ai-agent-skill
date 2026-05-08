@@ -2,6 +2,8 @@
 
 > **Evidence Status** — synthesized. New Relic SRE Agent、Azure SRE Agent、Observe AI SRE、incident.io、PagerDuty AIOps、multi-agent SRE 研究。
 
+> **文档深度**：骨架级——提供设计维度清单和关键问题，不提供完整蓝图。详细设计需结合 `architecture/planes/` 和 `paradigms/` 自行组装。
+
 ## Core Job
 
 在告警、日志、指标、发布和回滚之间形成闭环，帮助值班人员更快定位、缓解并验证恢复：

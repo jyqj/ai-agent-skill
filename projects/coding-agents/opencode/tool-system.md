@@ -421,6 +421,89 @@ for (const toolCall of toolCalls) {
 
 ---
 
+## 7. Edit Generator-based 降级机制
+
+### 来源
+`tool/edit.ts`（降级实现细节）
+
+### 代码
+```typescript
+// 每个 Replacer 是一个 Generator，yield 候选匹配结果
+function* SimpleReplacer(content: string, old: string, new_: string) {
+  const index = content.indexOf(old)
+  if (index !== -1) {
+    yield { index, length: old.length, replacement: new_ }
+  }
+}
+
+function* BlockAnchorReplacer(content: string, old: string, new_: string) {
+  // 滑动窗口，yield 所有相似度 > 0.8 的候选
+  for (let i = 0; i <= lines.length - oldLines.length; i++) {
+    const candidate = lines.slice(i, i + oldLines.length).join("\n")
+    const score = levenshteinSimilarity(candidate, old)
+    if (score > 0.8) {
+      yield { index: i, length: oldLines.length, replacement: new_, score }
+    }
+  }
+}
+
+// 统一唯一性检查
+function tryReplace(content: string, old: string, new_: string, replacers: Generator[]) {
+  for (const Replacer of replacers) {
+    const candidates = [...Replacer(content, old, new_)]
+    // 关键：唯一性检查——只有恰好 1 个候选时才执行替换
+    if (candidates.length === 1) {
+      return applyReplacement(content, candidates[0])
+    }
+    // 多个候选 → 跳过此策略，降级到下一个
+  }
+  throw new Error("No unique match found across all strategies")
+}
+```
+
+### 注释
+- 每个 Replacer 实现为 Generator，`yield` 所有可能的候选匹配位置。
+- 统一的**唯一性检查**：只有某个策略恰好产生 1 个候选时才执行替换，避免歧义替换。
+- 多候选意味着该策略精度不足，自动降级到更宽松的下一级策略。
+- 这种 Generator + 唯一性守卫的组合，比简单的 `if/else` 降级更安全——宽松策略不会误替换多个位置。
+
+---
+
+## 8. LSP 三级感知
+
+### 来源
+`tool/lsp.ts`, `lsp/index.ts`
+
+### 架构
+```text
+Level 1: Edit 后自动诊断
+    → 每次 edit/write 工具完成后，自动触发 LSP diagnostics
+    → 语法错误、类型错误、未使用导入等即时反馈给 agent
+
+Level 2: 9 种主动操作工具
+    → definitions     找定义
+    → references      找引用
+    → hover           悬浮信息
+    → symbols         文件符号
+    → workspace_symbols  工作区符号
+    → rename          重命名
+    → code_actions    代码操作
+    → diagnostics     主动诊断
+    → formatting      格式化
+
+Level 3: Symbol 范围修正
+    → 基于 LSP symbol 信息，自动确定 edit 影响范围
+    → 跨文件引用更新（rename 触发的级联修改）
+```
+
+### 注释
+- **28 种语言自动 server 管理**：OpenCode 内置了 TypeScript、Rust、Go、Python、Java 等 28 种语言的 LSP server 配置。
+- 启动时根据项目文件类型自动检测并启动对应 LSP server，无需用户配置。
+- LSP server 生命周期与 Session 绑定，会话结束自动清理。
+- Level 1（自动诊断）是隐式的——agent 不需要主动调用，edit 后自动获得反馈。Level 2 和 3 是显式的——agent 按需调用。
+
+---
+
 ## 设计模式总结
 
 | 模式 | 实现 | 效果 |
@@ -428,6 +511,8 @@ for (const toolCall of toolCalls) {
 | 动态初始化 | `tool.init(ctx)` | 运行时参数注入 |
 | Zod 验证 | `parameters.parse(args)` | 类型安全、友好错误 |
 | 策略模式 | 9 种 Edit 匹配器 | 优雅降级 |
+| Generator 降级 | yield 候选 + 唯一性守卫 | 安全的模糊匹配 |
 | 权限上下文 | `ctx.ask()` | 细粒度权限控制 |
 | 流式更新 | `ctx.metadata()` | 实时进度反馈 |
 | 自动截断 | `Truncate.output()` | 防止 token 溢出 |
+| LSP 三级感知 | 自动诊断 → 主动工具 → 范围修正 | 语义级代码理解 |

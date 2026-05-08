@@ -1,6 +1,6 @@
 # Paradigms x Economics 交叉设计
 
-> Evidence Status: grounded
+> **Evidence Status** — grounded.
 > 知识库映射: Cognition (Plane 4-6) x Lifecycle&Economics (Plane 17-18) x Coordination (Plane 16)
 
 ## 为什么需要这篇文档

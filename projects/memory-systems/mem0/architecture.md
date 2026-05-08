@@ -1,7 +1,7 @@
 # Mem0 架构分析
 
 
-> **Evidence Status** — grounded. 基于 Mem0 开源仓库、官方文档、13 个框架集成、19 个向量存储后端、3 个语音平台集成和公开性能基准。
+> **Evidence Status** — synthesized. 基于 Mem0 官方文档、集成说明与公开性能基准的架构综合，非源码级分析。
 
 ## 基本信息
 

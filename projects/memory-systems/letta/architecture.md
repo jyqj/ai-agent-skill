@@ -1,7 +1,7 @@
 # Letta (MemGPT) 架构分析
 
 
-> **Evidence Status** — grounded. 基于 V1 架构文档、Letta Cloud 服务说明、Codecademy 课程内容和官方博客。
+> **Evidence Status** — synthesized. 基于 Letta V1 架构文档、Cloud 服务说明、Codecademy 课程与官方博客，非源码级分析。
 
 ## 基本信息
 

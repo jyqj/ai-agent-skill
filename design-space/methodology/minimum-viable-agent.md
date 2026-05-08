@@ -1,13 +1,13 @@
 # Minimum Viable Agent Ladder
 
-> **Evidence Status** — synthesized. 给轻量级 Agent 留出空间，避免一开始就套完整生产架构；同时给出何时升级复杂度的证据触发器。
+> **Evidence Status** — synthesized. 给轻量级 Agent 留出起步空间；同时给出何时升级复杂度的证据触发器。
 
 
 ## 核心原则
 
 ```text
 先构建最小闭环，再根据真实失败补模块。
-不要因为框架完整，就要求每个 Agent 从第一天拥有全部 plane。
+不要因为框架有 25 个 plane，就要求每个 Agent 从第一天全部实现。
 ```
 
 ## MVA 阶梯
@@ -50,7 +50,7 @@
 
 ## 与生产级架构的关系
 
-MVA 阶梯不是反对完整架构，而是定义**渐进复杂性**：
+MVA 阶梯不是反对完整架构，而是给出**何时增加复杂度的判据**：
 
 ```text
 MVA-0/1 证明需求

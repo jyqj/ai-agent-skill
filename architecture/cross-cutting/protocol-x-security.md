@@ -1,6 +1,6 @@
 # Coordination x Trust 交叉设计
 
-> Evidence Status: grounded
+> **Evidence Status** — grounded.
 > 知识库映射: Coordination (Plane 16) x Trust&Identity (Plane 13-15) x Governance (Plane 21-24)
 
 ## 为什么需要这篇文档

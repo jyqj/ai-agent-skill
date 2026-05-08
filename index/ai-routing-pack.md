@@ -1,4 +1,4 @@
-# AI Routing Pack
+# AI 路由表
 
 > **Evidence Status** — synthesized. 给使用本 skill 的 AI 一个低上下文成本的路由表；目标是先读最少文件、产出可用方案，再按风险展开深层文档。
 

@@ -1,6 +1,6 @@
 # Reasoning x Action 交叉设计
 
-> Evidence Status: grounded
+> **Evidence Status** — grounded.
 > 知识库映射: Cognition (Plane 4-6) x Action&Effect (Plane 10-12) x Sensing&Repr (Plane 1-3)
 
 ## 为什么需要这篇文档

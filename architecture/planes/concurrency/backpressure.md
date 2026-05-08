@@ -196,5 +196,5 @@ Agent 系统中，Drop 策略适合投机执行结果的收集；Block 策略适
 | [Event Ordering](./event-ordering.md) | 背压下的消息顺序保证 |
 | [Cost Plane overview](../cost/overview.md) | 背压是成本控制的运行时执行层 |
 | [Token Budgeting](../cost/token-budgeting.md) | 预算耗尽触发背压 |
-| [Circuit Breaker pattern](../../../design-space/patterns/circuit-breaker.md) | 熔断器是背压的下游保护层 |
-| [Infinite Retry anti-pattern](../../../design-space/anti-patterns/infinite-retry.md) | 缺乏背压导致的典型反模式 |
+| [Circuit Breaker pattern](../../../design-space/patterns/depth-budgeting.md) | 熔断器是背压的下游保护层 |
+| [Infinite Retry anti-pattern](../../../design-space/anti-patterns/README.md) | 缺乏背压导致的典型反模式 |

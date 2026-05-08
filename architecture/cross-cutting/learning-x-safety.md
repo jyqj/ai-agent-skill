@@ -1,6 +1,6 @@
 # Learning x Safety 交叉设计
 
-> Evidence Status: grounded
+> **Evidence Status** — grounded.
 > 知识库映射: Reflection&Learning (Plane — Learning&Adaptation) x Trust&Identity (Plane — Security) x Action&Effect (Plane — Effects)
 
 ## 为什么需要这篇文档

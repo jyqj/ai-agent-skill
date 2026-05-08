@@ -1,6 +1,6 @@
 # Observation Loop
 
-> **Evidence Status** — grounded. computer-use 系统的 screenshot/action loop 与本知识库的表示/效果抽象。
+> **Evidence Status** — synthesized. 基于 computer-use 系统公开描述与本知识库的表示/效果抽象，非源码级分析。
 
 ## 观察
 

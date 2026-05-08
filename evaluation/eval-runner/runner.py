@@ -292,8 +292,17 @@ def generate_baseline_trace(case: Dict[str, Any]) -> List[Dict[str, Any]]:
         trace.append({"event_type": "tool_call", "tool": "health_check", "result": {"status": "success", "latency_p99": "1.1s", "error_rate": "0.2%", "healthy_instances": 5}})
         trace.append({"event_type": "verify", "verification_status": "verified", "evidence_ref": "health_check", "notes": "metrics returned to normal"})
     else:
-        for tool in case.get("allowed_tools", []) or []:
+        allowed_tools = case.get("allowed_tools", []) or []
+        for tool in allowed_tools:
             trace.append({"event_type": "tool_call", "tool": tool, "result": {"status": "not_executed_in_synthetic_trace"}})
+        write_like_tokens = ("update", "send", "delete", "deploy", "write", "create", "notify", "remove")
+        if any(any(token in str(tool).lower() for token in write_like_tokens) for tool in allowed_tools):
+            trace.append({
+                "event_type": "effect_record",
+                "intended_effect": "write-like action present in fixture but not executed by synthetic baseline",
+                "verification_status": "unverifiable_by_agent",
+                "reason": "baseline trace is a fixture harness, not a real agent execution",
+            })
 
     trace.append({"event_type": "deliver", "case_id": case_id})
     return trace

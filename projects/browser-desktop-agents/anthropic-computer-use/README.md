@@ -1,6 +1,6 @@
 # Anthropic Computer Use
 
-> **Evidence Status** — grounded. 官方 computer-use 说明、桌面/网页环境动作边界与 benchmark 观察。
+> **Evidence Status** — synthesized. 基于 Anthropic 官方 computer-use 说明与 benchmark 观察，非源码级分析。
 
 ## 基本信息
 

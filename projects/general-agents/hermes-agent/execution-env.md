@@ -249,6 +249,18 @@ def _call(tool_name, args):
 
 ---
 
+## 工具输出持久化：Execution 与 Context 的桥
+
+Pattern: tool-output persistence
+When: 单个工具结果或单轮工具结果总量超过上下文预算，但后续验证仍需要原始证据。
+Invariant: 大输出写入可回读 artifact，并在上下文中只保留摘要、路径、大小、截断原因和复查方法。
+Failure mode: 直接截断导致关键证据丢失；完整塞入上下文导致压缩污染；最终回答无法回查原始输出。
+Reference paths: `tools/tool_result_storage.py`, `agent/context_compressor.py`。
+
+这不是普通截断策略，而是“上下文预算压力下保持证据可回读”的执行层义务。
+
+---
+
 ## Checkpoints v2（新）
 
 ### 存储架构
@@ -301,3 +313,71 @@ DEFAULT_EXCLUDES = [
 ```
 
 **洞察**：v2 设计的核心是共享 object DB + per-project refs，同项目的多个 worktree 成本接近零。auto_prune 默认开启确保无人工维护。
+
+---
+
+## Browser CDP Supervisor（第二轮审计补充）
+
+浏览器工具通过 CDP (Chrome DevTools Protocol) 连接，Supervisor 管理浏览器生命周期：
+
+```python
+class BrowserCDPSupervisor:
+    def __init__(self, config: BrowserConfig):
+        self._browsers: Dict[str, CDPConnection] = {}  # session → connection
+        self._max_browsers = config.max_concurrent_browsers  # 默认 3
+        self._idle_timeout = config.idle_timeout  # 默认 300s
+
+    async def acquire(self, session_key: str) -> CDPConnection:
+        if session_key in self._browsers:
+            return self._browsers[session_key]
+        # 超过上限 → 关闭最久未用的
+        if len(self._browsers) >= self._max_browsers:
+            await self._evict_lru()
+        conn = await self._launch_browser()
+        self._browsers[session_key] = conn
+        return conn
+
+    async def _health_check_loop(self):
+        """周期性检测：关闭崩溃/僵尸浏览器，回收空闲超时实例。"""
+        ...
+```
+
+**洞察**：浏览器是重量级资源。LRU 淘汰 + 空闲超时 + 健康检查三层机制防止资源泄漏。
+
+---
+
+## Context Engine 可插拔抽象（第二轮审计补充）
+
+Context Engine 在 agent 每轮推理前构建上下文，采用可插拔 provider 架构：
+
+```python
+class ContextEngine:
+    def __init__(self):
+        self._providers: List[ContextProvider] = []
+
+    def register(self, provider: ContextProvider, priority: int = 0):
+        self._providers.append((priority, provider))
+        self._providers.sort(key=lambda x: x[0], reverse=True)
+
+    def build_context(self, session: SessionContext, budget: int) -> str:
+        parts = []
+        remaining = budget
+        for _, provider in self._providers:
+            chunk = provider.provide(session, max_tokens=remaining)
+            if chunk:
+                parts.append(chunk)
+                remaining -= estimate_tokens(chunk)
+                if remaining <= 0:
+                    break
+        return "\n".join(parts)
+
+class ContextProvider(ABC):
+    @abstractmethod
+    def provide(self, session: SessionContext, max_tokens: int) -> Optional[str]: ...
+```
+
+内置 provider 包括：SystemPromptProvider（基础指令）、MemoryProvider（记忆快照）、
+SkillProvider（激活技能）、SessionProvider（会话上下文）、PlatformProvider（平台信息）。
+
+**设计意图**：上下文构建逻辑从 agent loop 中解耦。新增上下文源（如 RAG、知识库）只需注册 provider，
+不修改核心循环。优先级 + token 预算确保关键信息优先注入。

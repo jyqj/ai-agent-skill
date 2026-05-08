@@ -2,6 +2,8 @@
 
 > **Evidence Status** — synthesized. Eval Framework、Eval Runner Spec 对可复现测试数据的需求。
 
+> **定位**：本目录定义 Eval Fixture 的标准格式和字段契约。当前包含的 fixture 是格式示例和 baseline trace 验证用例，不是完整的生产评估用例集。生产使用需按品类和场景自行编写，每个 fixture 应针对具体系统的工具、世界状态和验收条件。
+
 Fixture 是评估的最小可复现输入——每个 fixture 固定一个场景的输入、工具、世界状态和验收条件，使评估可重复运行。
 
 ## 目录约定

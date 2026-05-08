@@ -7,6 +7,16 @@
 
 > 来源：`tools/registry.py`, `model_tools.py`, `toolsets.py`, `mcp_tool.py`, `kanban_tools.py`
 
+## 二轮校准：Registry 作为运行时边界
+
+Pattern: registry-discovered tool surface
+When: 工具来自本地模块、MCP、managed gateway 或任务分派系统。
+Invariant: schema、handler、check_fn、toolset、max_result_size 必须从同一注册表查询，不能在 prompt、配置和代码中各写一份。
+Failure mode: 工具描述漂移、不可用工具暴露给模型、远端 gateway 与本地 toolset 权限不一致。
+Reference paths: `tools/registry.py`, `tools/managed_tool_gateway.py`, `tools/tool_result_storage.py`, `tools/schema_sanitizer.py`。
+
+工具数量应描述为“registry-discovered tool surface”，不要写死固定数量；真实工具面会随 toolset、MCP server、managed gateway 和配置动态变化。
+
 ## 注册模式
 
 ```python

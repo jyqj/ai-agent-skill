@@ -134,6 +134,26 @@ effect_record:
     executed: false
 ```
 
+### EffectRecord 状态迁移
+
+```text
+unverified ──→ pending ──→ verified
+    │              │           │
+    │              ↓           ↓
+    │          failed      （终态）
+    │              │
+    ↓              ↓
+ expired     compensated
+```
+
+迁移规则：
+- `unverified → pending`：Agent 发起验证请求（readback / test / sensor query）
+- `pending → verified`：验证通过（postcondition 成立）
+- `pending → failed`：验证失败（postcondition 不成立），触发 FailureRecord 创建
+- `unverified → expired`：超过 TTL 未发起验证，标记为过期
+- `failed → compensated`：补偿操作成功执行
+- 时间约束：`pending` 状态最长保持 T_verify（由品类定义，默认 30s），超时自动转 `failed`
+
 ### 2.5 FailureRecord
 
 ```yaml
@@ -151,6 +171,22 @@ failure_record:
   retry_budget_remaining: integer
   status: open | recovering | recovered | escalated | stopped
 ```
+
+### FailureRecord 状态迁移
+
+```text
+open ──→ retrying ──→ resolved
+  │          │
+  ↓          ↓
+escalated  abandoned
+```
+
+迁移规则：
+- `open → retrying`：Recovery 模块选择重试策略，消耗 retry budget
+- `retrying → resolved`：重试成功
+- `retrying → open`：重试失败，回到 open，再次评估策略
+- `open → escalated`：retry budget 耗尽或风险过高，升级为人工处理
+- `open/retrying → abandoned`：任务整体被取消或超时
 
 ### 2.6 InteractionEvent
 

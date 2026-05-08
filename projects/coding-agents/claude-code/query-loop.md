@@ -1,5 +1,7 @@
 # Agent 主循环 (query.ts)
 
+> **Evidence Status** — grounded. 基于 Claude Code 参考源码观察整理；代码片段仅作架构映射。
+
 > **参考性**：以下代码片段只用于说明架构模式或源码观察点，不是完整实现；复制到项目中前需按真实接口、安全、测试和运维要求重写。
 
 ## 来源
@@ -132,3 +134,34 @@ async function* queryLoop(params: QueryParams) {
 - **Agent Loop**: 这是 TAO 循环的生产系统观察点
 - **Compaction**: 多层策略，不是单一压缩
 - **State Management**: 显式状态对象，不依赖闭包
+
+---
+
+## max_output_tokens 分级恢复
+
+当 API 返回 `stop_reason: 'max_tokens'`（模型输出被截断）时，queryLoop 执行三级恢复：
+
+1. **升级重试**（`ESCALATE_MAX_OUTPUT_TOKENS` feature gate）：
+   - 首次截断时，将 `max_output_tokens` 从默认值（如 8192）提升到 64K（`MAX_OUTPUT_TOKENS_ESCALATED`），重新发送同一请求。
+   - 仅尝试一次；若升级后仍截断，进入下一级。
+
+2. **恢复消息重试**（最多 `MAX_RECOVERY_ATTEMPTS = 3` 次）：
+   - 向 messages 追加一条合成用户消息：`"Your previous response was truncated. Please continue from where you left off."`
+   - 同时设置 `maxOutputTokensOverride` 为升级值，让模型在更大输出窗口内续写。
+   - `state.maxOutputTokensRecoveryCount` 递增，用于追踪已消耗的恢复配额。
+
+3. **放弃 + withhold 语义**：
+   - 恢复次数耗尽后，queryLoop 将截断的助手消息标记为 `withhold: true`。
+   - `withhold` 消息保留在 `state.messages` 中供调试审计，但 **不会** 出现在下一轮发给 API 的 `messagesForQuery` 中——`normalizeMessagesForAPI()` 会过滤掉它们。
+   - 这避免了截断的半成品文本污染后续推理上下文。
+
+---
+
+## Model Fallback 降级
+
+queryLoop 支持运行时模型降级，用于应对特定模型的 API 错误或可用性问题：
+- **触发条件**：API 返回 `overloaded_error`、`rate_limit_error` 或特定 5xx 错误，且当前模型配置了 fallback 链。
+- **降级链**：`modelFallbackChain` 数组定义优先级（如 `opus → sonnet → haiku`），每次降级取链中下一个可用模型。
+- **状态影响**：降级后 `StreamingToolExecutor` 丢弃已排队的孤立 tool_use（因为降级模型可能不产生兼容的 tool_use 格式），并重置流适配器。
+- **回升**：降级非永久——后续轮次的 `shouldAttemptUpgrade()` 检查原始模型的健康状态，若恢复则自动回升。
+- **可观测性**：每次降级事件记录 `model_fallback` telemetry 事件（包含原始模型、目标模型、触发错误码）。

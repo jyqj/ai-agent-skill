@@ -7,7 +7,7 @@
 
 - **类型**：general-agent
 - **项目定位**：生产级通用 agent，重点是内置学习循环、多平台 gateway 和多 backend 执行。
-- **学习来源**：仓库分析与 snippet 文件。
+- **学习来源**：仓库分析与源码观察文件。
 - **推荐入口**：README → gateway.md / memory-skills.md / execution-env.md。
 
 ## 模块覆盖
@@ -54,7 +54,7 @@ Agent = AIAgent (run_agent.py) + Harness (everything else)
 
 核心循环：同步单线程，ThreadPoolExecutor 并发工具执行
 上下文策略：冻快照 + 实时持久化 + 延迟压缩
-工具系统：中心化注册表 + Toolset 组合 + MCP 集成 + ~70 工具
+工具系统：中心化注册表 + Toolset 组合 + MCP / managed gateway 动态发现
 记忆系统：FTS5 全文搜索 + 冻快照注入
 执行环境：7 后端（local/docker/ssh/modal/daytona/vercel/singularity）+ Checkpoints v2
 多平台网关：适配器模式 + 会话隔离 + Cron 调度
@@ -87,6 +87,9 @@ Agent = AIAgent (run_agent.py) + Harness (everything else)
 | `./memory-skills.md` | 记忆持久化、技能系统、学习循环 |
 | `./execution-env.md` | 7 后端执行环境、Checkpoints v2、沙箱策略 |
 | `./gateway.md` | 多平台网关、会话管理、Cron |
+| `./credential-pool.md` | 多凭证故障转移引擎、选择策略、租约管理 |
+| `./error-recovery.md` | 结构化错误分类管道、17 种 FailoverReason |
+| `./transport-layer.md` | Provider 格式转换层、多 provider 适配 |
 
 ## 可复用洞察
 

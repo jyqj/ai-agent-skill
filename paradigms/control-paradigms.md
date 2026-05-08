@@ -28,6 +28,23 @@ Layer 4: Assurance (红队/回归/变体分析) — 持续验证防御有效性
 
 攻击者必须**同时**绕过确定性层和推理层，这显著提高了攻击门槛。
 
+### 纵深防御层级图
+
+```mermaid
+graph TD
+    INPUT[用户意图] --> L1[Layer 1: Policy Engine<br/>确定性规则/权限树/路径匹配]
+    L1 --> L2[Layer 2: Guard Model<br/>推理型分类器/语义风险判断]
+    L2 --> L3[Layer 3: Base Model Hardening<br/>对抗训练/内在鲁棒性]
+    L3 --> L4[Layer 4: Assurance<br/>红队/回归/变体分析]
+    L4 --> OUTPUT[受控执行]
+
+    L1 -.->|"快速拦截<br/>可审计/可测试"| BLOCK1[确定性拒绝]
+    L2 -.->|"语义拦截<br/>处理新型威胁"| BLOCK2[推理型拒绝]
+    L4 -.->|"持续验证<br/>防御有效性"| FEEDBACK[回归信号]
+    FEEDBACK -.-> L1
+    FEEDBACK -.-> L2
+```
+
 三大安全原则：
 1. Agent 必须有明确的**人类控制者**（identity + consent）
 2. Agent 权限必须**动态受限**（不允许自我提权）
@@ -48,6 +65,28 @@ Layer 4: Assurance (红队/回归/变体分析) — 持续验证防御有效性
 | 模糊安全风险 | guard model + deterministic policy + human escalation |
 | 长时自治 | budget gate + heartbeat + observability + kill switch |
 | Agent 金融交易 | spending cap + delegation proof + double confirmation + AP2 |
+
+## HITL vs HOTL 选择矩阵
+
+人类参与 Agent 控制有两种基本模式，选择依据不同：
+
+| 维度 | HITL (Human-in-the-Loop) | HOTL (Human-on-the-Loop) |
+|---|---|---|
+| 定义 | 人类在关键节点主动审批/决策，Agent 暂停等待 | 人类持续监控但不阻塞执行，异常时介入 |
+| 执行流 | 同步——Agent 暂停 → 等待人类 → 继续 | 异步——Agent 持续执行，人类异步审查 |
+| 延迟影响 | 高——每次审批引入人类响应延迟 | 低——Agent 不被阻塞 |
+| 风险兜底 | 前置拦截——错误动作不会发生 | 后置纠正——错误动作可能已执行 |
+
+**选择因素**：
+
+| 因素 | 倾向 HITL | 倾向 HOTL |
+|---|---|---|
+| 操作风险 | 不可逆、高影响（删除生产数据、金融交易） | 可逆、低影响（信息查询、草稿生成） |
+| 吞吐要求 | 低频、高价值任务 | 高频、批量处理 |
+| 专业度 | 需要领域专家判断 | Agent 能力已充分验证 |
+| 信任度 | 新 Agent、新场景、未经验证 | 经过充分 eval 和灰度验证 |
+
+**渐进策略**：实践中通常从 HITL 起步，随信任积累逐步过渡到 HOTL。过渡条件：pass^k 达标 + 连续 N 个任务无人工修正 + 回滚机制就位。
 
 ## 控制不是只在行动前
 

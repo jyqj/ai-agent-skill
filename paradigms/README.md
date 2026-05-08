@@ -38,6 +38,7 @@ projects/                   真实项目中的实现证据
 | 范式族 | 入口 | 主要问题 |
 |---|---|---|
 | 推理范式 | `reasoning-paradigms.md` | direct、ReAct、Plan-and-Execute、Reflection、ORDA-VU 什么时候用？ |
+| 推理技术选择 | `reasoning-technique-selection.md` | CoT/ToT/ReAct/PAL/CoD/GoD/MASS/RLVR——给定任务特征选哪种？（从 cognitive-architecture/ 迁入） |
 | 记忆范式 | `memory-paradigms.md` | in-context、RAG、Disclosure、分层记忆、图记忆如何取舍？ |
 | 工具使用范式 | `tool-paradigms.md` | 静态工具、动态发现、MCP、code-as-tool、原子工具和丰富工具如何组合？ |
 | 协作范式 | `collaboration-paradigms.md` | 单 Agent、Coordinator-Worker、Peer、Event-driven、Human-in-loop 如何选择？ |

@@ -10,6 +10,48 @@ User Job → External Effect Risk → Required Depth → Verification Reachabili
 
 不要为所有 Agent 都堆满全部模块。拓扑由风险、执行深度、外部效果、验证可达性、恢复需求和交互复杂度决定。复杂度等级见 `complexity-levels.md`。
 
+### 拓扑选择决策树
+
+```mermaid
+flowchart TD
+  Start(["任务输入"]) --> Q1{"有外部写动作?"}
+
+  Q1 -- "无" --> Q2{"需要检索证据?"}
+  Q2 -- "无" --> T0["T0 Chat/Advisory<br/>C0 · 最低成本"]
+  Q2 -- "是" --> T1["T1 Read-only Research<br/>C1-C2 · provenance"]
+
+  Q1 -- "有" --> Q3{"写入目标是?"}
+  Q3 -- "代码/文件" --> T2["T2 Coding Agent<br/>C3-C4 · sandbox + tests"]
+  Q3 -- "企业 API/数据库" --> Q4{"需要审批/合规?"}
+  Q4 -- "是" --> T3["T3 Enterprise Workflow<br/>C4-C5 · approval + audit"]
+  Q4 -- "否" --> T2
+
+  Q3 -- "浏览器/GUI" --> T4["T4 Browser/Desktop<br/>C3-C5 · perception + confirm"]
+  Q3 -- "生产基础设施" --> T5["T5 Ops/SRE<br/>C5 · rollback + incident"]
+
+  Q1 -- "有" --> Q5{"需要多 Agent 协作?"}
+  Q5 -- "中心化调度" --> T6a["T6a Coordinated Multi-Agent<br/>C5-C6 · arbitration"]
+  Q5 -- "去中心化涌现" --> T6b["T6b Emergent Multi-Agent<br/>C5-C6 · convergence"]
+  Q5 -- "否" --> Q3
+
+  Start --> Q6{"持续/流式处理?"}
+  Q6 -- "是" --> T7["T7 Continuous/Streaming<br/>C5-C6 · backpressure"]
+  Q6 -- "否" --> Q1
+
+  %% 渐进复杂度标注
+  style T0 fill:#d4edda,stroke:#28a745
+  style T1 fill:#d4edda,stroke:#28a745
+  style T2 fill:#fff3cd,stroke:#ffc107
+  style T3 fill:#fff3cd,stroke:#ffc107
+  style T4 fill:#fff3cd,stroke:#ffc107
+  style T5 fill:#fddede,stroke:#dc3545
+  style T6a fill:#fddede,stroke:#dc3545
+  style T6b fill:#fddede,stroke:#dc3545
+  style T7 fill:#fddede,stroke:#dc3545
+```
+
+> **图注**：绿色 = 低复杂度（C0-C2），黄色 = 中复杂度（C3-C5），红色 = 高复杂度（C5-C6）。从上到下沿决策路径走，第一个匹配的拓扑即为起点；随后按"模块升级触发器"（第 10 节）按需叠加模块。
+
 ## 2. T0：Chat / Advisory Assistant
 
 ```text

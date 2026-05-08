@@ -15,6 +15,11 @@
   └─ 不可逆或高影响：C4/C5 + approval + compensation/rollback plan
 
 任务是否会跨多轮、跨系统或中断？
+  │  > 判定"环境会在执行中变化"：
+  │  >   若依赖的外部状态 TTL <任务预估耗时 → 环境会变化。
+  │  >   或：原型运行中 ≥20% 的执行出现"步骤前提失效"（如资源被他人修改、
+  │  >   API 返回值与预期不一致）→ drift 频率过高，需要 World State 刷新。
+  │  >   实用简判：任务涉及 ≥2 个外部系统，且预估耗时 >30 秒 → 按"会变化"处理。
   ├─ 否：单任务拓扑
   └─ 是：State + World State + Recovery + Trace
 ```
@@ -27,12 +32,24 @@
   └─ 否 → 需要外部读取吗？
        ├─ 是，但工具结果不改变计划 → Tool-Augmented Direct
        └─ 是，工具结果会改变下一步 → ReAct / ORDA-VU micro-loop
+            > 判定"多步"：若完成任务需要 ≥3 次独立工具调用，且后续调用依赖前序结果 → 多步。
+            > 1-2 次独立查询 → Tool-Augmented Direct 即可。
+            > ≥5 次且有分支 → 考虑 Plan-and-Execute。
 
 任务可预先拆成稳定步骤吗？
+  │  > 判定方法：人工拆分为 N 步后做原型运行（≥10 次）。
+  │  > 若 ≥80% 步骤的单次成功率 ≥90% → "稳定" → Plan-and-Execute。
+  │  > 若任一步骤失败率 >20%，或步骤顺序需运行时决定 → "不稳定" → ReAct。
   ├─ 是 → Plan-and-Execute + step verification
   └─ 否 → ReAct with stop gate and recovery budget
 
 风险高或写动作不可逆吗？
+  │  > "可逆"分级：
+  │  >   L0 纯读 — 无副作用，始终安全。
+  │  >   L1 软可逆 — 可通过 API/undo 在 <5 min 回滚（如撤销 git commit、删除草稿）。
+  │  >   L2 硬可逆 — 可回滚但需人工介入或耗时 >5 min（如数据库恢复、工单状态回退）。
+  │  >   L3 不可逆 — 无法回滚（如发送邮件、物理动作、资金转账、删除无备份数据）。
+  │  > L0-L1 → 按深度选择；L2 → 加 dry-run + 确认；L3 → 必须 Plan + Approval + Verification。
   ├─ 是 → Plan + Approval + Verification Gate
   └─ 否 → 按深度选择 Direct / ReAct / Plan
 
@@ -113,6 +130,12 @@
   └─ 是 → Effect verification gate
 
 动作是否不可逆或高影响？
+  │  > 触发人工审批的条件（满足任一即需审批）：
+  │  >   1. 可逆性 ≥ L2（硬可逆或不可逆）。
+  │  >   2. 影响范围：涉及 >100 条记录、>$100 金额、或影响外部用户可见状态。
+  │  >   3. 合规要求：SOX/GDPR/HIPAA 等法规明确要求人工签核的动作。
+  │  >   4. 首次执行：该动作模板在生产环境首次运行（无历史成功记录）。
+  │  > 不需审批：L0-L1 可逆 + 影响范围小 + 有历史成功记录 → 自动执行 + trace。
   ├─ 是 → Approval + sandbox/dry-run + rollback/compensation
   └─ 否 → risk-based gate + trace
 

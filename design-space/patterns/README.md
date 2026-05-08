@@ -4,7 +4,7 @@
 
 ## 定位
 
-`patterns/` 存放可以跨品类复用的具体做法。它不是概念层，也不是项目摘要；一个模式应回答：
+`patterns/` 存放可跨品类复用的具体做法。每个模式应回答：
 
 - 解决什么反复出现的问题；
 - 适用 / 不适用场景；
@@ -18,13 +18,17 @@
 
 | 问题 | 优先看 |
 |---|---|
-| 任务规格不清、验收不明 | `contract-agent.md`、`milestone-gated-execution.md` |
-| 工具成功但现实未变 | `effect-ledger.md`、`self-verification.md` |
-| 上下文过大或关键信息丢失 | `compaction.md`、`tool-output-offloading.md`、`progressive-disclosure.md` |
-| 不可信输入、工具输出注入 | `untrusted-context-boundary.md`、`tool-output-sanitization.md`、`guard-model.md` |
+| 任务规格不清、验收不明 | `contract-agent.md`、`milestone-gated-execution.md`、`spec-driven-development.md` |
+| 工具成功但现实未变 | `effect-ledger.md`、`self-verification.md`、`adversarial-verification.md` |
+| 上下文过大或关键信息丢失 | `compaction.md`、`tool-output-offloading.md`、`progressive-disclosure.md`、`context-compression-safety.md`、`summary-forced-extraction.md`、`token-budget-controller.md` |
+| 不可信输入、工具输出注入 | `untrusted-context-boundary.md`、`tool-output-sanitization.md`、`guard-model.md`、`guardian-review-agent.md` |
 | 需要长期记忆或技能复用 | `layered-memory.md`、`skill-crystallization.md`、`frozen-snapshot.md` |
-| 多 Agent / Worker 协作 | `subagent.md`、`worker-orchestration.md`、`checkpoint-hydration.md` |
+| 多 Agent / Worker 协作 | `subagent.md`、`worker-orchestration.md`、`checkpoint-hydration.md`、`isolation-gradient.md` |
 | 需要可回放评估 | `property-based-agent-testing.md`、`shadow-mode-regression.md`、`citation-chain.md` |
+| Agent 循环延迟或工具调度 | `streaming-tool-execution.md`、`deferred-tool-loading.md` |
+| 模型行为偏差（空回复、伪执行、虚假完成） | `behavior-correction-layer.md` |
+| 多凭证管理与故障转移 | `credential-pool-failover.md` |
+| 精确错误恢复 | `structured-error-classification.md` |
 
 ## 升级规则
 

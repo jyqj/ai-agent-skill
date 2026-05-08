@@ -1,6 +1,6 @@
 # Stagehand 架构分析
 
-> **Evidence Status**: grounded
+> **Evidence Status**: synthesized. 基于 Stagehand GitHub README、产品对比文章与行业报告的架构综合，非源码级分析。
 > **来源**: [Stagehand GitHub (Vercel)](https://github.com/browserbase/stagehand) | [Stagehand vs Browser Use vs Playwright](https://www.nxcode.io/resources/news/stagehand-vs-browser-use-vs-playwright-ai-browser-automation-2026) | [Agentic Browser Landscape 2026](https://nohacks.co/blog/agentic-browser-landscape-2026)
 
 ## 项目概述

@@ -13,9 +13,12 @@
 - `long-horizon-runtime.md` — 长时任务的运行时需要哪些额外机制
 - `multimodal-and-computer-use.md` — 多模态和 GUI 操作迫使多个架构层同时升级
 - `agent-protocols-and-boundaries.md` — MCP、A2A、Repo Instructions 是不同的边界
+- `agent-protocols.md` — MCP/ACP/A2A 协议族技术对比与实战选择
 - `observability-control-plane.md` — 可观测性正在从"事后看日志"变成"运行时控制面"
 - `multi-agent-governance.md` — Agent 经济学、涌现治理、Agent 宪法、跨组织治理标准化
 - `automated-harness-evolution.md` — 可观测性驱动的自动 Harness 演进（AHE），Terminal-Bench 2 实证
 - `agent-governance-frameworks.md` — 2025-2026 治理框架汇总：Microsoft Toolkit、CSA Trust Framework、OWASP Agent Top 10、EU AI Act
+- `memory-forms-and-dynamics.md` — Memory Survey 三维分类法（Forms-Functions-Dynamics），超越传统 short/long-term 二分
+- `rl-driven-memory.md` — RL 驱动记忆管理路线图：从规则到数据驱动的三阶段演进
 
 **使用方式**：先用 `categories/` 和 `architecture/` 形成当前设计，再读 frontier 判断未来扩展点。某个做法在多个案例中复现后，再提升到 `patterns/`。

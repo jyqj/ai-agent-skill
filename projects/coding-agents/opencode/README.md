@@ -26,6 +26,17 @@ OpenCode 是一个**可组合的 agent runtime 框架**。它用 Effect.js 的 S
 
 ## 关键发现
 
+### Runtime 吸收点
+
+| Runtime obligation | 本项目模式 | 关键文件 |
+|---|---|---|
+| loop | session processor + Effect Service graph | `orchestration.md` |
+| context | prune → compact → truncate 分级降级 | `context-engineering.md` |
+| tool lifecycle | Zod schema、registry、permission 共同设计 | `tool-system.md` |
+| permission | deny > ask > allow，异步 permission lifecycle | `control-memory.md` |
+| state / resume | DB messages、continue/session/fork | `orchestration.md` |
+| event stream | reducer / SSE 把 runtime events 落成 UI | `README.md` |
+
 - 权限模型（deny > ask > allow）必须和工具系统共同设计，否则后补的权限层总是有缝隙。
 - 上下文溢出不应是单一策略，OpenCode 的三层渐进处理（修剪 → 压缩 → 截断）证明了分层降级比单一阈值更鲁棒。
 - Doom Loop 检测属于 runtime 基础设施，而不应该依赖 prompt 提示来"请不要重复"。
@@ -63,8 +74,31 @@ SimpleReplacer → LineTrimmedReplacer → BlockAnchorReplacer → WhitespaceNor
 - Task 工具创建独立子会话运行子代理
 
 ### 6. Doom Loop 检测
-- 连续 3 次相同工具调用触发权限检查
+- 工具名+参数 JSON 全等匹配，连续 3 次触发权限检查
+- 匹配范围：单条 assistant message 内的 tool_calls 集合
 - 步骤限制：`maxSteps = agent.steps ?? Infinity`
+
+### 8. Effect.js 三段式桥接
+- Interface（Zod Schema）→ Layer（Effect Service + 依赖注入）→ 静态门面（namespace Effect.fn）
+- 每层可独立测试和替换
+
+### 9. LSP 三级感知
+- Level 1：edit 后自动触发 diagnostics 诊断
+- Level 2：9 种主动操作工具（definitions, references, hover, symbols 等）
+- Level 3：基于 symbol 信息自动修正 edit 影响范围
+- 28 种语言自动 LSP server 管理（TypeScript, Rust, Go, Python, Java 等）
+
+### 10. Snapshot 独立 Git
+- 每个会话在 `.opencode/snapshots/` 下维护独立 git repo
+- 不污染用户工作区 git 历史，支持会话级 revert
+
+### 11. Batch Tool（用户态并行）
+- 单次调用并行执行最多 25 个工具
+- 每个子工具独立权限检查、独立截断、独立错误处理
+
+### 12. Plan Mode
+- 只读权限规则集，禁止所有写操作
+- 与 build 模式共享会话上下文，无缝切换
 
 ### 7. 分级重试策略
 - 检测 Overloaded/Rate Limited/exhausted 等错误

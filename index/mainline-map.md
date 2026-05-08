@@ -2,6 +2,28 @@
 
 > **Evidence Status** — synthesized. 给这套 skill 一条稳定主干，避免读者在概念、范式、品类、模块、项目之间跳跃断层。
 
+## 如何使用本主干
+
+本页适合深入学习和维护结构，不是日常使用的第一入口。
+
+- 快速构建、诊断、升级、评审：先走 `../START-HERE.md` 和 `../toolkit/`。
+- 系统学习：从本页的层级关系读起。
+- 维护仓库：本页是目录归属和导航收敛的单一参考之一。
+
+```mermaid
+flowchart TD
+  F[Front Door: START-HERE] --> T[Toolkit Facade]
+  F --> M[Mainline Map]
+  M --> P0[L0 Philosophy]
+  P0 --> P1[L1 Concepts]
+  P1 --> COG[L1.5 Cognitive Architecture]
+  COG --> PAR[L2 Paradigms]
+  PAR --> CAT[L3 Categories]
+  CAT --> RUN[L4 Runtime Planes]
+  RUN --> EVAL[L5 Projects + Evaluation]
+  RUN --> SYN[Synthesis]
+  EVAL --> SYN
+```
 
 ## 主干层级
 
@@ -12,7 +34,7 @@
 | L1.5 认知架构 | Agent 的认知应该如何组织？ | `../cognitive-architecture/` | 工作记忆、目标层级、推理模式、心智理论、元认知控制 |
 | L2 范式论 | 有哪些根本不同的做法？ | `../paradigms/` | 选择矩阵和方法论 |
 | L3 品类架构 | 某类 Agent 的完整设计？ | `../categories/` | 任务、表示、行动、闭环、eval |
-| L4 运行时 | 模块如何设计、交互、流转？ | `../architecture/` | 9 域 25 plane、多模型架构、演化机制 |
+| L4 运行时 | 模块如何设计、交互、流转？ | `../architecture/` | 运行时模块、多模型架构、演化机制 |
 | L5 证据与评估 | 真实项目怎么做？怎么验收？ | `../projects/` + `../evaluation/` | 项目证据、评估框架、主观性评估 |
 | 横切 设计空间 | 可复用模式/反模式/经验教训/前沿观察？ | `../design-space/` | patterns / anti-patterns / lessons-learned / frontier |
 | 横切 综合 | 跨项目与跨框架趋势？ | `../synthesis/` | 对比分析 |
@@ -33,7 +55,7 @@ L2  paradigms/                  用什么做法（范式选择）
      ↓
 L3  categories/                 某类 Agent 怎么设计（品类架构）
      ↓
-L4  architecture/               模块怎么实现（运行时 9 域 25 plane）
+L4  architecture/               模块怎么实现（运行时模块）
      ├── planes/                各域各 plane 的深入设计
      ├── multi-model/           多模型异构架构
      └── evolution/             长期演化机制

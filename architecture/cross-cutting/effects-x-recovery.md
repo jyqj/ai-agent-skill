@@ -1,6 +1,6 @@
 # Effects x Recovery 交叉设计
 
-> Evidence Status: grounded
+> **Evidence Status** — grounded.
 > 知识库映射: Action&Effect (Plane — Effects) x Lifecycle&Economics (Plane — Recovery) x Governance (Plane — Control)
 
 ## 为什么需要这篇文档
@@ -63,6 +63,60 @@ Effect Verification Failed
       ├─ 截止时间内 → 等待 + 轮询
       └─ 超过截止时间 → 升级
 ```
+
+---
+
+## 实战裁决规则：Effects → Recovery → Cost 优先级链
+
+生产系统中，Effects 验证失败后的处理并非只看决策矩阵——而是一条三阶段优先级链：
+
+1. **Effects 检测**：确认"状态到底变没变"（read-after-write / 测试验证）
+2. **Recovery 判定**：决定是重读（可能延迟但安全）还是重操作（可能成本高但快速）
+3. **Cost 约束**：如果 Recovery 判定重操作但成本超预算，强制降级到更低成本方案
+
+### 优先级链裁决流程
+
+```mermaid
+flowchart TD
+    A["Effects 检测: 状态变了吗？"] -->|read-after-write 通过| B["效果已达成 → 正常继续"]
+    A -->|read-after-write 失败| C["Recovery 判定"]
+    A -->|检测超时/不确定| D["重试检测（最多 2 次）"]
+    D -->|仍失败| C
+
+    C -->|"方案 A: 重读（延迟等待后再验证）"| E{"等待后重新验证"}
+    C -->|"方案 B: 重操作（重新执行动作）"| F{"检查 Cost 约束"}
+
+    E -->|验证通过| B
+    E -->|验证失败| F
+
+    F -->|"成本 ≤ 预算"| G["执行重操作"]
+    F -->|"成本 > 预算"| H["Cost 降级"]
+
+    G --> A
+
+    H --> I["降级方案选择"]
+    I --> J["接受部分失败 + 记录"]
+    I --> K["切换低成本替代方案"]
+    I --> L["升级到人工介入"]
+```
+
+### 项目实证：连续失败的升级策略
+
+不同项目对连续失败的处理形成了一致的"渐进升级"模式：
+
+| 失败次数 | GenericAgent | OpenCode | Claude Code | Codex |
+|---------|-------------|----------|-------------|-------|
+| 第 1 次 | 理解失败原因，调整参数 | 正常重试 | PostToolUseFailure hook 触发重试 | sandbox outcome 不等于 effect verified，触发测试回读 |
+| 第 2 次 | 探测环境（检查前提条件） | 累计失败计数 | hook 可选择补救路径 | 仍需测试/回读验证 |
+| 第 3 次 | 换方案或请求人工介入 | Doom Loop 检测触发 compact 或停止 | 分类为持续失败，限制重试 | 风险评分提升，Guardian 介入 |
+| ≥4 次 | 强制停止 + 人工报告 | 强制会话重置 | 升级到用户确认 | 中止执行 + 审计记录 |
+
+**关键洞察**：
+
+- **Codex**：sandbox 内执行成功 ≠ effect verified。即使工具返回 success，仍需通过测试或 read-after-write 确认实际效果。这将 Effects 检测从"工具返回值检查"升级为"独立验证"。
+- **Claude Code**：`PostToolUseFailure` hook 提供了结构化的失败处理入口——可以选择重试、补救、或升级，而不是简单的"再来一次"。
+- **OpenCode**：Doom Loop 检测（连续 ≥3 次相同模式的失败）是一个重要的安全阀——它识别的不是"单次失败"，而是"系统性无法解决的问题"，此时继续重试只会浪费 token。
+- **GenericAgent**：三阶段升级（理解→探测→换方案）体现了 Recovery 应该是"学习型"的——每次失败都应该增加对问题的理解，而不是盲目重复。
 
 ---
 

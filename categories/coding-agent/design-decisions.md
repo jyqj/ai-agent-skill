@@ -89,6 +89,17 @@ before_final_answer: stop gate verification
 before_memory_write: project/user/skill classification
 ```
 
+
+### 三层执行决策
+
+```text
+Policy decision: allow / ask / deny
+Execution decision: sandbox / no sandbox / remote / terminal
+Recovery decision: retry / compact / resume / stop / escalate
+```
+
+三层不能混在 prompt 里：Policy 决定能不能做，Execution 决定在哪里做，Recovery 决定失败后如何继续。
+
 ## Operations 策略
 
 Coding Agent 进入生产或团队环境后，至少需要：
@@ -115,3 +126,29 @@ Coding Agent 进入生产或团队环境后，至少需要：
 | 上线退化 | Observability + Operations + Eval Runner |
 
 相关：`../../paradigms/tool-paradigms.md`、`../../paradigms/control-paradigms.md`、`../../architecture/planes/operations/overview.md`。
+
+## 多 Agent 团队模式
+
+> 来源：Gulli (2025) *Agentic Design Patterns*, Appendix G.
+
+当 Coding Agent 从单 Agent 演化为多 Agent 团队时，推荐的角色分工：
+
+| 角色 | 职责 | 调用时机 |
+|---|---|---|
+| **Scaffolder** | 写新代码、实现功能、生成脚手架 | 需求明确后 |
+| **Test Engineer** | 编写单元/集成/E2E 测试，覆盖边界 | 代码实现后 |
+| **Documenter** | 生成函数/类/API 文档 | 代码稳定后 |
+| **Optimizer** | 性能瓶颈分析、重构建议 | 功能验证后 |
+| **Reviewer** | 批判性审查（Critique → Reflection → 优先级排序摘要） | 提交前 |
+
+**三条原则**：
+1. **Human-Led Orchestration**：人类是团队负责人和最终决策者。Agent 输出是提案而非命令。
+2. **Primacy of Context**：Agent 质量完全取决于上下文质量。使用 Context Staging Area（临时目录：brief + code + docs）作为每个任务的完整简报包。
+3. **Direct Model Access**：直接使用前沿模型，避免中间层截断或降级上下文。
+
+**实施路径**：
+- Version-controlled prompt library（`/prompts/reviewer.md`、`tester.md` 等）
+- Git hooks 自动触发 Reviewer Agent（pre-commit）
+- 双模型策略（如 Gemini Pro + Claude Opus 交叉验证）
+
+**与知识库映射**：此模式是 `../../architecture/planes/orchestration/` 的 coding-agent 特化实例，角色分工对应不同的 subagent 配置，Context Staging Area 对应 ContextPack 的人工策展模式。

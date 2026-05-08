@@ -1,6 +1,6 @@
 # 哲学原则 × 品类违反概率热力图
 
-> **Evidence Status** — synthesized. 基于 28 条哲学原则和 12 个品类（含新增 Creative Agent）的交叉分析。
+> **Evidence Status** — synthesized. 基于 28 条哲学原则和 14 个品类的交叉分析。
 
 本热力图帮助品类架构师快速定位"我这类 Agent 最容易违反哪些原则"。
 

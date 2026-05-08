@@ -7,17 +7,17 @@
 
 | 参考项目 | 模块深度覆盖 | 核心学习点 |
 |---|---|---|
-| Claude Code | Context ★★★, Tools ★★★, Execution ★★★, Control ★★★, Orchestration ★★, State ★★ | 4 阶段压缩、工具并发控制、Hook、子代理隔离 |
-| Codex | Execution ★★★, Control ★★★, Orchestration ★★, Security ★★ | 沙箱隔离、Guardian Policy、多 agent 控制 |
-| OpenCode | Context ★★★, Tools ★★★, Control ★★, Orchestration ★★, Operations ★ | Doom Loop、权限模型、函数式 runtime |
+| Claude Code | Context ★★★, Tools ★★★, Execution ★★★, Control ★★★, Orchestration ★★, State ★★, Recovery ★★ | 4 阶段压缩、工具并发控制、Hook（25 事件类型）、Fork 缓存共享、子代理隔离、413 三阶段恢复 + 熔断器 |
+| Codex | Execution ★★★, Control ★★★, Orchestration ★★, Security ★★, Memory ★★ | 沙箱隔离、Guardian LLM 审批、多 agent 控制、Rollout 两阶段记忆管道 |
+| OpenCode | Context ★★★, Tools ★★★, Control ★★, Orchestration ★★, Operations ★, Recovery ★★ | Doom Loop 检测、deny>ask>allow 权限、Zod schema、函数式 DI runtime、分级重试 |
 | Augment | Tools ★★★, Orchestration ★★★, State ★★★, Interface ★ | 分层工具主机、Worker 编排、Checkpoint |
 | Nocturne | Memory ★★★, Context ★★, Representation ★★ | Disclosure、记忆审计、修订链 |
 | MemPalace | Memory ★★★, Representation ★★, Tools ★★ | 原文存储、KG、MCP 工具、benchmark |
-| Hermes | Interface ★★★, Tools ★★★, Execution ★★★, Memory ★★ | Multi-platform Gateway、学习循环 |
-| Generic | Memory ★★, Tools ★★, Learning ★★★ | 最小 Agent Loop、自我进化 |
+| Hermes | Interface ★★★, Tools ★★★, Execution ★★★, Memory ★★, Recovery ★★, Orchestration ★★ | Multi-platform Gateway、学习循环、IterationBudget consume/refund、Kanban Worker 分派、双引擎浏览器 |
+| Generic | Memory ★★, Tools ★★, Learning ★★★, Interface ★★★ | 最小 Agent Loop、自我进化、13 渠道前端适配、Agent BBS 分布式协作 |
 | NagaAgent | Memory ★★★, Context ★★, Interface ★★ | 分层 Prompt、GRAG、Voice / Avatar |
 | VCPToolBox | Tools ★★★, Platform ★★★, Memory ★★ | 插件系统、分布式工具、TagMemo |
-| Warp | Tools ★★★, Orchestration ★★★, Control ★★★, Operations ★★★, Interface ★★ | Skills 系统、Oz Pipeline、Spec-Driven、Readiness Label |
+| Warp | Tools ★★★, Orchestration ★★★, Control ★★★, Operations ★★★, Interface ★★, Learning ★★ | Skills 系统（10 Provider 兼容 + Skill 继承）、Oz Pipeline、Spec-Driven、Readiness Label、AgentDriver 多 Harness 托管 |
 | Browser Use | Tools ★★★, Execution ★★★, Interface ★★, Control ★★ | 81K stars 开源 Browser Agent、DOM 操作、多步浏览器任务 |
 | Stagehand | Tools ★★★, Interface ★★★, Execution ★★ | Vercel DOM-first Browser Agent、结构化 DOM 抽取 |
 | Perplexity | Orchestration ★★★, Context ★★★, Representation ★★ | 19 模型编排、搜索 + 生成流水线、引用链 |
@@ -42,4 +42,5 @@
 | State | Augment（Checkpoint） | Claude Code（git-based）/ LangGraph（持久化 Checkpointer） |
 | Interface | Hermes（multi-platform） | Naga（多模态）/ Warp（terminal-native）/ Browser Use（浏览器 UI）/ Stagehand（DOM-first） |
 | Operations | Warp（Oz triage/review） | Hermes（multi-platform） |
-| Learning | Generic（self-evolution） | VCPToolBox（TagMemo） |
+| Learning | Generic（self-evolution） | VCPToolBox（TagMemo）/ Warp（Skill 继承 + 10 Provider 发现）/ Hermes（学习循环 + Skill Curator） |
+| Recovery | Claude Code（413 三阶段 + 熔断器） | Hermes（IterationBudget + 压力注入）/ OpenCode（Doom Loop + 分级重试）/ Generic（轮次梯级降级） |

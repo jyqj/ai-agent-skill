@@ -128,3 +128,75 @@ def batch_process(src, l4_dir):
 
     # P4: 删除源文件
 ```
+
+---
+
+## Summary 强制抽取机制（第二轮审计补充）
+
+每轮 LLM 响应末尾被要求输出 `<summary>...</summary>` 标签，内含本轮关键信息摘要。
+若 LLM 遗漏该标签，下一轮注入惩罚提示迫使补交：
+
+```python
+# turn_end_callback 中检测
+if "<summary>" not in response.content:
+    next_prompt += "\n[系统] 你遗漏了 <summary> 标签。立即补充本轮摘要，否则关键信息将丢失。"
+```
+
+抽取的 summary 存入 `working['earlier_context']`，在上下文截断时作为保底摘要保留。
+这是"只传最新消息"极简架构的配套保障——没有累积历史，全靠 summary 链条维持连续性。
+
+---
+
+## Anchor Prompt 完整注入结构（第二轮审计补充）
+
+`_get_anchor_prompt()` 是每轮消息的骨架，由三段拼接：
+
+```python
+def _get_anchor_prompt(self):
+    parts = []
+    # 1. earlier_context: 过往轮次的 summary 拼接（压缩历史）
+    if self.working.get('earlier_context'):
+        parts.append(f"<history>\n{self.working['earlier_context']}\n</history>")
+    # 2. history: 最近 N 轮的原始交互（短期窗口）
+    if self.working.get('history'):
+        parts.append(f"<recent>\n{self.working['history']}\n</recent>")
+    # 3. key_info: 任务关键信息（由 update_working_checkpoint 设置）
+    if self.working.get('key_info'):
+        parts.append(f"<key_info>\n{self.working['key_info']}\n</key_info>")
+    return "\n".join(parts)
+```
+
+这三段构成从远到近的上下文梯度：压缩摘要 → 近期原文 → 任务锚点。
+
+---
+
+## passed_sessions 代龄计数器（第二轮审计补充）
+
+`working['passed_sessions']` 记录工作记忆在多少个会话间被携带。每次新会话启动时递增：
+
+```python
+# 新会话开始时
+self.working['passed_sessions'] = self.working.get('passed_sessions', 0) + 1
+# 超过阈值 → 工作记忆过期，提示 Agent 重新读取或丢弃
+if self.working['passed_sessions'] > 3:
+    next_prompt += "\n[系统] 工作记忆已跨越 3 个会话，可能已过时。请验证后决定保留或丢弃。"
+```
+
+`update_working_checkpoint` 调用时重置为 0。这是对"跨会话漂移"的轻量级防护。
+
+---
+
+## 存在性编码理论（第二轮审计补充）
+
+记忆系统遵循 ROI 公式决定信息是否值得持久化：
+
+```
+ROI = (复现代价 × 复用概率) / 存储成本
+```
+
+- **高 ROI**：环境特异性事实（路径/凭证/API 行为怪癖）→ L2
+- **中 ROI**：经过艰难调试的多步 SOP → L3
+- **低 ROI**：通用常识、单次推理过程 → 不存储
+
+L0 元规则 `memory_management_sop.md` 将此公式编码为决策树，Agent 在 `start_long_term_update` 时自动执行。
+核心约束：**行动验证原则**——仅存储已通过执行验证的信息，推理猜测一律丢弃。

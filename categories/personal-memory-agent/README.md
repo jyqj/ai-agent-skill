@@ -191,7 +191,9 @@ README.md（本文）
 
 ## 验证与评估扩展
 
-本品类的核心任务涉及主观性判断，标准 postcondition 验证不完全适用：
+记忆的存储和检索准确性可通过客观 postcondition 验证（recall/precision）。但记忆价值判断（什么值得记）和用户满意度涉及主观维度：
 
-- 验证哲学：`../../concepts/beyond-verification.md` — 从 postcondition 到 resonance / longitudinal / intersubjective 的验证语义扩展
-- 主观性评估：`../../evaluation/subjective-eval.md` — 用户满意度、一致性、对齐度、关系健康度等维度的评估框架
+- 客观验证：记忆检索 recall/precision、矛盾检测准确率、过期记忆失效率
+- 主观维度：写入决策的合理性、用户感知的"了解我"程度
+- 扩展验证：`../../concepts/beyond-verification.md` — 超越 postcondition 的验证语义
+- 评估框架：`../../evaluation/subjective-eval.md` — 长期用户满意度评估

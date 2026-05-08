@@ -2,6 +2,8 @@
 
 > **Evidence Status** — synthesized. LangGraph Platform、CrewAI、OpenAI Agents SDK、Temporal、MCP/A2A/ACP 协议生态。
 
+> **文档深度**：骨架级——提供设计维度清单和关键问题，不提供完整蓝图。详细设计需结合 `architecture/planes/` 和 `paradigms/` 自行组装。
+
 ## Core Job
 
 提供 Agent 从原型到生产的基础设施层：

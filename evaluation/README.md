@@ -2,7 +2,9 @@
 
 > **Evidence Status** — synthesized. coding、workflow、memory、research、browser 场景中对任务完成、验证、恢复、证据与回归的共同需求；this repository 对 Agent 评估维度和运行方式的统一抽象。
 
-评估（Evaluation）是 Agent 系统质量的度量基础——没有可回归的评估，任何改进都只是猜测。
+评估（Evaluation）是 Agent 系统质量的度量基础，也是改进可回归的前提。
+
+Agent 评估覆盖六个维度：任务完成、表示可靠性、外部效果、可控性、失败恢复、上线回归。这六个维度之间有依赖关系——表示不可靠会导致后续所有判断失效，外部效果无法验证会让任务完成判定变成幻觉验证。因此评估不是独立打分再求平均，而是一条链路：上游维度失败时，下游维度的高分没有意义。
 
 Agent 评估不只是看回答质量，而是看：
 
@@ -13,6 +15,23 @@ Agent 评估不只是看回答质量，而是看：
 - 失败是否可恢复；
 - 上线升级是否会回归；
 - 成本与质量是否可量化对比；
+
+以上维度的评估不是一次性完成的，而是通过一条从定义到执行到用例再到评分的流水线落地：
+
+```mermaid
+flowchart LR
+    A["eval-framework.md\n评估维度定义\n+ Scorecard 标准"]
+    B["eval-runner/\n自动化执行引擎\n+ failure injection"]
+    C["fixtures/\n测试用例集\n+ golden answers"]
+    D["结果 Scorecard\n0-5 分 × 每个维度\n+ 必过门判定"]
+
+    A --> B --> C --> D
+
+    D -. "回归信号" .-> B
+    C -. "用例扩充" .-> A
+```
+
+`eval-framework.md` 定义"评什么、怎么打分"；`eval-runner/` 提供自动化执行能力和 failure injection；`fixtures/` 存放可复用的测试用例和 golden answer；最终产出 Scorecard，其中必过门失败会直接阻断发布。Scorecard 中发现的盲区反馈回 fixtures 扩充用例，回归信号驱动 runner 持续执行。
 
 | 文件 | 作用 |
 |---|---|
@@ -41,3 +60,38 @@ Agent 评估不只是看回答质量，而是看：
 - `eval-runner/tests/`：对 runner 的基础回归测试。
 - `testability-design.md`：mock world、trace replay、property-based testing、shadow mode。
 - `.github/workflows/skill-checks.yml`：示例 CI 入口。
+
+## 品类 × 评估维度
+
+> 从"我做的是什么品类"到"应该评估什么、怎么评估"的映射。典型深度参考 `../design-space/methodology/autonomy-and-depth.md` 的 D0-D6 定义。
+
+| 品类 | 典型深度 | 核心评估指标 | 推荐 Eval 方式 | 相关评估文件 |
+|---|---|---|---|---|
+| Coding Agent | D4-D5 | test pass rate, diff minimality, 回归率, 验证覆盖率 | trace replay + test gate + diff review | `coding-agent-evals.md`, `effect-evals.md`, `tool-use-evals.md` |
+| Research Agent | D3-D5 | citation 准确率, 覆盖率, 事实一致性, conflict 透明度, freshness | human eval + citation chain check + freshness audit | `research-agent-evals.md`, `representation-evals.md` |
+| Browser/Desktop Agent | D3-D5 | 任务完成率, 步骤效率, DOM/截图一致性, 恢复成功率 | trace replay + screenshot diff + effect readback | `effect-evals.md`, `tool-use-evals.md`, `execution-depth-evals.md` |
+| Security Agent | D4-D5 | 误报率/漏报率, 证据链完整性, 响应时效, 自身安全性 | red team + failure injection + audit trail review | `security-evals.md`, `effect-evals.md` |
+| Companion Agent | D2-D4 | 人格一致性, 用户满意度, 关系健康度, 边界守护率 | subjective eval + 长期一致性追踪 | `subjective-eval.md`, `memory-evals.md` |
+| Data/BI Agent | D3-D5 | SQL 正确率, 语义准确率, 数据溯源完整性, 查询效率 | golden query 对比 + semantic layer 验证 + cost eval | `representation-evals.md`, `cost-evals.md`, `tool-use-evals.md` |
+| Ops/SRE Agent | D5-D6 | 根因定位准确率, MTTR 改善, 误操作率, 回滚成功率 | incident replay + failure injection + runbook coverage | `effect-evals.md`, `execution-depth-evals.md`, `cost-evals.md` |
+| Enterprise Workflow | D4-D5 | 流程完成率, 审计完整性, SLA 达标率, 越权率 | trace replay + audit trail + approval chain replay | `effect-evals.md`, `human-in-the-loop-evals.md`, `security-evals.md` |
+| Creative Agent | D2-D5 | 风格一致性, 用户满意度, 品牌合规率, 版权安全 | subjective eval + style consistency check + 抽样质检 | `subjective-eval.md`, `representation-evals.md` |
+| Education Agent | D2-D4 | 教学准确率, 难度适配度, 学习效果(前后测), 动机维持 | 学习效果测试 + subjective eval + 错误概念检测 | `subjective-eval.md`, `representation-evals.md` |
+| Financial Agent | D5-D6 | 执行准确率, 滑点控制, 合规违规率, 风险度量误差, 资金安全 | trace replay + 回测对比 + 合规审计 + stress testing | `effect-evals.md`, `cost-evals.md`, `security-evals.md` |
+| Embodied Robot Agent | D5-D6 | 任务完成率, 物理安全(零伤害), 感知准确度, Sim-to-Real gap | 仿真评估 + 真机验证 + safety boundary testing | `effect-evals.md`, `execution-depth-evals.md`, `subjective-eval.md` |
+| Personal Memory Agent | D3-D4 | 记忆准确率, 检索召回率, 冲突解决率, 隐私合规 | golden memory 对比 + retrieval benchmark + privacy audit | `memory-evals.md`, `security-evals.md` |
+| Agent Platform | D5-D6 | 租户隔离, 回归率, 延迟P99, 插件安全, 评估覆盖率 | shadow mode + canary + 回归门禁 + red team | `security-evals.md`, `cost-evals.md`, `execution-depth-evals.md` |
+
+### 评估维度选择指南
+
+上表列出了 14 个品类各自的核心指标和推荐方式，但实际搭建评估时不需要一次性覆盖所有维度。以下 7 条规则按优先级排列，帮助确定"先评什么"：
+
+1. **所有品类**都应有基础 trace 和 `tool-use-evals.md` 覆盖。
+2. **有外部写动作的品类**（Coding, Browser, Ops/SRE, Enterprise, Financial, Embodied）必须覆盖 `effect-evals.md`。
+3. **面向终端用户的品类**（Companion, Education, Creative）需要 `subjective-eval.md` 覆盖主观性维度。
+4. **涉及安全/合规的品类**（Security, Financial, Enterprise, Agent Platform）必须覆盖 `security-evals.md`。
+5. **有长期记忆的品类**（Companion, Personal Memory, Education）需要 `memory-evals.md`。
+6. **有成本敏感度的品类**（Research, Data/BI, Ops/SRE, Financial, Agent Platform）需要 `cost-evals.md`。
+7. **评估结果应可回归**——任何评估都应产出可复用的 fixture（参考 `fixtures/README.md`）。
+
+规则 1-2 是底线——没有 trace 就无法定位问题，没有 effect 验证就无法判断任务是否真正完成。规则 3-6 根据品类特征按需叠加。规则 7 确保评估本身可持续：一次评估如果不产出 fixture，下次还是从零开始。

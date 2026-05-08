@@ -184,6 +184,14 @@ TaskStatus: 'pending' | 'running' | 'completed' | 'failed' | 'killed'
 - 子代理权限提示呈现到父终端
 - 父会话用户批准/拒绝
 
+### Agent Swarm / In-Process Teammate
+
+当 `subagent_type = 'in_process_teammate'`（Task 前缀 `'t'`）时，启用进程内多 Agent 并行模式：
+- **AsyncLocalStorage 隔离**：每个 teammate 运行在独立的 `AsyncLocalStorage` 上下文中，持有自己的 `AppState` 快照（messages、permissions、cwd），避免共享可变状态。
+- **Mailbox 通信**：teammate 之间不直接调用函数，而是通过 `Mailbox` 消息队列异步通信。每个 teammate 有一个入站 mailbox，leader 可向其投递指令消息，teammate 完成后向 leader mailbox 回复结果。
+- **Leader Permission Bridge**：teammate 的 `permissionMode` 固定为 `'bubble'`，所有权限请求通过 bridge 序列化后转发到 leader 的终端进行人工审批，审批结果再回传。这确保用户只需面对一个统一的权限交互界面。
+- **与 Fork/Spawn 的区别**：Swarm teammate 共享同一进程和 Node.js 事件循环，无 fork 的字节对齐缓存优势，但免除了进程/worktree 创建开销，适合短生命周期的并行子任务。
+
 ### Streaming Tool Execution
 
 **StreamingToolExecutor**：

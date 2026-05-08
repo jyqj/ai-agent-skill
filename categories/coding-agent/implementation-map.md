@@ -1,20 +1,20 @@
 # Coding Agent Implementation Map
 
-> **Evidence Status** — synthesized. `projects/coding-agents/` 下参考项目 README、分析文档和 snippet。
+> **Evidence Status** — synthesized. `projects/coding-agents/` 下参考项目 README、分析文档和源码观察摘录。
 
-## 项目覆盖矩阵
+## Runtime Obligation 覆盖矩阵
 
-| 设计问题 | Claude Code | Codex | OpenCode | Augment | Warp |
+| 运行时义务 | Claude Code | Codex | OpenCode | Augment | Warp |
 |---|---|---|---|---|---|
-| Context/Compaction | ★★★ `context-layer.md` | ★ | ★★★ `context-engineering.md` | ★★ | ★★ `agent-architecture.md` |
-| Tool System | ★★★ `execution-layer.md` | ★★ | ★★★ `tool-system.md` | ★★★ `README.md` | ★★★ `agent-architecture.md` |
-| Execution/Sandbox | ★★ | ★★★ `guardian-policy.md` | ★★ | ★★ | ★★ `terminal-ai-integration.md` |
-| Control/Permission | ★★★ `control-layer.md` | ★★★ | ★★ `control-memory.md` | ★★ | ★★★ `contribution-workflow.md` |
-| Orchestration | ★★ `orchestration-layer.md` | ★★ `orchestrator.md` | ★★ `orchestration.md` | ★★★ `patterns.md` | ★★★ `contribution-workflow.md` |
-| State/Checkpoint | ★★ `state-ui-layer.md` | ★ | ★★ | ★★★ `patterns.md` | ★★ |
-| Memory/Learning | ★ | ★★ `memory-pipeline.md` | ★★ | ★ | ★ |
-| UI/Interaction | ★★★ `state-ui-layer.md` | ★ | ★ | ★ | ★★★ `terminal-ai-integration.md` |
-| Operations/Workflow | ★ | ★ | ★ | ★ | ★★★ `contribution-workflow.md` |
+| Runtime loop | ★★★ query loop / QueryEngine | ★★ task + orchestrator | ★★★ session processor | ★★ worker loop | ★★★ AgentDriver / harness |
+| Context / compaction | ★★★ snip / micro / collapse / auto | ★★ history accounting / compact task | ★★★ prune / compact / truncate | ★★ checkpoint | ★★ repo skills / input context |
+| Tool lifecycle | ★★★ tool orchestration / hooks | ★★★ approval → sandbox → retry | ★★★ schema / permission / retry | ★★★ remote/local/sidecar tools | ★★ action queue / harness output |
+| Permission / sandbox | ★★★ permission mode + hook | ★★★ filesystem/network sandbox 分离 | ★★ deny > ask > allow | ★★ workspace policy | ★★★ permission profile / action model |
+| State / resume | ★★ transcript + compact boundary | ★★ SessionState / previous settings | ★★ DB messages / continue / fork | ★★★ checkpoint | ★★★ ResumePayload / periodic save |
+| UI / event stream | ★★★ SDK stream / tool progress | ★★ TUI stream chunks | ★★★ SSE / reducer | ★★ progress UI | ★★★ ResponseStream / terminal blocks |
+| Eval / verification | ★★ diff / test / readback | ★★ sandbox outcome + trace | ★★ permission trace / tool outcome | ★★ regression workflow | ★★★ spec → CI → Oz/SME review |
+
+> 读法：这张表按 runtime obligation 对齐项目，而不是按“项目有哪些模块”罗列。设计新 Coding Agent 时，优先补齐义务缺口。
 
 ## 品类模块 → 项目证据
 

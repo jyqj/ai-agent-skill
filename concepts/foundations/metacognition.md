@@ -77,7 +77,33 @@
 
 2. **分层置信度**：不要对整个输出给一个笼统的置信度，而是对每个关键 claim 分别标注
 
-3. **校准反馈**：记录历史上 Agent 声称的置信度与实际正确率的对应关系，用于调整未来的校准策略
+3. **参考合成规则**：将多个信号汇聚为单一置信度值的一种实现方式：
+
+   ```python
+   confidence = min(
+       evidence_count / evidence_threshold,
+       freshness_weight(data_age),
+       1 - conflict_ratio(supporting, contradicting)
+   )
+   ```
+
+   - `evidence_count / evidence_threshold`：证据充分度。证据不够时置信度天花板受限
+   - `freshness_weight(data_age)`：信息新鲜度。过期数据拉低上限，常见实现是指数衰减
+   - `1 - conflict_ratio`：冲突比率。支持与反驳证据的比例；全部冲突时趋近 0
+
+   取 `min` 而非加权平均，是因为任何一个维度的短板都不应被其他维度掩盖。这不是强制规范——不同系统可根据场景调整权重函数或改用加权几何平均。关键是置信度必须由多信号合成，而非模型自报的单一数字。
+
+   ```mermaid
+   graph LR
+       E["证据充分度<br/>evidence_count / threshold"] --> MIN["min()"]
+       F["信息新鲜度<br/>freshness_weight(age)"] --> MIN
+       C["冲突比率<br/>1 − conflict_ratio"] --> MIN
+       MIN --> CONF["confidence ∈ [0, 1]"]
+       CONF -->|≥ threshold| ACT["可执行"]
+       CONF -->|< threshold| HOLD["需补充证据<br/>或请求确认"]
+   ```
+
+4. **校准反馈**：记录历史上 Agent 声称的置信度与实际正确率的对应关系，用于调整未来的校准策略
 
 ## 3. 任务难度估计：Depth 判断
 

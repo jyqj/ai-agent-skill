@@ -1,6 +1,6 @@
 # Memory x Security 交叉设计
 
-> Evidence Status: grounded
+> **Evidence Status** — grounded.
 > 知识库映射: Sensing&Repr (Plane 1-3) x Trust&Identity (Plane 13-15) x World Modeling (Plane 7-9)
 
 ## 为什么需要这篇文档

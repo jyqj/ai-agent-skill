@@ -231,6 +231,227 @@ BlocklistAIController
          └── ResponseStream（流式处理响应）
 ```
 
+## ThirdPartyHarness Adapter Pattern
+
+### 来源
+`app/src/ai/agent_harness/`, `crates/ai/src/harness/`
+
+### 架构
+```rust
+// trait 定义：所有外部 coding agent 的统一接口
+pub trait ThirdPartyHarness {
+    /// 验证 harness 是否可用（二进制存在、版本兼容等）
+    fn validate(&self, ctx: &HarnessContext) -> Result<ValidationResult>;
+
+    /// 准备运行环境（创建临时目录、写入配置、设置环境变量）
+    fn prepare(&self, ctx: &HarnessContext, config: &HarnessConfig) -> Result<PreparedHarness>;
+
+    /// 构建 runner（返回可执行的 HarnessRunner）
+    fn build_runner(&self, prepared: PreparedHarness) -> Result<Box<dyn HarnessRunner>>;
+}
+
+// 生命周期：validate → prepare → build_runner → run → save/resume
+```
+
+### HarnessRunner 有状态运行时
+```rust
+pub trait HarnessRunner: Send {
+    /// 启动 agent 进程
+    async fn start(&mut self) -> Result<()>;
+
+    /// 发送用户输入
+    async fn send_input(&mut self, input: &str) -> Result<()>;
+
+    /// 读取输出流
+    fn output_stream(&self) -> Pin<Box<dyn Stream<Item = HarnessOutput>>>;
+
+    /// 保存状态（用于跨 session 恢复）
+    async fn save_state(&self) -> Result<HarnessState>;
+
+    /// 停止
+    async fn stop(&mut self) -> Result<()>;
+}
+```
+
+### 注释
+- **validate → prepare → build_runner** 三阶段生命周期，每阶段可独立失败和重试。
+- 支持 Claude Code、Codex CLI、Gemini CLI 等外部 agent 作为 harness 运行。
+- HarnessRunner 是有状态的——持有子进程句柄、PTY 会话和输出缓冲区。
+- `save_state()` 返回可序列化的 `HarnessState`，配合 `ResumePayload` 实现跨会话恢复。
+
+---
+
+## ResumePayload 跨 Agent 恢复
+
+### 来源
+`app/src/ai/agent_harness/resume.rs`
+
+### 代码
+```rust
+pub struct ResumePayload {
+    pub harness_type: HarnessType,           // Claude / Codex / Gemini 等
+    pub conversation_id: AIConversationId,
+    pub harness_state: HarnessState,          // 序列化的 runner 状态
+    pub working_directory: PathBuf,
+    pub environment_snapshot: HashMap<String, String>,
+    pub timestamp: DateTime<Utc>,
+}
+
+// 恢复流程
+pub async fn resume_agent(payload: ResumePayload) -> Result<Box<dyn HarnessRunner>> {
+    let harness = get_harness(payload.harness_type);
+    let prepared = harness.prepare_for_resume(&payload)?;
+    let mut runner = harness.build_runner(prepared)?;
+    runner.restore_state(payload.harness_state).await?;
+    Ok(runner)
+}
+```
+
+### 注释
+- ResumePayload 包含恢复 agent 所需的全部信息：harness 类型、对话 ID、runner 状态、工作目录和环境变量。
+- 跨 Agent 恢复意味着用户可以关闭 Warp、重新打开后继续之前的 agent 会话。
+- 环境快照确保恢复后的 agent 运行在与中断时相同的环境中。
+
+---
+
+## RunAgents 批量子 Agent 编排
+
+### 来源
+`app/src/ai/blocklist/controller.rs`
+
+### 架构
+```rust
+// 单个 tool call 启动多个子 agent
+pub struct RunAgentsRequest {
+    pub agents: Vec<AgentSpec>,
+    pub orchestration_mode: OrchestrationMode,
+}
+
+pub struct AgentSpec {
+    pub harness_type: HarnessType,           // Local 或 Remote
+    pub task_description: String,
+    pub working_directory: Option<PathBuf>,
+    pub model_override: Option<LLMId>,
+}
+
+pub enum OrchestrationMode {
+    Parallel,      // 全部并行启动
+    Sequential,    // 按顺序执行
+    Supervised,    // 主 agent 监督，按需启动
+}
+```
+
+### 注释
+- RunAgents 允许单个 tool call 同时启动多个子 agent，每个可以是 Local 或 Remote。
+- 三种编排模式：Parallel（全并行）、Sequential（串行）、Supervised（主 agent 按需调度）。
+- 每个子 agent 独立的工作目录和模型配置。
+
+---
+
+## OrchestrationConfig 用户审批式编排
+
+### 来源
+`app/src/ai/blocklist/orchestration_events.rs`
+
+### 代码
+```rust
+pub struct OrchestrationConfig {
+    pub require_user_approval: bool,          // 关键操作需用户审批
+    pub auto_approve_read_only: bool,         // 只读操作自动通过
+    pub max_concurrent_agents: usize,         // 最大并发 agent 数
+    pub timeout_per_agent: Duration,          // 单个 agent 超时
+    pub escalation_policy: EscalationPolicy,  // 升级策略
+}
+
+pub enum EscalationPolicy {
+    AbortOnFailure,        // 任一失败则全部中止
+    ContinueOnFailure,    // 失败的跳过，其余继续
+    RetryThenEscalate,    // 重试后升级到用户
+}
+```
+
+### 注释
+- 用户审批式编排：关键操作（文件写入、命令执行）在执行前需用户确认。
+- `auto_approve_read_only` 允许只读操作自动通过，减少审批噪音。
+- EscalationPolicy 定义了子 agent 失败时的处理策略。
+
+---
+
+## Computer Use 跨平台 GUI 操作
+
+### 来源
+`app/src/ai/tools/computer_use.rs`
+
+### 注释
+- Warp 内置 Computer Use 工具，支持跨平台（macOS/Windows/Linux）的 GUI 自动化。
+- 使用 `computer_use_model_id` 指定专用模型（通常为 vision model）。
+- 操作包括：截屏、鼠标点击、键盘输入、窗口管理。
+- 权限层独立控制：`computer_use` 在 `AIExecutionProfile` 中有专门开关。
+
+---
+
+## Cloud Environments 容器化运行
+
+### 来源
+`app/src/ai/cloud/`
+
+### 注释
+- Warp 支持在云端容器中运行 agent，隔离本地环境风险。
+- Cloud 环境下所有 project skills 都可见（无 cwd 匹配限制）。
+- Agent 的文件操作、命令执行都在容器内完成，结果通过 API 同步回本地。
+
+---
+
+## PTY Write Mode 三种模式
+
+### 来源
+`app/src/ai/blocklist/permissions.rs`
+
+### 代码
+```rust
+pub enum PtyWriteMode {
+    Disabled,       // 禁止写入 PTY
+    Cautious,       // 只允许安全命令（按 allowlist）
+    Autonomous,     // agent 可自由写入 PTY
+}
+```
+
+### 注释
+- PTY（伪终端）写入是 Warp 独有的工具模式：agent 直接向终端会话写入命令。
+- 三种模式对应不同的自治级别：Disabled（完全手动）、Cautious（安全子集）、Autonomous（完全自主）。
+- 与普通命令执行不同，PTY 写入可以与用户当前的终端会话交互（如发送 Ctrl+C 中断）。
+
+---
+
+## AskUserQuestion 结构化多选交互
+
+### 来源
+`app/src/ai/tools/ask_user.rs`
+
+### 代码
+```rust
+pub struct AskUserQuestion {
+    pub question: String,
+    pub options: Vec<QuestionOption>,      // 结构化选项
+    pub allow_free_text: bool,             // 是否允许自由文本
+    pub timeout: Option<Duration>,
+}
+
+pub struct QuestionOption {
+    pub label: String,
+    pub value: String,
+    pub description: Option<String>,
+}
+```
+
+### 注释
+- Agent 通过 `AskUserQuestion` 工具向用户提出结构化问题。
+- 支持预定义选项（类似多选/单选）和自由文本输入。
+- 有超时机制：超时后 agent 可使用默认选项继续。
+- 在 `AIExecutionProfile` 中 `ask_user_question` 有独立开关。
+
+---
+
 ## 与知识库的关联
 
 ### 印证
@@ -247,3 +468,9 @@ BlocklistAIController
 4. **多任务并行**：`HashMap<TaskId, Vec<AIAgentInput>>` 支持并行任务
 5. **ProtectedPath 硬限制**：即使用户设置允许，系统文件也不可写
 6. **Orchestration 事件系统**：支持多 Agent 间的消息传递和生命周期管理
+7. **ThirdPartyHarness Adapter**：validate → prepare → build_runner 三阶段外部 agent 集成
+8. **ResumePayload 跨 Agent 恢复**：关闭重开后继续之前的 agent 会话
+9. **RunAgents 批量编排**：单个 tool call 启动多个 Local/Remote 子 agent
+10. **Computer Use**：跨平台 GUI 自动化作为一等工具
+11. **PTY Write Mode**：三级自治的终端直写模式
+12. **AskUserQuestion**：结构化多选的人机交互

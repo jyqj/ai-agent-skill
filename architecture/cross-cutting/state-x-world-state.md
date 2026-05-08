@@ -1,6 +1,6 @@
 # State x World State 交叉设计
 
-> Evidence Status: synthesized
+> **Evidence Status** — synthesized.
 > 知识库映射: Cognition (Plane — State) x World Modeling (Plane — World State) x Action&Effect (Plane — Effects)
 
 ## 为什么需要这篇文档

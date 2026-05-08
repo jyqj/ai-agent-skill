@@ -1,3 +1,6 @@
+# Agent Control
+
+> **Evidence Status** — grounded. 基于 Codex 参考源码观察整理；代码片段仅作架构映射。
 
 > **参考性**：以下代码片段只用于说明架构模式或源码观察点，不是完整实现；复制到项目中前需按真实接口、安全、测试和运维要求重写。
 // codex-rs/core/src/agent/control.rs
@@ -74,3 +77,24 @@ impl AgentRegistry {
 // 3. 昵称从池中分配，保证唯一
 // 4. spawn 有深度限制，防止无限递归
 // 5. 继承父 agent 的 shell 和 policy 配置
+
+// ===== Multi-Agent v2 消息模型 =====
+//
+// v1 工具集: spawn_agent / wait_agent / send_input / list_agents / close_agent
+// v2 新增:   send_message / followup_task / resume_agent
+//
+// MessageDeliveryMode:
+//   QueueOnly    — 消息入队但不唤醒目标 agent
+//   TriggerTurn  — 消息入队并立即唤醒目标 agent 处理
+//
+// SpawnAgentForkMode（控制子 agent 继承的上下文）:
+//   FullHistory      — 继承完整对话历史
+//   LastNTurns(n)    — 仅继承最近 n 轮
+//
+// `keep_forked_rollout_item()`:
+//   fork 时过滤工具调用和推理过程，只保留 system/developer/user 消息和 final answer。
+//   目的：减少子 agent 的上下文噪声，避免继承无关的中间状态。
+//
+// followup_task:
+//   向已完成（Completed）的 agent 追加新任务并重新激活。
+//   避免为同一上下文重复 spawn，复用已有状态。

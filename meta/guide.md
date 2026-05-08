@@ -57,6 +57,17 @@
 - 在相关 `architecture/planes/<module>/overview.md` 底部补“参考实现”
 - 更新 `index/project-module-map.md`、`index/category-module-map.md`、`index/category-pattern-matrix.md`
 
+## 外部素材吸收规则
+
+外部论文、白皮书和长文不要只做摘要；应形成 source-to-artifact 映射：
+
+1. 先登记输入资料和高价值主题。
+2. 将主题落到稳定目录、frontier、evaluation 或 corpus。
+3. 明确哪些内容只作为 reference-only，不进入生产样板。
+4. 更新相关导航或审计报告。
+
+当前本地参考文章吸收情况见 `meta/audit/reference-article-absorption-audit.md`。
+
 ## 内容归属规则
 
 | 内容性质 | 放哪 |

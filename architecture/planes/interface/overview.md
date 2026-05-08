@@ -1,3 +1,5 @@
+> **本文件已合并到 `../sensing-representation/overview.md`，请前往查看。**
+
 # Interface Gateway & Perception Adapters
 >
 > **所属域**：1. Sensing & Representation — 现实如何进入系统

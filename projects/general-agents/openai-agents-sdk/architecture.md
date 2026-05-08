@@ -1,6 +1,6 @@
 # OpenAI Agents SDK 架构分析
 
-> **Evidence Status**: grounded
+> **Evidence Status**: synthesized（基于官方文档与社区资料，非源码级分析）
 > **来源**: [The next evolution of the Agents SDK | OpenAI](https://openai.com/index/the-next-evolution-of-the-agents-sdk/) | [OpenAI Agents SDK 文档](https://openai.github.io/openai-agents-python/) | [Agent Architecture Patterns Taxonomy 2026](https://www.digitalapplied.com/blog/agent-architecture-patterns-taxonomy-2026)
 
 ## 项目概述

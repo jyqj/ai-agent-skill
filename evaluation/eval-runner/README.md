@@ -2,6 +2,8 @@
 
 > **Evidence Status** — synthesized. `evaluation/eval-runner-spec.md` 与 `evaluation/fixtures/`；本目录提供一个最小可执行骨架，用于把 fixture、mock tool、trace comparator 连接起来。
 
+> **定位**：本 Runner 是评估流程的参考骨架和格式规范，不是开箱即用的生产评估工具。它定义了 trace → fixture → scoring 的标准流程和数据契约，并提供基于合成 baseline trace 的参考实现。默认 `BaselineAdapter` 生成确定性合成 trace 用于验证评估管道本身的正确性；接入真实 Agent 需实现自定义 `AgentAdapter`。
+
 ## 1. 目标
 
 这个 runner 不是替代真实 Agent，而是提供三件事：
@@ -15,6 +17,8 @@
 ## 2. 运行
 
 ```bash
+# 以下命令可在本仓库根目录执行，运行的是合成 baseline trace 而非真实 Agent。
+# 用于验证评估管道（fixture 解析 → trace 生成 → criteria/invariant 检查）本身是否正常工作。
 python evaluation/eval-runner/runner.py evaluation/fixtures
 python -m unittest discover -s evaluation/eval-runner/tests -p 'test_*.py'
 ```
@@ -32,9 +36,9 @@ python -m unittest discover -s evaluation/eval-runner/tests -p 'test_*.py'
 
 | 文件 | 作用 |
 |---|---|
-| `runner.py` | CLI 入口和 fixture 执行 |
-| `mock_tools.py` | Mock tool registry 和 world state |
-| `trace_comparator.py` | Trace 断言和不变性检查 |
+| `runner.py` | CLI 入口和 fixture 执行（当前为参考实现，含 YAML 解析、baseline trace 合成、AgentAdapter 抽象） |
+| `mock_tools.py` | Mock tool registry 和 world state（提供 CRM / browser 等场景的 mock 工具） |
+| `trace_comparator.py` | Trace 断言和不变性检查（含结构不变量、合理性检查、字符串/结构化 criteria 匹配） |
 | `world_fixture.py` | 读取和更新 world state fixture |
 | `tests/` | runner 自身的最小回归测试 |
 
@@ -69,6 +73,28 @@ result = run_case(Path("fixture.yaml"), adapter=MyAgentAdapter())
 ```
 
 不传 adapter 时，`run_case()` 自动使用 `BaselineAdapter`，保持向后兼容。
+
+
+## 5. Real Candidate Trace Adapter Contract
+
+当前默认 `BaselineAdapter` 只证明评估管道可运行，不证明真实 Agent 能力。接入真实 Agent 时，adapter 至少要满足：
+
+| 要求 | 说明 |
+|---|---|
+| trace events | 返回 observe / decide / tool_call / execution_result / effect_record / final 等关键事件 |
+| stable IDs | 每个 task、tool_call、effect、artifact 有稳定 ID，便于断言 |
+| world fixture binding | 工具读写必须落到 fixture 或可控 mock world，不能只返回自然语言 |
+| policy trace | approval / deny / sandbox / retry 必须显式记录 |
+| artifact refs | 大输出只传 ref，保留可回读路径 |
+| honest status | `verified / failed / partially_verified / blocked / pending / unverifiable_by_agent` 不得压成 success/fail |
+
+接入真实 Agent 后，结论应明确标注证据层级：
+
+```text
+L1 harness smoke test      # synthetic baseline，当前默认
+L2 real trace replay       # 真实 Agent trace，受控工具/fixture
+L3 world-effect eval       # 真实或强 mock world 的外部效果验证
+```
 
 
 ## 5. 无依赖运行

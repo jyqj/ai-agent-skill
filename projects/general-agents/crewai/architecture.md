@@ -1,6 +1,6 @@
 # CrewAI 架构分析
 
-> **Evidence Status**: grounded
+> **Evidence Status**: synthesized（基于官方文档与社区资料，非源码级分析）
 > **来源**: [CrewAI 官方文档](https://docs.crewai.com/) | [CrewAI Enterprise](https://www.crewai.com/enterprise) | [Agent Architecture Patterns Taxonomy 2026](https://www.digitalapplied.com/blog/agent-architecture-patterns-taxonomy-2026)
 
 ## 项目概述

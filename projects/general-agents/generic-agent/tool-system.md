@@ -70,6 +70,17 @@ def run_code_subprocess(code, lang, timeout, cwd, stop_signal):
 
 ## 动态扩展机制
 
+
+### Control caveat
+
+`code_run` 证明了高信任个人环境中“万能执行出口”可以快速扩展能力，但它不应直接迁移到生产平台。生产环境应拆成：
+
+```text
+registry → policy / approval → sandbox / backend → execution result → effect verification
+```
+
+也就是说，GenericAgent 给的是 MVA 哲学：少工具、强学习、行动后固化；平台型 Agent 仍需要显式权限、审计、沙箱和补偿策略。
+
 ### 1. code_run_header.py 自动注入
 
 ```python

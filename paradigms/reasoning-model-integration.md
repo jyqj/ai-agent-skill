@@ -1,6 +1,6 @@
 # Reasoning Model Integration
 
-> **Evidence Status** — grounded。基于 2025-2026 年间 Anthropic、OpenAI、Google 推理模型的公开文档、ICLR 2025/2026 论文、ACL 2025 论文及多篇工程实践文章，与 `paradigms/reasoning-paradigms.md`、`architecture/planes/` 及 ORDA-VU 闭环的交叉综合。
+> **Evidence Status** — synthesized（基于论文与产品文档的综合分析）。基于 2025-2026 年间 Anthropic、OpenAI、Google 推理模型的公开文档、ICLR 2025/2026 论文、ACL 2025 论文及多篇工程实践文章，与 `reasoning-paradigms.md`、`../architecture/planes/` 及 ORDA-VU 闭环的交叉综合。
 
 ---
 
@@ -16,6 +16,16 @@
 | 性能随 token 预算对数增长 | Anthropic Extended Thinking | 收益递减但单调增长 |
 | 无单一 test-time scaling 策略普遍占优 | Scaling Test-Time Compute | 策略选择依赖任务特征 |
 | 2026 年推理需求将超过训练需求 118 倍 | Zylos Research | 推理成本成为主导成本 |
+
+**Inference Scaling Law 核心公式**：
+
+```text
+Performance = f(Model Size, Inference-Time Compute)
+```
+
+两个变量之间存在可替代关系：小模型配合充足的推理时计算可逼近大模型的标准推理性能。这意味着性能提升不再只有"训练更大模型"一条路——在推理阶段投入更多计算是同等有效的替代手段。
+
+**思考预算动态分配**：推理时计算不应均匀分配。简单子步骤只需极少 thinking token，关键决策节点则需要深度推理。最优策略是在 Agent Loop 的每一步根据当前状态动态调整思考预算，而非全局固定 effort 等级。Budget-Aware Agent Scaling 的实验表明，动态分配相比固定分配可额外降低 20-30% 推理成本且不损失质量。
 
 **对 Agent 架构的根本影响**：
 
@@ -293,16 +303,16 @@ Agent Output v1
 
 | 本文主题 | 知识库对应文件 | 关系 |
 |---------|--------------|------|
-| ORDA-VU 闭环影响 | `paradigms/reasoning-paradigms.md` | 扩展 ORDA-VU 在推理模型时代的运作方式 |
-| 五大范式族影响 | `paradigms/reasoning-paradigms.md`, `paradigms/memory-paradigms.md`, `paradigms/tool-paradigms.md`, `paradigms/collaboration-paradigms.md`, `paradigms/control-paradigms.md` | 横切视角——推理模型如何改变每个范式族 |
+| ORDA-VU 闭环影响 | `reasoning-paradigms.md` | 扩展 ORDA-VU 在推理模型时代的运作方式 |
+| 五大范式族影响 | `reasoning-paradigms.md`, `memory-paradigms.md`, `tool-paradigms.md`, `collaboration-paradigms.md`, `control-paradigms.md` | 横切视角——推理模型如何改变每个范式族 |
 | 多模型架构 | `architecture/multi-model/` | 角色定位表直接对接多模型架构设计 |
-| 成本/质量/延迟 | `architecture/planes/` | Token 经济学影响 Context Plane、Prompting Plane |
+| 成本/质量/延迟 | `../architecture/planes/` | Token 经济学影响 Context Plane、Prompting Plane |
 | Adaptive Thinking | `architecture/controllers/execution-depth/overview.md` | effort 参数是 Execution Depth 的新控制维度 |
 | 设计决策树 | `paradigms/decision-trees.md` | 本文决策树是 decision-trees 在推理模型场景下的特化 |
 | Context Engineering | `concepts/context-engineering.md` | 推理模型的 token 消耗加剧上下文管理需求 |
-| 反模式 | `design-space/lessons-learned/` | 推理模型特有的反模式补充 |
-| MCP 与工具集成 | `architecture/planes/tool-integration/` | 推理模型与 MCP 的交错使用模式 |
+| 反模式 | `../design-space/lessons-learned/` | 推理模型特有的反模式补充 |
+| MCP 与工具集成 | `../architecture/planes/tools/overview.md` | 推理模型与 MCP 的交错使用模式 |
 
 ---
 
-相关文件：`../paradigms/reasoning-paradigms.md`、`../architecture/kernel/agent-loop.md`、`../architecture/lifecycle.md`、`../concepts/context-engineering.md`、`../paradigms/decision-trees.md`。
+相关文件：`reasoning-paradigms.md`、`../architecture/kernel/agent-loop.md`、`../architecture/lifecycle.md`、`../concepts/context-engineering.md`、`decision-trees.md`。

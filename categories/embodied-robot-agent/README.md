@@ -2,6 +2,8 @@
 
 > **Evidence Status** — synthesized. SayCan、Inner Monologue、RT-2、VLA 综述、Open X-Embodiment、ROS2。
 
+> **文档深度**：骨架级——提供设计维度清单和关键问题，不提供完整蓝图。详细设计需结合 `architecture/planes/` 和 `paradigms/` 自行组装。
+
 ## Core Job
 
 在物理世界中通过感知、规划、动作完成实际任务：
@@ -41,7 +43,9 @@
 
 ## 验证与评估扩展
 
-本品类的核心任务涉及主观性判断，标准 postcondition 验证不完全适用：
+物理动作不可逆，验证必须依赖传感器回读而非推断。部分任务（如人机交互中的用户满意度）超越标准 postcondition：
 
-- 验证哲学：`../../concepts/beyond-verification.md` — 从 postcondition 到 resonance / longitudinal / intersubjective 的验证语义扩展
-- 主观性评估：`../../evaluation/subjective-eval.md` — 用户满意度、一致性、对齐度、关系健康度等维度的评估框架
+- 物理效果验证：传感器状态 + 力/位置/视觉多通道回读
+- 安全验证：硬件边界（force/speed/e-stop）独立于 LLM 判断
+- 扩展验证：`../../concepts/beyond-verification.md` — 超越 postcondition 的验证语义
+- 主观性评估：`../../evaluation/subjective-eval.md` — 适用于人机交互场景的评估框架

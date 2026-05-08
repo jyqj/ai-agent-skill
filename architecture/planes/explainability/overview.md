@@ -2,13 +2,13 @@
 >
 > **所属域**：8. Reflection & Learning — 决策解释与置信度表达
 >
-> **Evidence Status** — synthesized. 从 Interaction Plane（progressive disclosure）、Observability Plane（trace）、agent-epistemics（置信度）中提取解释性需求；结合生产 Agent 用户反馈中"不知道 Agent 为什么这么做"的高频痛点。
+> **Evidence Status** — theoretical. 从 Interaction Plane（progressive disclosure）、Observability Plane（trace）、agent-epistemics（置信度）中提取解释性需求；结合生产 Agent 用户反馈中的高频痛点。降级理由：核心机制（推理回放 DecisionReplay、ExplanationRecord schema、自动解释触发规则、置信度自然语言映射函数）均为本框架设计，尚未在任何参考项目中被显式实现或验证。Claude Code 的 Progressive Disclosure 和 Hermes 的渐进信息披露仅为间接实践，不构成对本 Plane 完整框架的生产验证。
 
 **Principle Refs**: MC-01, MC-03 — 解释必须显式表达不确定性；知道自己不知道什么才能诚实地向用户说明解释的边界
 
 ## 1. 定义
 
-Explainability Plane 负责让 Agent 的决策过程、推理依据和不确定性对用户**可理解**。
+Explainability Plane 把 Agent 的决策过程、推理依据和不确定性翻译成用户能理解的解释。
 
 它回答的不是"trace 里记了什么"（那是 Observability 的事），而是：
 
@@ -141,9 +141,93 @@ generated_at: datetime
 [ ] 在 Stop Gate 中增加"是否需要自动解释"检查
 [ ] 实现从 TraceEvent 到 DecisionReplay 的提取逻辑
 [ ] 为 Interaction Plane 的 approval_request 附加 Risk Explanation
-[ ] 在 Eval 中增加解释质量评估维度
+[ ] 在 Eval 中增加解释质量评估项
 ```
+
+## 10. 走向实践：从间接实践到目标架构
+
+> 本节桥接当前生产系统中已验证的间接实践与本 Plane 的理论目标。标注哪些已经存在、哪些仍需建设。
+
+### 10.1 当前最接近 Explainability 的生产实践
+
+以下实践已在各自项目中被验证，但它们各自只覆盖了 Explainability 的一个切面：
+
+| 实践 | 来源 | 覆盖的解释类型 | 验证状态 |
+|---|---|---|---|
+| **Progressive Disclosure** | Claude Code | Progress / Decision（Summary 层） | production-validated |
+| **reasoning_per_turn** | Hermes | Decision（每轮提取推理内容） | prototype-validated |
+| **ask_user** | GenericAgent | Boundary / Confidence（不确定时主动解释并请求确认） | prototype-validated |
+| **permission ask** | OpenCode | Risk（权限询问时解释为什么需要该权限） | production-validated |
+
+### 10.2 差距分析
+
+这些实践与完整 Explainability 目标之间的差距：
+
+| 目标能力 | 当前状态 | 差距 |
+|---|---|---|
+| **DecisionReplay**（推理回放） | 无生产实现；Hermes 的 reasoning_per_turn 最接近但不支持结构化回放 | 需要从 TraceEvent 到回放格式的提取逻辑 |
+| **ExplanationRecord schema** | 无生产实现；各系统用各自的日志格式 | 需要统一 schema + 存储 |
+| **自动解释触发规则** | 部分存在——ask_user 和 permission ask 是手动嵌入的条件判断 | 需要通用的触发引擎，而非逐个硬编码 |
+| **置信度自然语言映射** | 无显式实现；LLM 本身会用不确定语气但不可控 | 需要显式映射函数 + 校准 |
+| **多层级解释（Summary → Detail → Trace）** | Progressive Disclosure 有层级概念但不针对解释内容 | 需要解释专用的层级渲染 |
+
+### 10.3 演进路径
+
+```mermaid
+flowchart LR
+    subgraph 已验证实践
+        A[Progressive Disclosure<br/>Claude Code]
+        B[reasoning_per_turn<br/>Hermes]
+        C[ask_user<br/>GenericAgent]
+        D[permission ask<br/>OpenCode]
+    end
+
+    subgraph 近期可建设
+        E[统一 ExplanationRecord<br/>schema]
+        F[自动解释触发<br/>基于 Stop Gate 扩展]
+        G[Risk Explanation<br/>附加到 approval_request]
+    end
+
+    subgraph 目标架构
+        H[DecisionReplay<br/>结构化推理回放]
+        I[置信度自然语言映射<br/>显式校准]
+        J[多层级解释渲染<br/>Summary → Detail → Trace]
+    end
+
+    A --> E
+    B --> H
+    C --> F
+    D --> G
+    E --> H
+    E --> I
+    F --> J
+    G --> J
+    H --> K[完整 Explainability Plane]
+    I --> K
+    J --> K
+
+    style A fill:#c8e6c9
+    style B fill:#c8e6c9
+    style C fill:#c8e6c9
+    style D fill:#c8e6c9
+    style E fill:#fff9c4
+    style F fill:#fff9c4
+    style G fill:#fff9c4
+    style H fill:#ffccbc
+    style I fill:#ffccbc
+    style J fill:#ffccbc
+    style K fill:#e1bee7
+```
+
+**图例**：绿色 = 已验证实践 ｜ 黄色 = 近期可建设（有基础设施支撑） ｜ 橙色 = 目标架构（需要专项开发） ｜ 紫色 = 完整目标
+
+### 10.4 实施建议
+
+1. **先统一 schema**：ExplanationRecord 是基础设施，先落地 schema 再做触发和渲染。
+2. **从 Stop Gate 切入自动触发**：Stop Gate 已经有中断判断逻辑，在其中嵌入"是否需要解释"的检查点成本最低。
+3. **reasoning_per_turn → DecisionReplay**：Hermes 的实践是最接近的起点，将其结构化输出对齐到 DecisionReplay 格式即可原型验证。
+4. **置信度映射需要人类校准**：不能只靠 LLM 自评，需要小规模人类评测来校准映射阈值。
 
 ## Evidence Status
 
-混合来源。置信度自然语言映射和 Progressive Disclosure 在 Claude Code 和 Interaction Plane 中有间接实践。推理回放和自动解释触发为理论框架，尚未在参考项目中被显式实现。
+降级为 theoretical。置信度自然语言映射和 Progressive Disclosure 在 Claude Code 和 Interaction Plane 中有间接实践，但本 Plane 的核心机制（DecisionReplay、ExplanationRecord、自动解释触发、推理回放）均为理论设计，尚未在参考项目中被显式实现或生产验证。上述"走向实践"桥接段落中明确区分了已验证实践（production-validated / prototype-validated）和理论目标，不改变整体 evidence-status 评级。

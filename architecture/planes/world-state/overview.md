@@ -41,6 +41,53 @@ consistency_model: strong | eventual | unknown
 stale_policy: refresh_before_act | allow_if_recent | require_human
 ```
 
+## 同步策略
+
+三种策略不互斥，生产系统通常组合使用。
+
+```mermaid
+flowchart LR
+    subgraph read-before-act
+        A1[Action Request] --> A2{关键写操作?}
+        A2 -- 是 --> A3[刷新目标状态]
+        A3 --> A4[执行动作]
+        A2 -- 否 --> A4
+    end
+
+    subgraph periodic-snapshot
+        B1[Timer tick] --> B2[全量快照]
+        B2 --> B3[覆盖本地缓存]
+    end
+
+    subgraph event-driven
+        C1[外部变更事件] --> C2[增量更新]
+        C2 --> C3[patch 本地缓存]
+    end
+```
+
+| 策略 | 适用场景 | 新鲜度 | 开销 |
+|---|---|---|---|
+| 读前刷新（read-before-act） | 写操作前、交付前 | 最高 | 每次动作一次 IO |
+| 定期快照（periodic-snapshot） | 监控、仪表盘、后台同步 | 取决于间隔 | 固定频率 |
+| 事件驱动（event-driven） | Webhook、队列消费、文件 watch | 接近实时 | 仅在变更时触发 |
+
+**组合示例**：Claude Code 以 read-before-act 为主（Edit 前必须 Read），同时在会话初始化时做一次 periodic-snapshot（memoize），compact 后按需 event-driven 重注入关键上下文。
+
+## Stale Snapshot 风险与缓解
+
+基于过期状态做出的决策是 Agent 最常见的静默错误来源之一。
+
+**风险链**：状态过期 → 决策基于错误前提 → 执行"成功"但效果不符合预期 → False Completion。
+
+**缓解手段**：
+
+| 手段 | 实现 | 适用层级 |
+|---|---|---|
+| freshness TTL 标注 | 每个 snapshot 携带 `freshness_ttl`，超期自动标记 stale | 所有 |
+| stale_policy 三级策略 | `warn`：日志告警但允许继续；`block`：阻止基于 stale 数据的写操作；`refresh`：自动触发刷新 | C2+ |
+| 双读确认 | 写操作前后各读一次，对比变更是否符合预期 | 高风险场景 |
+| etag / 版本号 | 乐观锁，写入时校验版本，冲突则重试 | 多 Actor 场景 |
+
 ## 何时必须刷新
 
 | 场景 | 默认策略 |

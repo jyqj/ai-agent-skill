@@ -73,7 +73,7 @@ Chroma 在 2025 年的系统性研究中测试了 18 个前沿模型（包括 GP
 **架构启示**：
 
 - Claude 的弃权倾向在安全关键场景更可靠——至少不会给出错误行动
-- GPT 的幻觉倾向需要更强的验证层（参见 `../../ARCHITECTURE.md` 的 Verify 阶段）
+- GPT 的幻觉倾向需要更强的验证层（参见 `../../../ARCHITECTURE.md` 的 Verify 阶段）
 - 无论哪种模型，都需要 Context Rot 检测机制
 
 ---

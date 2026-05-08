@@ -10,7 +10,7 @@
 
 | 品类 | 项目 |
 |------|------|
-| Coding Agents | [Claude Code](coding-agents/claude-code/) · [Codex](coding-agents/codex/) · [OpenCode](coding-agents/opencode/) · [Augment](coding-agents/augment/) · [Warp](coding-agents/warp/) |
+| Coding Agents | [Claude Code](coding-agents/claude-code/) · [Codex](coding-agents/codex/) · [OpenCode](coding-agents/opencode/) · [Augment](coding-agents/augment/) · [Warp](coding-agents/warp/) · [横向对比](coding-agents/cross-comparison.md) |
 | Research Agents | [OpenAI Deep Research](research-agents/openai-deep-research/) · [Perplexity](research-agents/perplexity-analysis.md) |
 | Browser/Desktop Agents | [Anthropic Computer Use](browser-desktop-agents/anthropic-computer-use/) · [Browser Use](browser-desktop-agents/browser-use/) · [Stagehand](browser-desktop-agents/stagehand/) |
 | Memory Systems | [MemPalace](memory-systems/mempalace/) · [Nocturne Memory](memory-systems/nocturne-memory/) · [Letta](memory-systems/letta/) · [Mem0](memory-systems/mem0/) |

@@ -1,6 +1,6 @@
 # Multi-Model Trust Boundary 交叉设计
 
-> Evidence Status: grounded
+> **Evidence Status** — grounded.
 > 知识库映射: Trust&Identity (Plane — Security, Identity&Capability) x Coordination (Plane — Orchestration) x Cognition (Plane — Context)
 
 ## 为什么需要这篇文档

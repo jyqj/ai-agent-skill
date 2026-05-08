@@ -180,6 +180,18 @@ metadata:
 
 ---
 
+## 记忆上下文隔离
+
+Pattern: memory-context fencing
+When: 长期记忆、用户画像、技能说明或会话搜索结果进入系统提示或上下文。
+Invariant: 记忆必须以明确边界注入，标注来源、作用域和时效；运行中写磁盘不应立刻改变当前 system prompt 快照。
+Failure mode: 记忆被当成当前世界状态、外部文本通过 memory 工具注入指令、mid-session 写入破坏前缀缓存和可复现性。
+Reference paths: `agent/memory_manager.py`, `tools/memory_tool.py`, `tools/skills_tool.py`。
+
+Hermes 的冻结快照与实时落盘分离说明：Memory 是跨会话经验资产，不是当前 turn 的隐式控制通道。
+
+---
+
 ## 学习循环（隐式）
 
 ```
@@ -196,3 +208,82 @@ Hermes 无显式 RL 循环。学习来自三个通道：
 ```
 
 **洞察**：学习由 Agent 主动决策触发，而非外部反馈循环。记忆和技能是持久化的"经验结晶"。
+
+---
+
+## Skills Hub 联邦化仓库（第二轮审计补充）
+
+技能来源不限于本地目录，SkillSource ABC 允许联邦化聚合多个仓库：
+
+```python
+class SkillSource(ABC):
+    @abstractmethod
+    def list_skills(self) -> List[SkillMeta]: ...
+    @abstractmethod
+    def fetch_skill(self, name: str) -> SkillPackage: ...
+    @abstractmethod
+    def trust_level(self) -> TrustLevel: ...  # builtin / verified / community / unknown
+```
+
+四级信任分级：
+
+| 级别 | 来源 | 权限 |
+|------|------|------|
+| **builtin** | Hermes 内置 | 完全信任，可执行任意工具 |
+| **verified** | agentskills.io 签名 | 信任，需声明权限 |
+| **community** | 社区提交 | 受限，禁止文件系统写入 |
+| **unknown** | 未知来源 | quarantine 隔离，仅可查看 |
+
+### Quarantine 管道
+
+`unknown` 级别的技能进入隔离区，需要人工审核或自动化扫描后才能提升信任级别：
+
+```python
+def ingest_skill(self, source: SkillSource, name: str):
+    pkg = source.fetch_skill(name)
+    if source.trust_level() == TrustLevel.UNKNOWN:
+        self._quarantine.add(pkg)
+        self._scan_for_threats(pkg)  # 复用 memory 威胁扫描器
+        return QuarantineResult(pkg.name, reason="untrusted_source")
+    self._install(pkg)
+```
+
+### Provenance Tracking
+
+每个技能记录完整来源链，支持审计：
+
+```python
+@dataclass
+class SkillProvenance:
+    source_type: str        # "local" / "hub" / "git" / "inline"
+    source_url: Optional[str]
+    installed_at: datetime
+    installed_by: str       # session_key 或 "user_manual"
+    trust_level: TrustLevel
+    signature: Optional[str]  # 签名哈希（verified 级别）
+```
+
+---
+
+## Skill Curator 自动化维护（第二轮审计补充）
+
+Skill Curator 定期扫描技能库，执行自动化维护：
+
+```python
+class SkillCurator:
+    def audit(self):
+        for skill in self._skills_dir.rglob('SKILL.md'):
+            meta = parse_frontmatter(skill)
+            # 1. 检测过时依赖
+            if self._has_stale_deps(meta):
+                self._flag(skill, "stale_dependencies")
+            # 2. 检测未使用技能（超过 N 天未被 skill_view 调用）
+            if self._last_used(meta['name']) > timedelta(days=90):
+                self._flag(skill, "unused_90d")
+            # 3. 检测重复技能（语义相似度 > 阈值）
+            duplicates = self._find_duplicates(meta)
+            if duplicates:
+                self._flag(skill, "potential_duplicate", duplicates)
+```
+
+**洞察**：技能库是活的资产，不是只增不减的仓库。Curator 防止技能膨胀和质量退化。

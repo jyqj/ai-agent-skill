@@ -1,6 +1,6 @@
 # Trajectory Evaluation
 
-> **Evidence Status** — grounded. Google Agents Companion (2025) 的 Trajectory Evaluation 框架；AgentBench、τ-bench 等基准；本知识库 eval-framework 的补充。
+> **Evidence Status** — grounded. Google Agents Companion (2025) 的 Trajectory Evaluation 框架；Gulli (2025) *Agentic Design Patterns* Ch19；AgentBench、τ-bench 等基准；本知识库 eval-framework 的补充。
 
 ## 定义
 
@@ -127,9 +127,49 @@ trajectory_scorecard:
 | Process-based Evaluation | 关注推理过程而非仅结果 |
 | Human-in-the-Loop | 复杂/主观场景的人工校准 |
 
+## LLM-as-a-Judge
+
+用高能力 LLM 评估其他 Agent 的输出质量，替代或补充人工评估。
+
+**评估维度**：Clarity & Precision / Neutrality & Bias / Relevance & Focus / Completeness / Appropriateness for Audience。
+
+**评估方法对比**：
+
+| 方法 | 优势 | 局限 |
+|---|---|---|
+| **Human Eval** | 捕获细微行为和主观质量 | 难以规模化、成本高、耗时 |
+| **LLM-as-a-Judge** | 可扩展、一致、高效 | 可能遗漏中间步骤、受 LLM 能力限制 |
+| **Automated Metrics** | 可扩展、客观 | 可能无法完整反映能力 |
+
+最佳实践：三种方法分层使用——Automated Metrics 做门控过滤，LLM-as-a-Judge 做批量评估，Human Eval 做校准和边界案例。
+
+## Contractor Model（承包商模型）
+
+将 Agent 从不可预测的工具转化为可信赖、可问责的承包商。四大支柱：
+
+1. **Formalized Contract**：详细规范的单一信息源——不是"分析销售数据"，而是"20 页 PDF，欧洲 Q1 市场，5 个可视化，含同比对比，包括供应链风险评估"。
+2. **Dynamic Negotiation**：Agent 可分析合同条款、标记歧义/风险。执行前解决误解。
+3. **Quality-Focused Iterative Execution**：生成多方案 → 测试 → 评分 → 提交通过版本。优先正确性和质量，非低延迟。
+4. **Hierarchical Decomposition**：主合同 → 子合同（项目管理模式）。每个子合同独立完整，可分配给专特化 Agent。
+
+**与 eval-framework 的关系**：Contractor Model 的 "Contract" 可视为 eval case 的 `expected_output` 的强化版——不仅定义期望结果，还定义交付规范、范围和质量标准。
+
+## Drift Detection（漂移检测）
+
+监测 Agent 输出质量随时间衰减：
+
+| 漂移类型 | 触发因素 | 检测方式 |
+|---|---|---|
+| 概念漂移 | 输入数据分布变化 | 输入特征分布监控 |
+| 环境漂移 | 运营环境改变（API 变更、工具行为变化） | 工具成功率、API 响应变化监控 |
+| 模型漂移 | 基础模型更新/退化 | 固定 benchmark 定期重跑 |
+
+**实施建议**：定期在固定 fixture 集上运行 trajectory evaluation，绘制趋势图。当 precision/recall 跌破阈值时触发告警。
+
 ## 参考来源
 
 - Google "Agents Companion" (2025): Evaluating Trajectory and Tool Use
+- Gulli, A. (2025). *Agentic Design Patterns*, Ch19: Evaluation and Monitoring.
 - Berkeley Function-Calling Leaderboard (BFCL)
 - τ-bench: Common Tool-calling Mistakes
 - AgentBench: End-to-end Agent Evaluation

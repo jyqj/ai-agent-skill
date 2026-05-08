@@ -1,6 +1,6 @@
 # Categories x Multi-Model 交叉设计
 
-> Evidence Status: synthesized
+> **Evidence Status** — synthesized.
 > 知识库映射: L3 品类 x L4 运行时 (Multi-Model) x Coordination (Plane 16)
 
 ## 为什么需要这篇文档

@@ -1,3 +1,6 @@
+# Memory Pipeline
+
+> **Evidence Status** — grounded. 基于 Codex 参考源码观察整理；代码片段仅作架构映射。
 
 > **参考性**：以下代码片段只用于说明架构模式或源码观察点，不是完整实现；复制到项目中前需按真实接口、安全、测试和运维要求重写。
 // codex-rs/core/src/memories/
@@ -102,3 +105,24 @@ async fn run_phase2_consolidation(
 // 3. Selection diff 追踪变化（added/retained/removed）
 // 4. Watermark 防止重复处理
 // 5. 合并 agent 禁用 collab 防止递归
+
+// ===== AGENTS.md 加载机制 =====
+//
+// Project Root 检测:
+//   通过 `project_root_markers`（默认 `.git`）向上查找项目根目录，
+//   到达标记目录后停止，不会越过根目录继续搜索。
+//
+// 三层搜索（优先级从高到低）:
+//   AGENTS.override.md > AGENTS.md > project_doc_fallback_filenames（可配置）
+//   每一层在 CWD 到 project root 的路径上逐级查找，深层优先。
+//
+// Global Instructions:
+//   `~/.codex/AGENTS.md` 作为全局指令单独加载，与项目级指令合并。
+//
+// 字节预算:
+//   `project_doc_max_bytes` 限制所有项目文档的总大小，
+//   超出预算时截断低优先级文档，保证 prompt 不超限。
+//
+// Hierarchical Message:
+//   通过 Feature Flag 控制。启用后子 agent 收到完整的层级目录说明，
+//   包含从 project root 到当前工作目录每一层的 AGENTS.md 内容。

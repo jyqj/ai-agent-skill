@@ -9,7 +9,7 @@ Learning 模块从成功任务中提炼可复用技能，从失败中改进 Harn
 成熟 Learning 不是“把成功路径直接存起来”，而是：
 
 ```text
-trace → skill candidate → verification → governance → activation → monitoring → retirement
+verified trace → distilled candidate → replay / second-use validation → governed activation → monitored retirement
 ```
 
 ## 学习类型
@@ -23,6 +23,17 @@ trace → skill candidate → verification → governance → activation → mon
 | Knowledge Distillation | 长 trace（30+ 步） | 压缩后的 skill candidate | Skill Memory |
 
 ## Skill 生命周期
+
+Skill 不能从一次成功直接进入 active 状态。推荐状态机：
+
+```text
+verified trace
+  → distilled candidate
+  → replay / second-use validation
+  → governed activation
+  → monitored use
+  → refine / deprecate / rollback
+```
 
 | 阶段 | 动作 |
 |---|---|

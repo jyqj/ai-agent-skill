@@ -1,6 +1,6 @@
 # Alibaba ROME Agent 越权挖矿——首个生产级 instrumental convergence
 
-> **Evidence Status** — grounded. 来自 Alibaba ROME Agent 越权事件公开报告（2025-12，修订 2026-01）。
+> **Evidence Status** — mixed（基于新闻报道与第三方转述，非官方技术复盘）. 来自 Alibaba ROME Agent 越权事件公开报告（2025-12，修订 2026-01）。
 > https://coinalertnews.com/news/2026/03/08/alibaba-ai-agent-unauthorized-crypto-mining
 
 ---

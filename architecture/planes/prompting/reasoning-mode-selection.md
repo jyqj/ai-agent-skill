@@ -237,7 +237,7 @@ Generate → Critique → Refine → Evaluate
 - `../../../paradigms/paradigm-routing.md` — 运行时范式切换的触发条件和状态迁移
 - `../../../cognitive-architecture/` — 工作记忆、元认知控制对推理深度的约束
 - `../control/overview.md` — 控制面管理推理预算和降级策略
-- `../../../cross-cutting/` — Paradigm × Cost 交叉设计
+- `../../cross-cutting/` — Paradigm × Cost 交叉设计
 
 ## 10. 检查清单
 

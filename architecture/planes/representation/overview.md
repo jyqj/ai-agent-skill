@@ -1,3 +1,5 @@
+> **本文件已合并到 `../sensing-representation/overview.md`，请前往查看。**
+
 # Representation Layer
 >
 > **所属域**：1. Sensing & Representation — 原始输入如何编码为可信表示
@@ -66,7 +68,7 @@ replayable: boolean
 
 - 表示层永远不丢失 raw ref，除非策略明确允许。
 - 摘要永远标记为有损。
-- 任何来自外部世界的文本，都先进入 data lane，再由 Control / Security 决定能否升级为可执行约束。
+- 任何来自外部世界的文本，都先进入 data lane（Trust Lane 定义详见 [安全 Plane](../security/overview.md)），再由 Control / Security 决定能否升级为可执行约束。
 - 任何需要高置信结论的场景，都应支持回查原始材料。
 
 ## 常见失败
@@ -83,7 +85,7 @@ replayable: boolean
 - `representation-contract.md`
 - `observation-semantics.md`
 - `multimodal-grounding.md`
-- `../interface/overview.md`
+- `../sensing-representation/overview.md`
 - `../security/overview.md`
 - `../../../design-space/patterns/citation-chain.md`
 

@@ -1,3 +1,5 @@
+> **已迁移**：本文件已迁移至 `../categories/category-cognitive-assembly.md`。以下内容保留为存档，权威版本请查阅迁移目标。
+
 # 品类认知组装指南
 
 > **Evidence Status** — synthesized. 基于 `category-cognitive-profiles.md` 的品类认知热力图；SoK Agentic Skills (arXiv 2602.20867) 提供了 Skill 形式化定义和 SkillsBench 数据；Nurture-First (arXiv 2603.10808) 提供了三层认知架构的设计思路。本文为针对各品类的认知模块组装推导。

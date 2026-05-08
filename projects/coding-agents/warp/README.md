@@ -36,6 +36,19 @@
 
 ## 独特贡献
 
+Warp 的底层贡献不只是 spec/workflow，而是 `AgentDriver + HarnessRunner + ResponseStream`：它把第三方 coding agent 当作可托管、可保存、可恢复、可观测的 runtime 进程，而不是只把 agent 当聊天能力。
+
+### Runtime 吸收点
+
+| Runtime obligation | 本项目模式 | 关键文件 |
+|---|---|---|
+| loop | AgentDriver 托管 terminal / external harness | `agent-architecture.md` |
+| context | repo skills、spec、input_context 注入 | `contribution-workflow.md` |
+| tool lifecycle | action queue、terminal blocks、external harness output | `terminal-ai-integration.md` |
+| permission | readiness label、permission profile、action model | `contribution-workflow.md` |
+| state / resume | ResumePayload、periodic save、snapshot upload | `terminal-ai-integration.md` |
+| verification | spec invariants → CI → Oz review → SME review | `contribution-workflow.md` |
+
 Warp 的独特价值不在于它是另一个 coding agent，而是它把 agent 作为**开发流程的一等参与者**，从 issue triage 到 PR merge 全链路嵌入。特别是：
 
 1. **Agent-as-Contributor 模式**：Oz 是拥有 reviewer/implementer 角色的自动化贡献者
@@ -108,7 +121,7 @@ specs/               ← Feature specs（product.md + tech.md）
 |------|---------|---------|
 | [feature-flags.md](feature-flags.md) | `crates/warp_features/src/lib.rs` (1188行) | 150+ Feature Flags、三层状态优先级、RAII 测试隔离、四阶段渐进发布 |
 | [skill-system.md](skill-system.md) | `crates/ai/src/skills/` + `app/src/ai/skills/` | 10 种 Provider 兼容、ParsedSkill 解析、SkillManager 生命周期、条件激活 |
-| [agent-controller.md](agent-controller.md) | `app/src/ai/blocklist/controller.rs` (2870行) + `permissions.rs` (1197行) | BlocklistAIController 编排、带原因的权限枚举、多模型路由、Orchestration 事件系统 |
+| [agent-controller.md](agent-controller.md) | `app/src/ai/blocklist/controller.rs` (2870行) + `permissions.rs` (1197行) | BlocklistAIController 编排、带原因的权限枚举、多模型路由、Orchestration 事件系统、ThirdPartyHarness Adapter、ResumePayload、RunAgents 批量编排、Computer Use、PTY Write Mode、AskUserQuestion |
 
 ## 与知识库的关联
 
@@ -125,10 +138,3 @@ specs/               ← Feature specs（product.md + tech.md）
 - `categories/coding-agent/`：从"agent 做代码"到"agent 做全流程"的品类扩展
 - `synthesis/`：coding agent 从工具走向平台的演化趋势
 
-### 独特贡献
-
-1. **Agent-as-Contributor**：agent 是项目的贡献者，有自己的角色和权限
-2. **Spec-as-Contract**：需求文档同时服务人类和 agent，产品 spec 的 testable invariants 是 agent 的验收标准
-3. **Skill Engineering**：skill 文件是有模板、审计、最佳实践的工程化产物
-4. **Multi-Agent Platform**：终端作为 agent 运行平台，内置和外部 agent 共存协作
-5. **Readiness-Label Gating**：不是所有任务都让 agent 做，通过 label 控制进入门槛

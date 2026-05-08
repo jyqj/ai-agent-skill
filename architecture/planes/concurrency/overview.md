@@ -47,6 +47,59 @@ concurrency_policy:
 - Race-to-Write：多个 Agent 写同一对象无锁或仲裁。
 - Timestamp-only Ordering：只按时间排序，不考虑因果关系。
 
+## 4.5 生产验证：工具并行化决策流程
+
+> **Evidence Status** — production-validated. 路径重叠检查已在 hermes-agent 落地；层级限制已在 Codex 落地。
+
+并非所有工具调用都能并行。生产系统中，工具并行化需要一个显式的决策流程，而非"模型说并行就并行"。
+
+### 决策流程
+
+```mermaid
+flowchart TD
+    A[收到多个工具调用请求] --> B{工具在黑名单中？<br/>交互类 / 有副作用}
+    B -->|是| S1[串行执行]
+    B -->|否| C{工具在安全集中？<br/>只读 / 无副作用}
+    C -->|是| P1[直接并行]
+    C -->|否| D{路径重叠检查<br/>操作目标是否有交集？}
+    D -->|有重叠| S2[串行执行<br/>按依赖顺序排列]
+    D -->|无重叠| P2[并行执行]
+
+    style S1 fill:#ffcdd2
+    style S2 fill:#ffcdd2
+    style P1 fill:#c8e6c9
+    style P2 fill:#c8e6c9
+```
+
+### 三层分类
+
+| 分类 | 规则 | 示例工具 |
+|---|---|---|
+| **黑名单（强制串行）** | 交互类工具、会修改全局状态的工具 | `delegate`、`execute_code`、`human_input`、`memory_write` |
+| **安全集（直接并行）** | 只读工具、无副作用 | `Read`、`Grep`、`Glob`、`WebSearch` |
+| **灰区（需路径重叠检查）** | 可能有副作用但不确定 | `Bash`、`Edit`、`Write`（需检查操作的文件路径是否有交集） |
+
+### 路径重叠检查（hermes-agent 实现）
+
+hermes-agent 在派发并行工具调用前，提取每个工具调用的目标路径（文件路径、URL、数据库 key 等），检查是否存在交集：
+
+- **无交集**：安全并行。例如 `Edit(/src/a.ts)` 和 `Edit(/src/b.ts)` 可以并行。
+- **有交集**：降级为串行。例如 `Edit(/src/a.ts)` 和 `Read(/src/a.ts)` 必须串行（写后读依赖）。
+- **无法判断**：降级为串行。安全优先原则。
+
+### 层级限制（Codex 实现）
+
+Codex 通过 `max_depth` + `max_threads` 实现层级化的并发控制：
+
+```yaml
+codex_concurrency:
+  max_depth: 3          # 最大递归委派深度
+  max_threads: 5        # 每层最大并行线程数
+  total_budget: 15      # 全局最大并行数 = 跨所有层级的线程总和
+```
+
+**设计启示**：`max_depth` 防止无限递归委派（Agent A 委派 Agent B 再委派 Agent C……），`max_threads` 防止单层扇出过宽。两者结合限制了并发的"面积"（depth × threads），而非仅限制单一维度。
+
 ## 5. 并发模型选择
 
 不同并发模型适用于不同的 Agent 拓扑和资源约束。选型依据：共享状态的粒度、失败域的隔离需求、开发团队对模型的熟悉度。

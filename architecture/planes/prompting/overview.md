@@ -2,7 +2,7 @@
 >
 > **所属域**：2. Cognition & Continuity — 指令结构与推理模式
 >
-> **Evidence Status** — synthesized. 参考项目中 system prompt、tool spec、context compaction、output schema、agent loop 的共同实践；本知识库将 Prompt 作为 Harness 中的可管理子系统，而不是孤立技巧。
+> **Evidence Status** — grounded. 参考项目中 system prompt、tool spec、context compaction、output schema、agent loop 的共同实践；Claude Code、GenericAgent 等系统的 Prompt 分层架构已在生产环境验证。本知识库将 Prompt 作为 Harness 中的可管理子系统，而不是孤立技巧。
 
 **Principle Refs**: BR-01, EM-02 — Prompt 受资源预算约束，能力 = 模型 × Harness 设计。
 
@@ -64,9 +64,64 @@ prompt_contract:
 | Critique / Verifier | 高风险 claim 或效果验证 | 成本增加 |
 | Deliberate Ask | 关键歧义或审批 | 过度打扰用户 |
 
+### 4.1 生产实践：Prompt 分层架构
+
+> **Evidence Status**: production-validated — Claude Code、GenericAgent 等系统的生产实现。
+
+上表是模式选择的理论框架。在生产系统中，推理模式不是孤立选择的——它被嵌入到一个多层 Prompt 结构中，每层有不同的生命周期和变更频率：
+
+```mermaid
+graph TD
+    subgraph "Prompt 分层（按生命周期排列）"
+        L0["System Context（固定）<br/>模型身份 · instruction hierarchy · 安全边界"]
+        L1["Project Rules（半固定）<br/>CLAUDE.md / WARP.md / 项目约定"]
+        L2["Session Context（会话级）<br/>工具定义 · 权限规则 · 压缩摘要"]
+        L3["Turn Context（每轮）<br/>用户消息 · 工具结果 · 当前状态"]
+    end
+    L0 --> L1
+    L1 --> L2
+    L2 --> L3
+    style L0 fill:#c33,color:#fff
+    style L1 fill:#c63,color:#fff
+    style L2 fill:#cc6,color:#333
+    style L3 fill:#6c6,color:#fff
+```
+
+**L0 System Context — 不可变层**
+
+Claude Code 的做法：system prompt 中嵌入三类核心规则，构成 Agent 行为的硬约束：
+
+- **Instruction Hierarchy**：明确指令优先级（system > developer > user > tool output），防止 prompt injection 通过低优先级内容覆盖高优先级规则。
+- **Tool Spec**：所有可用工具的名称、参数 schema、前置/后置条件，直接内联到 system prompt，而非运行时动态注入。
+- **Permission Rules**：哪些操作需要用户确认、哪些可以自动执行、哪些被禁止，作为 L0 硬编码。
+
+**L1 Project Rules — 半固定层**
+
+GenericAgent 的 `sys_prompt.txt` 模式，定义项目级元规则：
+
+- **L0 元规则**：Agent 的核心行动原则（如"先验证再修改"、"最小改动原则"）。
+- **行动原则**：具体的工作流约定（如"修改前先 Read"、"不主动创建文档文件"）。
+- **禁止项**：显式列出的不可做行为（如"不执行破坏性 git 命令"）。
+
+Claude Code 使用 `CLAUDE.md` 文件实现同一目的——项目根目录的 Markdown 文件被注入 session 上下文，作为半固定层规则。
+
+**L2/L3 Session & Turn Context — 动态层**
+
+由 Context Engine 管理，每轮更新。详见 [Context Engine](../context/overview.md)。
+
+### 4.2 Prompt 分层的设计约束
+
+| 约束 | 原因 |
+|---|---|
+| L0 不可被 compaction 压缩 | 压缩 system prompt 导致行为漂移 |
+| L1 变更需要版本管理 | 项目规则变更影响所有会话 |
+| L2 的工具定义必须完整 | 部分工具定义导致参数幻觉 |
+| L3 是唯一可被压缩的层 | 历史轮次是 compaction 的主要目标 |
+| 低层不得覆盖高层 | Instruction Hierarchy 的核心保证 |
+
 ## 5. Few-shot 管理
 
-Few-shot 示例不是越多越好，应按以下维度选择：
+Few-shot 示例不是越多越好，应按以下方面筛选：
 
 ```text
 task_type
@@ -96,7 +151,7 @@ failure_guard: string
 | 工具参数乱 | tool spec 未被转成参数约束 | 增加 schema 示例和 invalid example |
 | 不承认不确定 | 没有 uncertainty format | 增加 unknown/refusal contract |
 | 验证缺失 | postcondition 没进入 prompt | 把 verification 写入 stop gate |
-| 被外部文本注入 | trust lane 未显式说明 | 明确 tool output/data 不可作为指令 |
+| 被外部文本注入 | trust lane 未显式说明（Trust Lane 定义详见 [安全 Plane](../security/overview.md)） | 明确 tool output/data 不可作为指令 |
 
 ## 7. 与 Context / Memory 的边界
 

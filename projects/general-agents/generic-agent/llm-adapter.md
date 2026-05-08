@@ -204,3 +204,58 @@ class MixinSession:
             delay = min(30, self._base_delay * (1.5 ** attempt))
             time.sleep(delay)
 ```
+
+---
+
+## 双客户端架构（第二轮审计补充）
+
+适配层提供两种客户端包装，对应两种协议风格：
+
+| 客户端 | 协议 | 适用后端 | 工具传递方式 |
+|--------|------|---------|-------------|
+| **ToolClient** | 文本协议 | ClaudeSession, LLMSession | 工具定义序列化为 JSON 文本注入 system prompt |
+| **NativeToolClient** | 原生协议 | NativeClaudeSession, NativeOAISession | 工具定义通过 API 原生 `tools` 参数传递 |
+
+```python
+class ToolClient:
+    def chat(self, messages, tools):
+        # 工具库 → 文本指令，拼入 system prompt
+        instruction = self._prepare_tool_instruction(tools)
+        messages[0]['content'] = instruction + messages[0]['content']
+        return self.session.raw_ask(messages)
+
+class NativeToolClient:
+    def chat(self, messages, tools):
+        # 工具库 → API 原生参数
+        return self.session.raw_ask(messages, tools=tools)
+```
+
+**设计权衡**：文本协议兼容任意 OpenAI 兼容端点（含本地 Ollama），但无法利用模型原生工具调用能力；
+原生协议支持 Claude extended thinking、结构化 tool_use 块，但要求端点完整实现 tool_calls API。
+
+---
+
+## _fix_messages 消息修复器（第二轮审计补充）
+
+LLM 返回的消息常存在格式异常，`_fix_messages` 在发送前进行修复：
+
+```python
+def _fix_messages(messages):
+    fixed = []
+    for m in messages:
+        # 1. 空 content 补充占位（某些 API 拒绝 null content）
+        if m.get('content') is None:
+            m['content'] = ""
+        # 2. 连续同角色消息合并（API 要求 user/assistant 交替）
+        if fixed and fixed[-1]['role'] == m['role']:
+            fixed[-1]['content'] += "\n" + m['content']
+            continue
+        # 3. 孤立 tool_result 补充 assistant 占位
+        if m['role'] == 'tool' and (not fixed or fixed[-1]['role'] != 'assistant'):
+            fixed.append({"role": "assistant", "content": "[tool call]"})
+        fixed.append(m)
+    return fixed
+```
+
+**必要性**：不同后端对消息格式的容忍度差异极大。Claude 要求严格交替，OpenAI 允许连续 tool 消息。
+修复器统一处理，使上层 loop 不必关心后端差异。

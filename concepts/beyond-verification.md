@@ -2,7 +2,9 @@
 
 > **Evidence Status** — synthesized. ORDA-VU 框架在主观性任务上的局限性分析；Companion / Creative Agent 的产品实践；HCI 和美学理论中的评价方法论。
 
-本知识库的核心骨架是验证主义的：定义 postcondition、执行动作、read-after-write、确认效果。这对工程型 Agent 是健康的，但对全谱 Agent 不够。本文讨论何时、为何、以及如何超越纯粹的验证。
+> **本文是"验证与完成"话题的主文件。** 元认知控制中的验证关卡见 [元认知控制](../cognitive-architecture/metacognitive-control.md)，效果验证的数据模型见 [表示与效果](representation-and-effects.md)。
+
+本知识库的核心骨架是验证主义的：定义 postcondition、执行动作、read-after-write、确认效果。这对工程型 Agent 是健康的，但对全谱 Agent 不够。下文讨论何时、为何、以及如何超越纯粹的验证。
 
 ---
 
@@ -53,39 +55,46 @@ ORDA-VU 的 Verify 阶段建立在一个隐含假设上：
 
 不是"放弃验证"，而是扩展 Verify 的含义。从单一的 postcondition 检查，扩展为四种验证模式：
 
-### 从 postcondition 到 resonance（共振）
+### 从 postcondition 到 resonance（用户对结果的主观满意度反馈）
 
 传统 Verify 问的是："postcondition 是否满足？"
 
-对主观性任务，更恰当的问题是："输出是否与用户的审美/价值/期望产生共振？"
+对主观性任务，更恰当的问题是："输出是否与用户的审美、价值观、期望产生共振？"共振不是精确匹配，而是"大方向对了，细节触动了人"。
 
-共振不是精确匹配，而是"大方向对了，细节触动了人"。它更接近音乐中的和声——不是同一个音，而是相互增强的音。
+例如 Creative Agent 为用户生成一个 Logo，格式和尺寸可以用 postcondition 检查，但"是否传达了品牌气质"只能通过用户反馈判断。检测方式包括：用户的即时反应（继续对话 vs 沉默）、后续行为（是否采纳建议）、长期反馈（是否回来）。
 
-检测方式：用户的即时反应（继续对话 vs 沉默）、后续行为（是否采纳建议）、长期反馈（是否回来）。
-
-### 从 single-point verification 到 longitudinal alignment
+### 从 single-point verification 到 longitudinal alignment（纵向一致性——多次交互中趋势是否正确）
 
 传统 Verify 是一次性检查：执行完就验证，验证完就结束。
 
-对价值对齐任务，验证是一个持续过程：每次交互都是一个数据点，趋势比单点更重要。用户满意度的移动平均、偏好预测的准确率、建议采纳率的变化——这些纵向指标比任何单次检查都更有意义。
+对价值相关的任务，验证是一个持续过程：每次交互都是一个数据点，趋势比单点更重要。用户满意度的移动平均、偏好预测的准确率、建议采纳率的变化——这些纵向指标比任何单次检查都更有意义。例如 Companion Agent 的情感陪伴效果无法在单次对话中衡量，需要观察用户是否在几周内持续回来、对话深度是否增加。
 
-### 从 objective measurement 到 intersubjective agreement
+### 从 objective measurement 到 intersubjective agreement（多方共识——多个判断主体的意见是否一致）
 
 传统 Verify 依赖客观测量：状态值是否正确、测试是否通过。
 
-对审美和创造性任务，替代标准是主体间一致性（intersubjective agreement）：不是"客观上好"，而是"多个有判断力的人都认为好"。这正是专家评审、A/B 测试和偏好排序的理论基础。
+对审美和创造性任务，替代标准是多方共识：不是"客观上好"，而是"多个有判断力的人都认为好"。这正是专家评审、A/B 测试和偏好排序的理论基础。例如 Creative Agent 生成的设计方案，可以让 3 位设计师独立评分，取一致性较高的结果作为质量信号。
 
-主体间一致性不如客观测量可靠，但它是审美/情感领域能达到的最佳标准。
+多方共识不如客观测量可靠，但它是审美和情感领域能达到的最佳标准。
 
 ### 验证模式的统一视图
 
 ```
 verification_type:
   objective        # 传统 postcondition，可自动化
-  resonance        # 输出与用户期望的共振度
-  longitudinal     # 多次交互的趋势对齐
-  intersubjective  # 多个判断主体的一致性
+  resonance        # 用户对结果的主观满意度
+  longitudinal     # 多次交互中趋势是否正确
+  intersubjective  # 多个判断主体的意见是否一致
 ```
+
+**选择哪种验证模式**——按以下顺序判断：
+
+| 判断条件 | 选择 |
+|---|---|
+| 结果状态可自动检测（文件存在、测试通过、API 返回值匹配） | objective |
+| 结果质量取决于单个用户的主观感受（语气、风格、情感回应） | resonance |
+| 效果需要多次交互才能观察（习惯改变、关系质量、学习进步） | longitudinal |
+| 没有单一权威判断者，需要多人交叉评估（设计方案、内容质量） | intersubjective |
 
 这四种模式不是互斥的，而是可以组合的。一个"帮我写周报"的任务可能同时需要：
 - objective：格式是否正确、长度是否合适
@@ -110,7 +119,7 @@ verify:
 
 ### 品类架构的差异化
 
-不同品类的 Agent 应采用不同的默认验证策略：
+不同品类的 Agent 应采用不同的默认验证策略。映射依据是各品类的核心验收标准差异——任务交付型的验收标准是客观状态变更，创作型的验收标准是用户主观满意，陪伴型的验收标准是长期关系质量：
 
 | 品类 | 主要验证类型 | 辅助验证类型 |
 |---|---|---|
@@ -123,17 +132,15 @@ verify:
 
 ### Evaluation 框架的补充
 
-`evaluation/subjective-eval.md` 已经创建，提供了主观性任务的具体评估维度和方法。本文是其哲学基础。
+`evaluation/subjective-eval.md` 已经创建，提供了主观性任务的具体评估指标和方法。本文是其哲学基础。
 
-## 这个口子的意义
+## 扩展验证模式的意义
 
-打开这个口子，整个知识库才能容纳真正全谱的 Agent。
+扩展验证模式后，知识库可以覆盖工程任务之外的主观性 Agent 品类。
 
-当前知识库的默认读者是构建工程型 Agent 的架构师——这些人最关心"代码是否正确"、"API 是否调通"、"数据是否一致"。但 Agent 的未来远不止此。
+当前知识库面向构建工程型 Agent 的架构师——关注"代码是否正确"、"API 是否调通"、"数据是否一致"。但 Companion Agent 的验收标准是"用户是否感到被理解"，Creative Agent 的验收标准是"作品是否打动人"，Coaching Agent 的验收标准是"用户是否在成长"——这些都不是 postcondition 能捕获的。
 
-Companion Agent 需要理解"被理解"意味着什么。Creative Agent 需要理解"打动人"意味着什么。Coaching Agent 需要理解"帮助成长"意味着什么。这些都不是 postcondition 能捕获的。
-
-验证主义是好的起点，但不是终点。从 postcondition 到 resonance，从单次检查到纵向追踪，从客观测量到主体间一致——这是 Agent 架构从工程工具走向人类伙伴的必经之路。
+从 postcondition 到 resonance，从单次检查到纵向追踪，从客观测量到多方共识——这三步扩展让 Agent 架构能处理主观性验收场景。
 
 ---
 

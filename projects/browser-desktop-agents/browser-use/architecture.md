@@ -1,6 +1,6 @@
 # Browser Use 架构分析
 
-> **Evidence Status**: grounded
+> **Evidence Status**: synthesized. 基于 Browser Use GitHub README、行业报告与深度指南的架构综合，非源码级分析。
 > **来源**: [Browser Use GitHub](https://github.com/browser-use/browser-use) | [Agentic Browser Landscape 2026](https://nohacks.co/blog/agentic-browser-landscape-2026) | [Browser Agents Deep Guide 2026](https://o-mega.ai/articles/agentic-computer-use-the-ultimate-deep-guide-2026)
 
 ## 项目概述

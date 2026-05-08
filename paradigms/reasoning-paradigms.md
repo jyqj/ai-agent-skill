@@ -2,6 +2,9 @@
 
 > **Evidence Status** — synthesized. `architecture/kernel/agent-loop.md`、`architecture/lifecycle.md`、`architecture/planes/prompting/overview.md` 与 coding agent 项目中循环、压缩、验证和恢复逻辑的抽象。
 
+> 认知需求如何驱动范式选择，见 [认知→范式路由](../cognitive-architecture/cognitive-to-paradigm-routing.md)。
+
+> 本文回答启动时的推理范式选择。运行时动态切换见 [paradigm-routing.md](paradigm-routing.md)。
 
 ## 范式定义
 
@@ -94,6 +97,34 @@ Update       TaskState / Memory / EffectLedger / next ContextPack
 有写动作/长任务/效果验证 → ORDA-VU
 需要比较多个候选 → Tree/Graph Search + evaluator
 高风险不可逆 → Plan + Approval + Verification + Recovery
+```
+
+### 范式选择决策树
+
+```mermaid
+graph TD
+    START{任务需要多步推理?}
+    START -->|否| DA[Direct Answer<br/>解释/总结/D0 问答]
+    START -->|是| TOOL{需要调用工具?}
+    TOOL -->|否| REFL{需要质量自省?}
+    TOOL -->|是| FEW{单次工具调用即可?}
+    FEW -->|是| TAD[Tool-Augmented Direct<br/>查询/计算/单步检索]
+    FEW -->|否| MULTI{步骤稳定且可拆解?}
+    MULTI -->|否| REACT{有漫游/发散风险?}
+    REACT -->|否| RA[ReAct<br/>边做边看 + loop detection]
+    REACT -->|是| PE[Plan-and-Execute<br/>先计划再逐步执行]
+    MULTI -->|是| PE
+    REFL -->|否| DA
+    REFL -->|是| RF[Reflection / Critique<br/>输出校验 + 证据修订]
+    PE --> EXPLORE{需要比较多条路径?}
+    RA --> EXPLORE
+    EXPLORE -->|是| TS[Tree / Graph Search<br/>分支 + 评估 + 剪枝]
+    EXPLORE -->|否| CLOSED{需要完整闭环验证?}
+    TS --> CLOSED
+    CLOSED -->|是| ORDA[ORDA-VU<br/>Observe-Represent-Decide<br/>Act-Verify-Update]
+    CLOSED -->|否| DONE[选定范式 + 必备控制]
+    ORDA --> DONE
+    RF --> DONE
 ```
 
 完整跨范式决策树见 `decision-trees.md`。

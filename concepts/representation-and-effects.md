@@ -3,7 +3,7 @@
 > **Evidence Status** — synthesized. 跨项目观察归纳。
 
 
-## 为什么这篇最重要
+## 为什么从边界讲起
 
 Agent 常被误解成"会思考的模型"——好像给模型加上工具就能操作现实。实际上，模型与现实之间隔着三道边界，每一道都可能出错，每一道都需要显式设计。
 
@@ -25,6 +25,25 @@ Agent 常被误解成"会思考的模型"——好像给模型加上工具就能
 [3] 效果边界：系统真的改变了什么？
   ↓ 回读 / 观察 / 审核
 验证闭环
+```
+
+### 三道连续边界可视化
+
+```mermaid
+graph LR
+    subgraph "表示边界 -- 系统能看到什么"
+        RAW[现实世界<br/>网页/日志/DB/传感器] -->|采样/解析/结构化| OBS[Raw Input<br/>原始输入引用]
+        OBS -->|parse + trust/freshness 标注| REP[Representation<br/>confidence/freshness/trust tier]
+    end
+    subgraph "接口边界 -- 系统能做什么"
+        REP -->|上下文注入 + 推理| DEC[Decision<br/>结构化动作意图]
+        DEC -->|权限分级 + schema 约束| TC[ToolCall<br/>读/写/可逆/不可逆]
+    end
+    subgraph "效果边界 -- 系统真的改变了什么"
+        TC -->|执行| EXE[Execution<br/>沙箱/staging/生产]
+        EXE -->|回读验证| EFF[Effect<br/>verified/partial/failed/pending]
+        EFF -.->|read-after-write / test / ack| RAW
+    end
 ```
 
 ### 1. 表示边界——系统能看到什么？
@@ -68,13 +87,14 @@ Agent 常被误解成"会思考的模型"——好像给模型加上工具就能
 
 把三道边界串起来，形成一个完整的现实闭环：
 
-```text
-观察原始输入
-  → 构建表示（标注来源、时效、置信度）
-  → 决定下一步动作
-  → 通过接口执行
-  → 观察外部返回
-  → 验证效果并更新世界状态
+```mermaid
+graph TD
+    O["观察原始输入"] --> R["构建表示<br/>标注来源 / 时效 / 置信度"]
+    R --> D["决定下一步动作"]
+    D --> X["通过接口执行"]
+    X --> F["观察外部返回"]
+    F --> V["验证效果并更新世界状态"]
+    V -.->|"状态变化触发新一轮观察"| O
 ```
 
 要支撑这个闭环，一个成熟的 Agent 至少需要显式建模五类对象：
@@ -87,9 +107,31 @@ Agent 常被误解成"会思考的模型"——好像给模型加上工具就能
 | 动作与效果（Action / Effect） | 对外部对象的读写及其预期结果 | "将 ticket 状态改为 resolved，期望回读确认" |
 | 证据（Evidence） | 支撑最终结论或完成声明的依据 | 测试通过截图、diff 审查记录、API 回读结果 |
 
+### Representation 与 World State 的界限
+
+五类对象中，Representation 和 World State 最容易混淆。两者的核心区别：
+
+| 维度 | Representation | World State |
+|---|---|---|
+| 粒度 | 单条信息经过解析和结构化后的可处理形式 | 多个 Representation 在某时间点的聚合快照 |
+| 举例 | 一个 API 响应的解析结果、一条日志的结构化提取 | 文件系统状态、环境变量集合、CRM 全部客户状态 |
+| 时间语义 | 无时间戳保证——可能来自不同时刻的不同调用 | 有时间戳和一致性保证——是"某一刻的世界长什么样" |
+| 一致性 | 不保证——两个 Representation 可能反映不同时刻的状态 | 要求——快照内各字段应来自同一时间窗口或标注偏差 |
+
+关系：World State 由多个 Representation 组成，但 World State 额外承诺了时间戳和一致性。将多个 Representation 聚合为 World State 时，必须处理时间偏差（不同 Representation 的采集时间不同）和冲突检测（两个 Representation 对同一实体给出矛盾描述）。
+
+```mermaid
+graph TD
+    R1["Representation A<br/>API 响应解析<br/>t=12:01"] --> WS["World State<br/>timestamp=12:02<br/>一致性: checked"]
+    R2["Representation B<br/>文件系统快照<br/>t=12:02"] --> WS
+    R3["Representation C<br/>环境变量读取<br/>t=12:01"] --> WS
+    WS -->|"时间偏差 > 阈值"| STALE["标记为 stale<br/>需要刷新"]
+    WS -->|"R_i 与 R_j 矛盾"| CONFLICT["标记为 conflicted<br/>需要仲裁"]
+```
+
 ## 设计启发
 
-理解了这三道边界，很多看似玄乎的 Agent 设计原则就变得具体了：
+把三道边界当作检查清单，常见的 Agent 设计原则可以逐条落地：
 
 - **多模态不是"多几种输入"**，而是扩大了可表示的世界——图像让 Agent 能"看到"UI 状态，音频让它能"听到"会议内容。
 - **工具调用不是"模型直接操作现实"**，而是模型生成动作意图，由执行器在受控环境中落实。

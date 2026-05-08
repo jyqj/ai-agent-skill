@@ -1,6 +1,6 @@
 # OpenAI Deep Research
 
-> **Evidence Status** — grounded. 官方 Deep Research / Responses / hosted research agent 说明，以及可引用报告交付模式的公开描述。
+> **Evidence Status** — synthesized. 基于 OpenAI 官方产品文档与公开报告，非源码级分析。
 
 ## 基本信息
 

@@ -1,3 +1,5 @@
+> **已合并**：本反模式的完整内容已合并至 `top-10.md`。以下内容保留为存档。
+
 # Context as State
 
 > **Evidence Status** — synthesized. 长任务 Agent 中反复出现“上下文被压缩或截断后任务进度丢失”的失败模式；State / Context 边界见 `../../architecture/module-boundaries.md`。

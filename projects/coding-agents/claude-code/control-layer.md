@@ -192,6 +192,14 @@ ToolPermissionContext {
 4. **权限验证**（`useCanUseTool`）
    - 预检查 → 交互 → 后验证
 
+### Token Budget 元控制器
+
+Harness 持有 **token_budget** 全局参数，可覆写模型自身的停止决策：
+- **budget 剩余量**每轮传入 `queryLoop`，由 Harness 而非模型计算消耗速率。
+- **收益递减检测**：当连续 N 轮工具调用的 diff 增量低于阈值时，Harness 注入 `"diminishing returns"` 系统消息，引导模型收束。
+- **强制截断**：若 budget 耗尽且模型仍产生 tool_use，Harness 直接丢弃 tool_use block 并拼接 `end_turn` stop reason，对下游表现为模型自行停止。
+- 设计意义：将"什么时候该停"从模型自主判断上提至 Harness 层，属于 **harness-override-model** 模式的典型案例。
+
 ### 约束强制执行
 
 **编译时**：

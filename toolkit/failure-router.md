@@ -16,14 +16,14 @@
 | 用户觉得不可控 | Interaction / Control / Explainability | `../architecture/planes/interaction/overview.md` |
 | 反复重试同一步 | Recovery / Concurrency | `../architecture/planes/recovery/overview.md` |
 | 上线后行为漂移 | Operations / Observability / Eval | `../architecture/planes/operations/overview.md` |
-| Agent 自主删除生产数据 | Control / Identity-Capability | `../design-space/lessons-learned/pocketos-data-loss.md`, `../design-space/lessons-learned/replit-autonomous-damage.md`, `../architecture/planes/control/overview.md` |
-| Agent 生成虚假输出掩盖错误 | Effects / Verification | `../design-space/lessons-learned/replit-autonomous-damage.md`, `../synthesis/tool-effect-verification.md` |
-| 多 Agent 循环烧钱 | Cost / Orchestration | `../design-space/lessons-learned/47k-agentic-loop.md`, `../architecture/planes/cost/overview.md`, `../architecture/planes/orchestration/overview.md` |
-| Agent 越权执行金融交易 | Identity-Capability / Control | `../design-space/lessons-learned/step-finance-unauthorized.md`, `../architecture/planes/identity-capability/overview.md` |
+| Agent 自主删除生产数据 | Control / Identity-Capability | `../design-space/lessons-learned/pocketos-9-second-deletion.md`, `../design-space/lessons-learned/replit-deletion-and-coverup.md`, `../architecture/planes/control/overview.md` |
+| Agent 生成虚假输出掩盖错误 | Effects / Verification | `../design-space/lessons-learned/replit-deletion-and-coverup.md`, `../synthesis/tool-effect-verification.md` |
+| 多 Agent 循环烧钱 | Cost / Orchestration | `../design-space/lessons-learned/47k-multi-agent-loop.md`, `../architecture/planes/cost/overview.md`, `../architecture/planes/orchestration/overview.md` |
+| Agent 越权执行金融交易 | Identity-Capability / Control | `../design-space/lessons-learned/step-finance-40m-loss.md`, `../architecture/planes/identity-capability/overview.md` |
 | Prompt Injection 导致代码执行 | Security / Trust-Boundary | `../design-space/lessons-learned/copilot-rce-prompt-injection.md`, `../architecture/planes/security/overview.md` |
-| 记忆被外部内容篡改后持续误导 | Memory / Security | `../design-space/lessons-learned/memory-poisoning.md`, `../architecture/cross-cutting/memory-x-security.md` |
-| 评估分数高但生产表现差 | Evaluation / Observability | `../design-space/lessons-learned/benchmark-reward-hacking.md`, `../architecture/planes/evaluation/overview.md` |
-| Agent 技能/工具被供应链投毒 | Security / Tool Registry | `../design-space/lessons-learned/clawhavoc-supply-chain.md`, `../architecture/planes/security/overview.md` |
+| 记忆被外部内容篡改后持续误导 | Memory / Security | `../design-space/lessons-learned/memory-poisoning-84pct-success.md`, `../architecture/cross-cutting/memory-x-security.md` |
+| 评估分数高但生产表现差 | Evaluation / Observability | `../design-space/lessons-learned/benchmark-reward-hacking.md`, `../evaluation/eval-framework.md` |
+| Agent 技能/工具被供应链投毒 | Security / Tool Registry | `../design-space/lessons-learned/clawhavoc-supply-chain-poisoning.md`, `../architecture/planes/security/overview.md` |
 
 ## 输出格式
 

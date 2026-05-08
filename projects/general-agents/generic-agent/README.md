@@ -1,13 +1,13 @@
 # GenericAgent 参考实现
 
 
-> **Evidence Status** — grounded. 本目录下的 snippet 分析与 README。
+> **Evidence Status** — grounded. 本目录下的 README 与源码观察摘录。
 
 ## 基本信息
 
 - **类型**：general-agent
 - **项目定位**：极简自进化 agent 框架，强调少工具、强记忆、技能固化。
-- **学习来源**：仓库 README 与专题 snippet。
+- **学习来源**：仓库 README 与专题源码观察。
 - **推荐入口**：README → agent-loop.md / memory-layers.md / self-evolution.md。
 
 ## 模块覆盖

@@ -21,6 +21,16 @@ RawInputRef
 
 ## 触发关系
 
+### Gateway Boundary
+
+多平台 Agent 先经过 gateway 边界，再进入通用 Agent run：
+
+```text
+PlatformEvent → SessionEnvelope → GatewayPolicy → AgentRun
+```
+
+其中 `SessionEnvelope` 负责身份、平台、会话、线程、交付目标和媒体引用；`GatewayPolicy` 负责平台权限、审批通道、PII 策略和中断/排队规则。Gateway 是 Interface、Identity、Control、Interaction 的组合边界，不只是 UI 适配器。
+
 | 对象变化 | 触发什么 | 原因 |
 |---|---|---|
 | RawInputRef 新增 | Representation build | 原始输入必须转成可处理表示 |

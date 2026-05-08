@@ -15,31 +15,17 @@
 → 避免把短期发布信息写成永久结构
 ```
 
-## 默认阅读顺序
+## 文件角色速查
 
-```text
-START-HERE.md
-  → toolkit/README.md
-  → index/ai-routing-pack.md（如果是 AI 在使用）
-  → SKILL.md
-  → index/mainline-map.md
-  → categories/README.md
-  → architecture/README.md
-  → design-space/README.md
-  → evaluation/README.md
-```
+| 文件 | 一句话职责 |
+|------|-----------|
+| [README.md](README.md) | 仓库首页，指向 START-HERE |
+| [START-HERE.md](START-HERE.md) | 唯一 front door，按任务分流 |
+| [SKILL.md](SKILL.md) | 核心速查卡，AI 路由入口 |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | 架构深度参考，非入口 |
+| [AGENTS.md](AGENTS.md)（本文件） | 仓库维护规则 |
 
-如果任务是补某个品类，先读该品类 README，再读对应的：
-
-```text
-task-model.md
-representation.md
-action-model.md
-closed-loop.md
-design-decisions.md
-eval-cases.md
-implementation-map.md
-```
+阅读顺序、任务分流均由 [START-HERE.md](START-HERE.md) 管理，本文件不重复。
 
 ## 目录归属规则
 
@@ -63,6 +49,10 @@ python3 evaluation/eval-runner/runner.py evaluation/fixtures
 python3 -m unittest discover -s evaluation/eval-runner/tests -p 'test_*.py'
 python3 -m unittest discover -s starter-kit/verified-tool-agent/tests -p 'test_*.py'
 ```
+
+## 外部资料吸收流程
+
+吸收论文、白皮书或本地参考文章时，维护 `meta/audit/reference-article-absorption-audit.md`：登记来源、提炼主题、映射目标文档，并列出不吸收的 reference-only / 时效性内容。
 
 ## 修改流程
 

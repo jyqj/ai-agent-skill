@@ -2,11 +2,13 @@
 
 > **Evidence Status** — grounded。基于 Anthropic 2026 年工程博客 "Effective Context Engineering for AI Agents"、Compaction API 文档、成本优化语料（Zylos Token Economics）、以及本知识库 ORDA-VU 闭环和 Plane 体系的交叉综合。
 
+> **相关视角**：认知科学视角见 [工作记忆动态](../cognitive-architecture/working-memory-dynamics.md)，注意力分配见 [注意力与显著性](../cognitive-architecture/attention-and-salience.md)。本文聚焦工程实现。
+
 ---
 
 ## 从 Prompt Engineering 到 Context Engineering
 
-2025-2026 年间，Agent 架构实践的一个核心认知升级是：**Prompt Engineering 不再足够描述我们实际在做的事情**。
+2025-2026 年间，Agent 架构实践中一个关键转变是：**Prompt Engineering 不再足够描述我们实际在做的事情**。
 
 Prompt Engineering 关注的是"如何写好一段提示词"——措辞、Few-shot 示例、格式约束。它隐含的假设是：上下文窗口足够装下所有信息，问题仅在于如何组织这些信息。
 
@@ -16,7 +18,7 @@ Prompt Engineering 关注的是"如何写好一段提示词"——措辞、Few-s
 2. **更长上下文必然降低精度和召回率**——transformer 的注意力稀释效应意味着"塞进去的信息越多，每条信息被利用的概率越低"。
 3. **Agent 的上下文是动态组装的**——工具定义、工具返回值、历史消息、外部检索结果、子 Agent 摘要……这些在运行时持续变化。
 
-**Context Engineering** 正是对这一现实的回应：它是一种**架构选择**，而不仅仅是 prompt 技巧。
+Context Engineering 是对这些约束的工程回应——它是架构层面的设计决策，不是 prompt 层面的措辞技巧。
 
 ---
 
@@ -34,7 +36,7 @@ Context Engineering 的核心公式：
 - 如何在多轮交互中维持关键状态不丢失？（结构化笔记）
 - 如何让子任务只看到与自己相关的上下文？（Sub-Agent 隔离）
 
-它不是单一技术，而是一组协调使用的策略。
+这些问题不靠单一技术解决，而是靠一组策略协调配合。
 
 ---
 
@@ -94,6 +96,10 @@ Anthropic 在 2026 年工程博客和 Claude Code 实践中总结了三个核心
 - 子 Agent 摘要的质量是关键——太简略会丢失信息，太详细会失去隔离的意义
 - 主 Agent 需要足够的推理能力来正确分配和整合子任务
 - 子 Agent 之间应避免共享上下文（除非通过主 Agent 显式传递）
+
+### 策略冲突：Compaction 与 Sub-Agent 的张力
+
+Compaction 和 Sub-Agent 都在削减上下文体积，但方向相反：Compaction 靠有损压缩保留摘要，Sub-Agent 靠隔离保证各自拿到完整但窄的上下文。当子 Agent 需要的信息恰好被主 Agent 的 Compaction 摘要掉时，就会出现"该给的没给到"。实践中的缓解方式：将子 Agent 需要的输入在派发时显式快照，而非依赖主 Agent 的实时上下文；把 Compaction 标记为"不可压缩"的字段与子 Agent 的输入需求对齐。两者不是替代关系——Compaction 管纵向（时间线上的信息衰减），Sub-Agent 管横向（任务间的信息隔离），需要同时设计。
 
 ---
 
@@ -175,14 +181,14 @@ Update     更新 TaskState / Memory / 结构化笔记
 
 Anthropic 的核心设计哲学。不要因为 Context Engineering 概念丰富就全部用上——从最简单的策略开始，仅在实际遇到瓶颈时升级：
 
-```text
-Level 0: 良好的 System Prompt + 必要的工具定义
-Level 1: + Prompt Caching
-Level 2: + Compaction API（长会话场景）
-Level 3: + 结构化笔记（跨轮次/跨重置场景）
-Level 4: + Sub-Agent 架构（复杂多步任务）
-Level 5: + 动态工具发现（工具数量 > 10）
-```
+| Level | 策略 | 升级信号——出现以下情况时考虑升级 |
+|-------|------|-------------------------------|
+| 0 | 良好的 System Prompt + 必要的工具定义 | 基线；所有 Agent 的起点 |
+| 1 | + Prompt Caching | token 成本超预期，或同一 system prompt 被重复计费 |
+| 2 | + Compaction API | 会话超过 ~20 轮，或上下文利用率 > 70% 且输出质量下降 |
+| 3 | + 结构化笔记 | 出现"Agent 忘了早期决策"问题，或上下文重置后状态丢失 |
+| 4 | + Sub-Agent 架构 | 单次任务涉及 3+ 不同领域，或工具返回值体积经常挤占推理空间 |
+| 5 | + 动态工具发现 | 可用工具 > 10 且工具定义本身占据 > 15% 上下文 |
 
 ### 2. "更聪明的模型需要更少的规定性工程"
 
@@ -227,16 +233,16 @@ Just-In-Time 检索模式类似人类使用索引而非记忆全文。
 
 | 本文主题 | 知识库对应文件 | 关系 |
 |---------|--------------|------|
-| 三 Plane 关系重定义 | `architecture/planes/` | 重新定义 Context/Memory/Prompting Plane 的边界 |
-| ORDA-VU 影响 | `paradigms/reasoning-paradigms.md` | 在 Represent → Decide 间插入 Context Assembly |
+| 三 Plane 关系重定义 | `../architecture/planes/` | 重新定义 Context/Memory/Prompting Plane 的边界 |
+| ORDA-VU 影响 | `../paradigms/reasoning-paradigms.md` | 在 Represent → Decide 间插入 Context Assembly |
 | 推理模型交互 | `paradigms/reasoning-model-integration.md` | 推理 token 与上下文空间的张力关系 |
 | Compaction | `architecture/lifecycle.md` | Compaction 是生命周期中上下文管理的关键环节 |
 | Sub-Agent 架构 | `architecture/multi-model/` | Sub-Agent 是 Context Engineering 的架构级手段 |
-| 工具设计 | `architecture/planes/tool-integration/` | 工具定义体积是上下文预算的组成部分 |
-| 成本优化 | `paradigms/control-paradigms.md` | Token 预算管理是控制范式的新维度 |
-| 结构化笔记 | `paradigms/memory-paradigms.md` | 结构化笔记是工作记忆外化的具体手段 |
-| 设计哲学 | `concepts/design-principles.md` | "做最简单的有效方案"对接设计原则 |
+| 工具设计 | `../architecture/planes/tools/overview.md` | 工具定义体积是上下文预算的组成部分 |
+| 成本优化 | `../paradigms/control-paradigms.md` | Token 预算管理是控制范式的新增关注点 |
+| 结构化笔记 | `../paradigms/memory-paradigms.md` | 结构化笔记是工作记忆外化的具体手段 |
+| 设计哲学 | `design-principles.md` | "做最简单的有效方案"对接设计原则 |
 
 ---
 
-相关文件：`../paradigms/reasoning-paradigms.md`、`../paradigms/reasoning-model-integration.md`、`../architecture/planes/`、`../paradigms/memory-paradigms.md`、`../concepts/design-principles.md`。
+相关文件：`../paradigms/reasoning-paradigms.md`、`../paradigms/reasoning-model-integration.md`、`../architecture/planes/`、`../paradigms/memory-paradigms.md`、`design-principles.md`。

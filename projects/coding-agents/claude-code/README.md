@@ -1,7 +1,7 @@
 # Claude Code
 
 
-> **Evidence Status** — grounded. 基于本目录下的源码分析、layer 文档与 snippet。可信度高。
+> **Evidence Status** — grounded. 基于本目录下的源码分析、layer 文档与源码观察摘录。可信度高。
 
 ## 基本信息
 
@@ -26,6 +26,17 @@
 上下文压缩、工具并发执行和 Hook 权限控制三者在 QueryEngine 内形成闭环联动——这让它成为少数真正把 runtime 当工程问题来解决的生产级 harness。
 
 ## 关键发现
+
+### Runtime 吸收点
+
+| Runtime obligation | 本项目模式 | 关键文件 |
+|---|---|---|
+| loop | QueryEngine / query loop 管理跨 turn 状态 | `query-loop.md` |
+| context | snip、micro、collapse、auto 多层压缩 | `compaction.md`、`context-layer.md` |
+| tool lifecycle | 只读并发、写操作受控、工具结果回写状态 | `tool-orchestration.md`、`execution-layer.md` |
+| permission | permission mode + hooks 拦截 | `hooks-system.md`、`control-layer.md` |
+| state / UI | AppState、tool progress、session 状态投影 | `state-ui-layer.md` |
+| verification | diff / test / readback 进入 stop gate | `query-loop.md` |
 
 - QueryEngine 是跨 turn 持久化状态、驱动压缩和工具编排的完整 runtime，而非简单的 API 包装器。
 - Hook 机制把控制层从”隐式约定”变成了”可声明、可拦截、可注入”的一等公民——这是大多数 agent 框架缺失的。

@@ -21,6 +21,30 @@
 13 Deliver or Continue
 ```
 
+### 主生命周期流程图
+
+```mermaid
+graph TD
+    S0[Configure<br/>校验配置/锁定约束] --> S1[Intake<br/>接收任务/解析来源]
+    S1 --> S2[Represent<br/>编码表示 + trust/freshness]
+    S2 --> S3[Select Depth<br/>评估风险/匹配执行深度]
+    S3 --> S4[Assemble Prompt & Context<br/>按 trust lane 组装上下文]
+    S4 --> S5[Decide<br/>推理并选定下一步]
+    S5 --> S6[Identity / Policy / Budget Gate<br/>身份+权限+策略+预算核验]
+    S6 -->|拒绝/改只读| INT[Interact / Collaborate<br/>请求审批或降级]
+    S6 -->|通过| S7[Act<br/>路由到 Execution Host]
+    S7 --> S8[Sense<br/>归一化返回值/提取新观察]
+    S8 --> S9[Verify<br/>比对预期后置条件]
+    S9 -->|pass| S12[Update<br/>checkpoint + world state + effect ledger]
+    S9 -->|fail| S10[Recover<br/>分类失败/补偿/回滚/升级]
+    S10 -->|可恢复| S5
+    S10 -->|不可恢复| STOP[停止并说明]
+    INT --> S5
+    S12 --> S13{Stop Gate<br/>满足交付条件?}
+    S13 -->|否| S5
+    S13 -->|是| DEL[Deliver<br/>交付结果]
+```
+
 简化主循环：
 
 ```text

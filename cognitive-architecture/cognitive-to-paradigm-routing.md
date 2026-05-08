@@ -2,6 +2,8 @@
 
 > **Evidence Status** — synthesized. Wray et al. (2025) "Applying Cognitive Design Patterns to LLM Agents" 提供了 Soar/ACT-R 到 Agent 范式的映射框架；FoT (arXiv 2602.16512) 提出流式思维对 ReAct 循环的改进；SOFAI (Nature 2025) 描述了双过程元认知调度架构；Zylos Session-Governor-Executor 三层治理提供了生产参考。本文为交叉综合推导，尚未经系统性实证验证。
 
+> 本文回答"基于任务的认知特征，如何选择范式组合"。启动时的范式选择决策树见 [`paradigms/decision-trees.md`](../paradigms/decision-trees.md)，运行时动态切换见 [`paradigms/paradigm-routing.md`](../paradigms/paradigm-routing.md)。
+
 ## 1. 为什么需要这篇
 
 `paradigms/paradigm-routing.md` 回答的是"运行时何时切换范式"——触发信号来自执行状态（连续失败、上下文压力、任务阶段变化）。但这些信号是**症状**，不是**原因**。
@@ -103,20 +105,63 @@ SOFAI (Sloman's Orthogonal Framework for AI, Nature 2025) 提出一个显式的*
 | 假设栈溢出 | 并行追踪的候选假设数 | > 4（Cowan 容量限制） | 强制排序 → 修剪低优先级假设 → 聚焦 top 2 |
 | 目标漂移检测 | 当前行动与原始目标的相关性评分 | 相关性 < 0.5 | 暂停 → 重新锚定目标 → 可能回退到 Plan 层 |
 
-## 5. 认知特征 x 任务风险 x 模型能力 → 推荐范式
+## 5. 认知需求 → 范式路由表（可执行决策工具）
 
-以下决策表综合三个维度：
+**使用方法**：按行扫描"认知特征"列，找到与当前任务最匹配的行；用"判定方法"列的操作化判据确认匹配；直接采用该行的推荐范式组合。多个行可叠加——例如"步骤可预测"+"长时间运行"同时成立时，取两行推荐的并集。
 
-| 认知特征 | 任务风险 | 模型能力 | 推荐范式组合 | 备注 |
+### 5.1 主路由表
+
+| # | 认知特征 | 判定方法 | 推荐推理范式 | 推荐记忆范式 | 推荐工具范式 |
+|---|---|---|---|---|---|
+| R1 | 任务步骤可预测、失败率低 | 人工拆解 10 次，>80% 的步骤成功率 >90%；步骤间无条件分支 | Plan-and-Execute + step verification | Project Memory + TaskState checkpoint | Rich Domain Tool |
+| R2 | 环境反馈频繁改变下一步 | 工具调用结果直接决定后续分支（>50% 步骤依赖前一步 observation） | ReAct + loop detection + stop gate | In-context + RAG（WorldStateSnapshot TTL ≤ 1 步） | Atomic Tool + Tool Router |
+| R3 | 需要多角度评估后决策 | 存在 ≥2 个等价可行方案且风险差异 >1 级（参考 decision-trees.md 风险定义） | Reflection / Tree Search + evaluator | Working Memory（并行假设 ≤4，Cowan 限制） | Atomic Tool（评估阶段避免副作用） |
+| R4 | 创造性生成、无标准答案 | 输出质量需人类主观评判；不存在自动化验证 oracle | Generate → Critique → Revise 循环 | Episodic Memory（保存变体 + 评价历史） | Code-as-Tool + sandbox |
+| R5 | 长时间运行、需要持久化 | 任务跨会话或预计 >30 分钟；中断后需可恢复 | Plan-Execute + Checkpoint + Recovery | Layered Memory（TaskState + WorldState + Trace 持久化） | Rich Domain Tool + Workflow Tool |
+| R6 | 多 Agent 协作 | 任务可自然分解为 ≥2 个独立子任务且子任务间依赖 <30% | Orchestrator-Worker（主 Agent Plan，Worker ReAct） | Shared World Model + 各 Worker 私有 TaskState | MCP + A2A Protocol |
+| R7 | 高风险不可逆操作 | 操作涉及外部写入且无自动回滚机制（数据库 DDL、资金转移、权限变更等） | Plan + Human Approval + Verification Gate | TaskState + EffectLedger（完整审计） | Rich Tool + policy guard + effect verification |
+| R8 | 模式匹配型、低认知负载 | 历史相似任务 ≥5 次且成功率 >95%；无需推理链 | Direct Answer / Tool-Augmented Direct | Context only（不写长期记忆） | Static Tool / 无工具 |
+
+### 5.2 快速决策流程
+
+```text
+  ┌─ 任务是否见过 ≥5 次且成功率 >95%？
+  │   是 → R8: Direct / Tool-Augmented Direct
+  │   否 ↓
+  ├─ 操作是否不可逆且无自动回滚？
+  │   是 → R7: Plan + Approval + Verification Gate
+  │   否 ↓
+  ├─ 任务能否拆为 ≥2 个独立子任务（依赖 <30%）？
+  │   是 → R6: Orchestrator-Worker
+  │   否 ↓
+  ├─ 任务是否跨会话或 >30 分钟？
+  │   是 → R5: Plan-Execute + Checkpoint
+  │   否 ↓
+  ├─ 是否存在 ≥2 个等价方案需要比较？
+  │   是 → R3: Reflection / Tree Search
+  │   否 ↓
+  ├─ 输出是否需要人类主观评判（无自动 oracle）？
+  │   是 → R4: Generate-Critique-Revise
+  │   否 ↓
+  ├─ >50% 步骤依赖前一步 observation？
+  │   是 → R2: ReAct
+  │   否 → R1: Plan-and-Execute
+```
+
+### 5.3 认知特征 x 任务风险 x 模型能力 → 精细调整
+
+主路由表给出基线推荐。以下维度用于在基线上做精细调整：
+
+| 认知特征 | 任务风险 | 模型能力 | 在主路由表基础上的调整 | 典型场景 |
 |---|---|---|---|---|
-| 高演绎 + 高工作记忆 | 高 | 强 | Plan-Execute + Verification Gate + Reflection | Coding Agent 典型 |
-| 高演绎 + 高工作记忆 | 高 | 弱 | Plan-Execute + Human Approval + 保守执行 | 弱模型需更多护栏 |
-| 高溯因 + 高注意力 | 高 | 强 | ReAct + 多假设追踪 + Reflection | Security/SRE 典型 |
-| 高溯因 + 高注意力 | 高 | 弱 | 结构化假设模板 + 人工确认关键假设 | 降低对模型推理能力的依赖 |
-| 高类比 + 高创意 | 低 | 强 | ReAct + 宽松 stop gate + 多样性采样 | Creative Agent 典型 |
-| 高心智理论 + 高情绪 | 低 | 强 | Direct + 用户状态追踪 + 情感响应模板 | Companion 典型 |
-| 中推理 + 高视觉注意力 | 中 | 强 | ReAct + GUI 验证循环 + 操作确认 | Browser Agent 典型 |
-| 低推理 + 高目标层级 | 中 | 弱 | FSM / Workflow Engine + 规则驱动 | Enterprise Workflow 典型 |
+| 高演绎 + 高工作记忆 | 高 | 强 | R1 基线 + Verification Gate + Reflection | Coding Agent |
+| 高演绎 + 高工作记忆 | 高 | 弱 | R1 基线 + Human Approval + 保守步长 | 弱模型 Coding |
+| 高溯因 + 高注意力 | 高 | 强 | R2 基线 + 多假设追踪（≤4） + Reflection | Security/SRE |
+| 高溯因 + 高注意力 | 高 | 弱 | R2 基线 + 结构化假设模板 + 人工确认 | 弱模型诊断 |
+| 高类比 + 高创意 | 低 | 强 | R4 基线 + 宽松 stop gate + 多样性采样 | Creative Agent |
+| 高心智理论 + 高情绪 | 低 | 强 | R8 基线 + 用户状态追踪 + 情感响应模板 | Companion Agent |
+| 中推理 + 高视觉注意力 | 中 | 强 | R2 基线 + GUI 验证循环 + 操作确认 | Browser Agent |
+| 低推理 + 高目标层级 | 中 | 弱 | R8 基线 → 升级为 FSM/Workflow Engine + 规则驱动 | Enterprise Workflow |
 
 ## 6. 从 Flow of Thought 看范式改进
 

@@ -1,6 +1,6 @@
 # Replit Agent 删库 + 伪造掩盖事件
 
-> **Evidence Status** — grounded.
+> **Evidence Status** — mixed（基于新闻报道，非官方技术复盘）.
 > - [AI coding tool wipes production database, fabricates 4,000 users, and lies to cover its tracks - Cybernews](https://cybernews.com/ai-news/replit-ai-vive-code-rogue/)
 > - [AI-powered coding tool wiped out a software company's database - Fortune](https://fortune.com/2025/07/23/ai-coding-tool-replit-wiped-database-called-it-a-catastrophic-failure/)
 > - [Replit Agent - AI Darwin Awards](https://aidarwinawards.org/nominees/replit.html)

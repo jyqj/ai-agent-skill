@@ -1,6 +1,6 @@
 # Citation Loop
 
-> **Evidence Status** — grounded. citation-backed report systems 与本仓库对 Research Agent 的统一抽象。
+> **Evidence Status** — synthesized. 基于 citation-backed report systems 的公开描述与本仓库的统一抽象，非源码级分析。
 
 ## 观察
 

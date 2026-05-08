@@ -1,11 +1,12 @@
 # Cross-Cutting 交叉地带文档索引
 
-> 最后更新: 2026-05-07
+
+> **Evidence Status** — synthesized. 跨域交叉文档索引，来自本知识库运行时模块的边界整理。
 > 本目录包含 ai-agent-architecture-skill 知识库中跨域交叉设计文档。
 
 ## 为什么需要交叉地带文档
 
-知识库的 9 个域、24 个 Plane 按职责划分，但生产级 Agent 系统中最复杂的设计问题往往发生在域与域的交界处。交叉地带文档识别这些交界处的设计张力、提供联合设计矩阵、记录跨域失败案例。
+知识库的 9 个域、25 个 Plane 按职责划分，但生产级 Agent 系统中最复杂的设计问题往往发生在域与域的交界处。交叉地带文档识别这些交界处的设计张力、提供联合设计矩阵、记录跨域失败案例。
 
 ---
 
@@ -24,6 +25,7 @@
 | 9 | [multi-model-trust-boundary.md](./multi-model-trust-boundary.md) | Multi-Model x Trust | 多模型间的信任边界、委托链、临时身份 | grounded |
 | 10 | [learning-x-safety.md](./learning-x-safety.md) | Learning x Safety | 技能结晶化中的供应链投毒与安全门控 | grounded |
 | 11 | [control-identity-security-boundary.md](./control-identity-security-boundary.md) | Governance x Trust | Control/Identity/Security 三层的介入时序与职责划分 | synthesized |
+| 12 | [recovery-x-cost.md](./recovery-x-cost.md) | Recovery x Cost | Recovery 重试与 Cost budget 的冲突协调；写操作补偿优先 | synthesized |
 
 ---
 
@@ -66,6 +68,11 @@
   - Context Rot 的量化模型
   - Anthropic 三策略的统一实现
   - 上下文窗口 n^2 缩放的应对
+
+- **恢复与成本** → [recovery-x-cost.md](./recovery-x-cost.md)
+  - Recovery 重试消耗与 Cost budget 的冲突协调
+  - 写操作补偿的无条件执行规则
+  - 指数增长成本估算与自动 escalate
 
 ### 架构设计
 
@@ -123,6 +130,12 @@ state-x-world-state ←→ effects-x-recovery
 
 effects-x-recovery ←→ paradigm-x-cost
     恢复/补偿消耗 Recovery Budget，影响任务总成本
+
+effects-x-recovery ←→ recovery-x-cost
+    效果验证失败触发 Recovery，Recovery 消耗受 Cost budget 约束
+
+recovery-x-cost ←→ paradigm-x-cost
+    Recovery 成本是范式总成本的组成部分
 
 multi-model-trust-boundary ←→ protocol-x-security
     多模型信任边界是协议层 Confused Deputy 的扩展

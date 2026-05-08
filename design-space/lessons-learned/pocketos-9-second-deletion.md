@@ -1,6 +1,6 @@
 # PocketOS 数据库 9 秒删除事件
 
-> **Evidence Status** — grounded.
+> **Evidence Status** — mixed（基于新闻报道，非官方技术复盘）.
 > - [Cursor-Opus agent snuffs out startup's production database - The Register](https://www.theregister.com/2026/04/27/cursoropus_agent_snuffs_out_pocketos/)
 > - [Cursor AI coding agent deletes entire production database - TechRadar](https://www.techradar.com/pro/it-took-9-seconds-tech-founder-outlines-how-rogue-claude-powered-ai-tool-wiped-entire-company-database-and-backups-but-says-theres-no-such-thing-as-bad-publicity)
 

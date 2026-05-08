@@ -7,19 +7,7 @@
 
 反模式不是“永远不能做”，而是出现后需要证明为什么安全、可控、可验证。
 
-入口：
+入口：**`top-10.md`**（权威合并版，包含全部 10 个反模式的定义、症状、风险、修复入口和评审问题）。
 
-- `god-prompt.md`
-- `tool-soup.md`
-- `memory-as-database.md`
-- `infinite-retry.md`
-- `depth-without-verification.md`
-- `trust-everything.md`
-- `approval-only-interaction.md`
-- `hidden-cost-explosion.md`
-- `context-as-state.md`
-- `eval-theater.md`
-- `top-10.md`
-
-
-建议设计评审先读 `top-10.md`，再按具体症状进入单个反模式。
+以下单文件已合并入 `top-10.md`，保留为存档：
+`god-prompt.md` / `tool-soup.md` / `memory-as-database.md` / `infinite-retry.md` / `depth-without-verification.md` / `trust-everything.md` / `approval-only-interaction.md` / `hidden-cost-explosion.md` / `context-as-state.md` / `eval-theater.md`

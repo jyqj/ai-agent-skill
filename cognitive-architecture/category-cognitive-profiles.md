@@ -1,3 +1,5 @@
+> **已迁移**：本文件已迁移至 `../categories/category-cognitive-profiles.md`。以下内容保留为存档，权威版本请查阅迁移目标。
+
 # 品类认知特化——不同 Agent 的认知需求差异
 
 > **Evidence Status** — synthesized. 基于知识库已有品类架构和认知架构的交叉分析。

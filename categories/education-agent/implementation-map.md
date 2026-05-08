@@ -56,7 +56,7 @@
 |---|---|---|
 | progressive-disclosure | 分层讲解——按学习者水平逐步展开 | `../../design-space/patterns/progressive-disclosure.md` |
 | layered-memory | 学习者模型的分层存储——短期交互 / 中期学习事件 / 长期知识状态 | `../../design-space/patterns/layered-memory.md` |
-| human-in-the-loop | 教师作为审核者和配置者 | `../../design-space/patterns/human-in-the-loop.md` |
+| human-in-the-loop | 教师作为审核者和配置者 | `../../evaluation/human-in-the-loop-evals.md` |
 | adaptive-loop | 难度自适应的核心模式 | `../../architecture/planes/control/overview.md` |
 
 ## 模块配置配方

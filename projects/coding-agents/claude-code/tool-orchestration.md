@@ -1,5 +1,7 @@
 # 工具执行编排 (toolOrchestration.ts)
 
+> **Evidence Status** — grounded. 基于 Claude Code 参考源码观察整理；代码片段仅作架构映射。
+
 > **参考性**：以下代码片段只用于说明架构模式或源码观察点，不是完整实现；复制到项目中前需按真实接口、安全、测试和运维要求重写。
 
 ## 来源
@@ -170,3 +172,28 @@ async function* runToolsSerially(
 | Write | false | 修改文件 |
 | Edit | false | 修改文件 |
 | Bash | 取决于命令 | ls 可以，rm 不行 |
+
+---
+
+### StreamingToolExecutor 状态机
+
+`StreamingToolExecutor` 实现了 **流式期间并行执行工具** 的优化，核心是一个三态状态机：
+- **Collecting**：正在接收 API 流事件，检测到完整 `tool_use` content block 后将其入队。
+- **Executing**：从队列取出 tool_use block，经权限检查后异步执行；同时继续接收流事件（流与执行并行）。
+- **Draining**：API 流结束（`message_stop`），等待所有仍在执行的工具完成并收集 `tool_result`。
+
+关键细节：
+- 若流式过程中检测到 **模型切换**（fallback），executor 丢弃已入队但未完成的孤立 tool_use，避免产生无匹配 tool_result 的脏消息。
+- tool_result 按原始 tool_use 顺序拼装回 messages，而非执行完成顺序，保证 API 不变量。
+- 与 `runTools` 的传统路径互斥：feature gate `STREAMING_TOOL_EXECUTION` 控制选择哪条路径。
+
+---
+
+### ToolSearch / Deferred Loading
+
+Claude Code 注册了 60+ 工具（内置 + MCP），全部加载到系统提示会浪费大量 token。采用延迟加载策略：
+- **启动时**：仅向模型暴露工具名称列表（无参数 schema），以 `<available-deferred-tools>` 块注入系统提示。
+- **ToolSearch 工具**：模型需要调用某工具时，先调用 `ToolSearch`，传入关键词或 `select:ToolA,ToolB` 精确选择。
+- **动态注入**：ToolSearch 返回匹配工具的完整 JSON Schema 定义；此后该工具在当前会话中变为可调用状态。
+- **收益**：系统提示 token 从数万降至数千；模型仍保有完整工具发现能力，只是按需支付 schema token。
+- **实现位置**：`src/tools/ToolSearchTool/`，匹配算法支持精确名称、前缀 `+` 必选词、以及 TF-IDF 关键词排序。

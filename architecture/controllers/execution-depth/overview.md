@@ -1,3 +1,5 @@
+> **本文件已迁移到 `../../kernel/execution-depth-controller/overview.md`，请前往查看。**
+
 # Execution Depth
 
 > **Evidence Status** — synthesized. coding-agent、research-agent、workflow-agent 参考项目在 inspect / draft / execute / verify / recover 上的真实差异；this repository 的 D0-D6 深度框架与 controller 词汇表。

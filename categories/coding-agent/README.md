@@ -84,6 +84,26 @@ Stop gate：
 [ ] 高风险动作未越过审批边界
 ```
 
+### Coding Agent 架构蓝图
+
+```mermaid
+graph TB
+    USER[开发者] -->|代码意图| INT[Interface<br/>CLI / IDE / Web]
+    INT --> REP[Representation<br/>RepoSnapshot / FileRef / SymbolRef]
+    REP --> CTX[Context<br/>相关代码 + 项目约定 + 测试状态]
+    CTX --> DEC[Decision<br/>ReAct / Plan-and-Execute]
+    DEC --> TOOLS[Tools<br/>Read / Edit / Search / Shell / Git]
+    TOOLS --> EXE[Execution<br/>Sandbox / Workspace / Docker]
+    EXE --> VER[Verify<br/>Test / Lint / TypeCheck / Diff Review]
+    VER -->|pass| DEL[Deliver<br/>diff / commit / PR + 风险说明]
+    VER -->|fail| DEC
+
+    MEM[Memory<br/>项目约定 / 历史修改 / Skill] -.-> CTX
+    CTRL[Control<br/>Permission Tree / Hook / Approval] -.-> EXE
+    OBS[Observability<br/>Trace / EffectLedger / Eval] -.-> VER
+    STATE[State<br/>TaskPlan / Checkpoint / Progress] -.-> DEC
+```
+
 ## 品类特有设计决策
 
 详见 `design-decisions.md`。

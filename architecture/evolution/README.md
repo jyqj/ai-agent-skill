@@ -14,11 +14,11 @@
 - **生态变化**：新 Agent 加入协作网络、协议版本升级、信任关系变化
 - **终结**：Agent/Skill/Memory 不再有价值，需要有序退役
 
-```text
-Learning:   做得更好（向上）
-Evolution:  适应变化（向前）
-Retirement: 有序结束（向下）
-```
+| 模块 | 关注点 |
+|---|---|
+| Learning | 做得更好 |
+| Evolution | 适应变化 |
+| Retirement | 有序结束 |
 
 ## 本目录回答的问题
 

@@ -1,6 +1,6 @@
 # Context x Memory x Prompting 交叉设计
 
-> Evidence Status: synthesized
+> **Evidence Status** — synthesized.
 > 知识库映射: Sensing&Repr (Plane 1-3) x World Modeling (Plane 7-9) x Reflection&Learning (Plane 19-20)
 
 ## 为什么需要这篇文档
@@ -76,6 +76,82 @@ Memory:    跨会话持久化的信息（用户偏好、历史摘要）
 | 记忆注入前安全检查 | 不参与 | **参与**（信任降级） | **参与**（来源验证） |
 
 **口诀**：Prompting 定规则不看内容，Context 管装配不改规则，Memory 管历史不决定呈现。
+
+---
+
+## 实战裁决规则：内容进入上下文的工作流
+
+生产级 Agent 系统中，信息不是"直接塞进上下文"的——它经过一条四步流水线，每一步都有明确的裁决逻辑。
+
+### Memory → Context → Prompting 四步流转协议
+
+1. **Memory 产出候选内容**：召回结果、学习到的经验、历史决策
+2. **Learning-Adaptation 验证候选**：是否经过验证、是否过期、是否与当前任务相关
+3. **Context 按优先级装配**：任务相关性 > 新鲜度 > 来源可信度
+4. **Prompting 按指令层分组**：系统指令 / 任务指令 / 工具结果 / 记忆注入
+
+```mermaid
+flowchart LR
+    subgraph Step1["Step 1: Memory 产出候选"]
+        M1["持久化记忆存储"]
+        M2["召回/检索引擎"]
+        M3["学习经验库"]
+        M1 --> M2
+        M3 --> M2
+    end
+
+    subgraph Step2["Step 2: Learning-Adaptation 验证"]
+        V1{"经过验证？"}
+        V2{"是否过期？"}
+        V3{"任务相关？"}
+        V1 -->|未验证| VX["降权或丢弃"]
+        V1 -->|已验证| V2
+        V2 -->|已过期| VX
+        V2 -->|有效| V3
+        V3 -->|不相关| VX
+        V3 -->|相关| VO["通过验证的候选集"]
+    end
+
+    subgraph Step3["Step 3: Context 优先级装配"]
+        P1["按任务相关性排序"]
+        P2["按新鲜度排序"]
+        P3["按来源可信度排序"]
+        P4["Context Budget 裁剪"]
+        P1 --> P4
+        P2 --> P4
+        P3 --> P4
+    end
+
+    subgraph Step4["Step 4: Prompting 分组注入"]
+        L1["系统指令层（Trusted）"]
+        L2["任务指令层（Trusted）"]
+        L3["工具结果层（Mixed）"]
+        L4["记忆注入层（Semi-trusted）"]
+    end
+
+    M2 --> V1
+    VO --> P1
+    P4 --> L1
+    P4 --> L2
+    P4 --> L3
+    P4 --> L4
+```
+
+### 项目实证：四步流转的具体实现
+
+| 流转步骤 | Claude Code | Hermes | GenericAgent | OpenCode |
+|---------|-------------|--------|-------------|----------|
+| **Step 1: 候选产出** | 内存文件（CLAUDE.md）+ Git 状态 | memory_manager 存储 + skills 库 | L2 事实库 + L3 SOP 库 | Config 配置 + 历史状态 |
+| **Step 2: 验证过滤** | 自适应 compact 判断信息是否仍有效 | PLATFORM_HINTS 平台感知过滤 | 索引层（L1, ~30行）预筛选 | Bus event 触发状态刷新 |
+| **Step 3: 优先级装配** | 静态系统上下文 → 动态用户上下文 → compact 结果 | SOUL.md → AGENTS.md → PLATFORM_HINTS → memory → skills | L1 索引 → L2 事实 → L3 SOP → `_get_anchor_prompt` 装配 | Config → Permission state → Agent selection |
+| **Step 4: 分组注入** | 系统 prompt（规则）+ 用户 prompt（任务）+ 工具输出 + 内存注入 | 按角色分层：灵魂 / 代理定义 / 平台 / 记忆 / 技能 | anchor_prompt 按层拼装，显式区分指令层级 | 规则 schema → 工具列表 → 对话历史 |
+
+**关键洞察**：
+
+- **Claude Code 的三级上下文**：静态系统上下文（Git 仓库信息、规则文件）作为不变基础；动态用户上下文（内存文件、当前编辑）按需加载；自适应 compact 在窗口压力下自动压缩低优先级内容。这三级严格对应 Step 3 的优先级排序。
+- **Hermes 的五层注入**：SOUL.md（不变的角色定义）→ AGENTS.md（代理能力声明）→ PLATFORM_HINTS（运行时平台感知）→ memory_manager（持久化记忆）→ skills（可用技能），层级越靠后信任越低、变化越频繁。
+- **GenericAgent 的索引-事实-SOP 三级**：L1 索引仅 ~30 行，作为"目录"帮助 Agent 决定是否需要加载 L2 事实或 L3 SOP。这是 JIT 检索的极致实现——先看目录，按需翻书。
+- **OpenCode 的事件驱动装配**：Config 变更、Bus event、Permission 状态变化都会触发上下文重新装配，而不是只在会话开始时一次性加载。这使得 Context 层能实时响应环境变化。
 
 ---
 

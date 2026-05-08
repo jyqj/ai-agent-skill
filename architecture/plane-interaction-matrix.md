@@ -55,6 +55,77 @@
 | Time → World State / Memory / Effects | 过期和因果关系横切多个 plane | ValidityWindow + StalenessPolicy 统一接口 |
 | Learning-Adaptation → Memory / Prompting | 学习结果写入 Memory 和 Prompt 模板 | CandidateRecord 经验证后才激活 |
 
+## 强耦合数据流与反馈环
+
+```mermaid
+graph LR
+  subgraph "感知-推理链 Sensing→Reasoning"
+    Repr["Representation"]
+    Ctx["Context"]
+    Prompt["Prompting"]
+  end
+
+  subgraph "执行-效果链 Execution→Effect"
+    Tools["Tools"]
+    Exec["Execution"]
+    Eff["Effects"]
+  end
+
+  subgraph "状态双核 State Core"
+    St["State"]
+    WS["World State"]
+  end
+
+  subgraph "安全三角 Trust Triangle"
+    Ctrl["Control"]
+    Sec["Security"]
+    IdCap["Identity-Capability"]
+  end
+
+  Obs["Observability"]
+  Rec["Recovery"]
+  Orch["Orchestration"]
+  Conc["Concurrency"]
+  Econ["Economics"]
+  Cost["Cost"]
+  Mem["Memory"]
+  Learn["Learning-Adaptation"]
+  Time["Time"]
+
+  %% 强耦合（实线 + 粗箭头）
+  Repr ==>|"W/R"| Ctx
+  Ctx ==>|"R/R"| Prompt
+  Tools ==>|"W"| Exec
+  Exec ==>|"W"| Eff
+  St <==>|"R/R"| WS
+  Ctrl <==>|"R/R"| Sec
+  Sec <==>|"R/↔"| IdCap
+  IdCap <==>|"↔"| Ctrl
+  Rec <==>|"W/W"| Eff
+  Orch <==>|"↔"| Conc
+  Econ -->|"W"| Cost
+
+  %% 反馈环 1: Effects → Recovery → Execution → Effects
+  Eff -.->|"触发补偿"| Rec
+  Rec -.->|"重试/回滚"| Exec
+  Exec -.->|"产生新效果"| Eff
+
+  %% 反馈环 2: Learning → Memory → Prompting → Learning
+  Learn -.->|"写入"| Mem
+  Mem -.->|"注入"| Prompt
+  Prompt -.->|"效果反馈"| Learn
+
+  %% 横切: Time → 多 plane
+  Time -.->|"过期/因果"| WS
+  Time -.->|"过期/因果"| Mem
+  Time -.->|"过期/因果"| Eff
+
+  %% 样式标注
+  linkStyle 11,12,13,14,15,16,17,18,19 stroke-dasharray:5 5
+```
+
+> **图注**：实线/粗箭头 = 强依赖（运行时必须同步协调）；虚线 = 反馈环或横切依赖（异步或延迟生效）。三个显著反馈环：(1) Effects → Recovery → Execution → Effects（故障补偿闭环）；(2) Learning → Memory → Prompting → Learning（学习激活闭环）；(3) Time 横切 World State / Memory / Effects（过期与因果）。
+
 ## 禁止耦合
 
 | 禁止链路 | 原因 |

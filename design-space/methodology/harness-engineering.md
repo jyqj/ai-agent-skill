@@ -74,4 +74,4 @@ Harness 不是一种推理范式，而是承载各种范式的工程外壳：
 - Multi-agent 需要 AgentMessage、OutputContract 和 merge strategy。
 - LLM-as-Judge 需要 rubric、校准 eval 和 trace。
 
-相关文件：`../reasoning-paradigms.md`、`../memory-paradigms.md`、`../tool-paradigms.md`、`../control-paradigms.md`。
+相关文件：`../../paradigms/reasoning-paradigms.md`、`../../paradigms/memory-paradigms.md`、`../../paradigms/tool-paradigms.md`、`../../paradigms/control-paradigms.md`。

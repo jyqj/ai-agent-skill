@@ -1,5 +1,7 @@
 # 多层压缩策略 (autoCompact.ts + compact.ts)
 
+> **Evidence Status** — grounded. 基于 Claude Code 参考源码观察整理；代码片段仅作架构映射。
+
 > **参考性**：以下代码片段只用于说明架构模式或源码观察点，不是完整实现；复制到项目中前需按真实接口、安全、测试和运维要求重写。
 
 ## 来源
@@ -130,3 +132,14 @@ async function autocompact(
    - 不是等到满了才压缩
    - 预留缓冲区（13K tokens）
    - 给摘要输出预留空间（20K tokens）
+
+---
+
+### Context Collapse 的 Commit-Log 投影
+
+Context Collapse（`CONTEXT_COLLAPSE` feature gate）与其他压缩层有本质区别——它 **不修改 `state.messages` 数组**：
+- **投影模型**：`applyCollapsesIfNeeded()` 接收 messages 的只读快照，返回一组 `CollapseSpec`（折叠区间 + 摘要文本），queryLoop 据此构造 `messagesForQuery`，但原始 messages 保持不变。
+- **Commit Log**：每次折叠生成一条 `CollapseCommit`（包含折叠区间 hash、摘要文本、被折叠的消息 ID 列表），追加到独立的 `collapseLog` 数组。这个 log 在压缩流水线之外维护，不受 autocompact/snip 的清洗影响。
+- **可恢复性**：因为原始消息未被销毁，当用户执行 `/undo` 或会话恢复时，可以重新展开被折叠的区间，无需重新查询 API。
+- **与 Autocompact 的交互**：若 Context Collapse 未能充分释放 token，autocompact 仍可在 collapse 投影后的 `messagesForQuery` 上执行完整摘要——两层串联而非互斥。
+- **413 错误恢复**：遇到 `prompt_too_long` 错误时，queryLoop 优先触发 collapse "排放"（强制折叠更多区间），再尝试 reactive compact，形成两级恢复阶梯。

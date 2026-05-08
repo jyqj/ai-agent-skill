@@ -15,12 +15,27 @@
 | 模块 | 覆盖程度 | 证据文件 | 可复用模式 |
 |---|---|---|---|
 | execution | 深 | README.md / orchestrator.md | sandbox isolation |
-| control | 深 | guardian-policy.md | risk-based approval |
-| security | 深 | guardian-policy.md | transcript as evidence not instruction |
-| orchestration | 中 | orchestrator.md / agent-control.md | agent registry |
-| state | 中 | memory-pipeline.md | memory pipeline |
+| control | 深 | guardian-policy.md | risk-based approval + approval persistence |
+| security | 深 | guardian-policy.md / exec-policy.md / network-proxy.md | transcript as evidence not instruction |
+| orchestration | 中 | orchestrator.md / agent-control.md | agent registry + multi-agent v2 |
+| state | 中 | memory-pipeline.md | memory pipeline + AGENTS.md loading |
+| policy | 深 | exec-policy.md / hooks.md | deterministic-first approval |
+| network | 深 | network-proxy.md | MITM proxy + domain-level ACL |
 
 ## 关键发现
+
+### Runtime 吸收点
+
+| Runtime obligation | 本项目模式 | 关键文件 |
+|---|---|---|
+| loop | task + orchestrator 分阶段运行 | `orchestrator.md` |
+| context | compact task、history token accounting、memory pipeline | `memory-pipeline.md` |
+| tool lifecycle | approval → sandbox → attempt → escalation retry | `orchestrator.md` |
+| permission | Guardian 风险评估，transcript 只作证据 | `guardian-policy.md` |
+| permission | 确定性规则优先于 LLM：Hooks → ExecPolicy → Guardian | `hooks.md` / `exec-policy.md` |
+| network | MITM 代理实现域名级网络访问控制 | `network-proxy.md` |
+| state / resume | SessionState、previous turn settings、AgentControl | `agent-control.md` |
+| verification | sandbox outcome 不等于 effect verified，仍需测试/回读 | `orchestrator.md` |
 
 - 沙箱的设计质量直接决定 agent 可被授予的执行深度——执行环境是能力的前提条件。
 - 高风险 transcript 必须被视为"证据"而非"指令"，这一原则区分了安全的审批系统和可被注入的审批系统。
@@ -138,9 +153,13 @@ Codex 定义了 AGENTS.md 作为人机协作接口：
 
 ## 关键代码片段
 - `./orchestrator.md` - 工具编排器流程
-- 沙箱执行尝试 - 见本 README 的“ToolOrchestrator”与“跨平台沙箱架构”部分
-- `./agent-control.md` - 多 Agent 控制
-- `./memory-pipeline.md` - 记忆两阶段架构
+- 沙箱执行尝试 - 见本 README 的”ToolOrchestrator”与”跨平台沙箱架构”部分
+- `./agent-control.md` - 多 Agent 控制 + Multi-Agent v2 消息模型
+- `./memory-pipeline.md` - 记忆两阶段架构 + AGENTS.md 加载机制
+- `./exec-policy.md` - Starlark 规则引擎与动态修订
+- `./network-proxy.md` - MITM 代理与域名级网络控制
+- `./hooks.md` - 确定性拦截层与事件 Hook
+- `./guardian-policy.md` - 含三级审批持久化 + Guardian Session 安全隔离
 
 ## 与知识库的关联
 
@@ -159,3 +178,7 @@ Codex 定义了 AGENTS.md 作为人机协作接口：
 2. **Guardian LLM 审批**：用 LLM 做风险评估而非硬编码规则，使审批能力随模型能力一起进化
 3. **AGENTS.md 规范**：把"项目级 agent 指令"从散落的 prompt 升格为有作用域、有优先级的标准化文件
 4. **角色系统**：同一 harness 通过 AgentRoleConfig 支撑不同人格和工具集，验证了 harness 与人格的正交性
+5. **三层确定性优先审批**：Hooks → ExecPolicy → Guardian，确定性规则先行，减少 LLM 调用开销
+6. **渐进信任（ExecPolicyAmendment）**：用户审批自动沉淀为规则，从"每次确认"到"永久放行"粒度可控
+7. **MITM 网络代理**：域名级网络策略与文件系统沙箱正交，双层隔离可独立控制
+8. **Guardian 最小权限隔离**：审查者自身禁用一切副作用能力，防止 prompt 注入攻击审批系统

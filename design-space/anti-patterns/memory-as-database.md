@@ -1,3 +1,5 @@
+> **已合并**：本反模式的完整内容已合并至 `top-10.md`。以下内容保留为存档。
+
 # Memory as Database
 
 > **Evidence Status** — synthesized. 本知识库中相关模块的失败模式总结。

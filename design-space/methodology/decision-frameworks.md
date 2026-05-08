@@ -17,14 +17,14 @@
 
 | 场景 | 推荐范式 | 看哪里 |
 |---|---|---|
-| 单轮解释 | Direct | `../reasoning-paradigms.md` |
-| 需要工具边做边看 | ReAct | `../reasoning-paradigms.md` |
-| 多步骤可拆解任务 | Plan-and-Execute + ORDA-VU | `../reasoning-paradigms.md` |
-| 长期偏好/项目约定 | Layered Memory | `../memory-paradigms.md` |
-| 文档知识库问答 | RAG + Source Trust | `../memory-paradigms.md` |
-| 外部工具生态 | MCP + Tool Registry | `../tool-paradigms.md` |
-| 可并行子任务 | Coordinator-Worker | `../collaboration-paradigms.md` |
-| 高风险动作 | Rule + Approval + Verification | `../control-paradigms.md` |
+| 单轮解释 | Direct | `../../paradigms/reasoning-paradigms.md` |
+| 需要工具边做边看 | ReAct | `../../paradigms/reasoning-paradigms.md` |
+| 多步骤可拆解任务 | Plan-and-Execute + ORDA-VU | `../../paradigms/reasoning-paradigms.md` |
+| 长期偏好/项目约定 | Layered Memory | `../../paradigms/memory-paradigms.md` |
+| 文档知识库问答 | RAG + Source Trust | `../../paradigms/memory-paradigms.md` |
+| 外部工具生态 | MCP + Tool Registry | `../../paradigms/tool-paradigms.md` |
+| 可并行子任务 | Coordinator-Worker | `../../paradigms/collaboration-paradigms.md` |
+| 高风险动作 | Rule + Approval + Verification | `../../paradigms/control-paradigms.md` |
 
 ## 何时选择自治等级
 

@@ -98,8 +98,19 @@ worker_output:
 | Contract-based (Contractor) | Agent 接收结构化契约，可协商、可拆分子契约 | 高 stakes 复杂任务、需要明确验收标准 |
 | Digital Assembly Line | 人类监督→协调 Agent→多专家 Agent (A2A) | 端到端企业流程自动化 |
 
+### 模式详解
+
+**Diamond Pattern**：主 Agent 将用户请求分发给多个专家 Agent（如搜索专家、数据库专家、知识库专家），各专家独立生成结果，最后由统一的 Rephraser/Mixer 将多源结果整合为一致风格的输出。Rephraser 还承担安全过滤和格式统一职责。适合需要多源信息但对外呈现统一口径的场景。
+
+**Response Mixer**：与 Diamond 类似但更精细——Mixer 不是简单拼接，而是从各专家输出中选取最优片段重新组合。评估标准可以是置信度、信息密度或与用户意图的匹配度。代价是 Mixer 本身需要足够的推理能力来判断"哪段更好"。
+
+**Adaptive Loop**：迭代式协作——初始 Agent 生成结果 → Evaluator 评估不满足标准 → 反馈改进方向 → Agent 重新生成。循环直到满足标准或达到轮次上限。关键是 Evaluator 的反馈必须是可操作的（指出具体不足），而非笼统的"不够好"。
+
+**Peer-to-Peer 自纠错**：两个或多个 Agent 互为 Reviewer，交替生成和审查。Agent A 生成 → Agent B 审查并标注问题 → Agent A 修正 → Agent B 复审。与 Critic 模式的区别在于角色对称——每个 Agent 既是生产者也是审查者，减少单一视角盲区。适合需要高准确性但无权威裁判的场景。
+
 详见：
 - `../design-space/patterns/contract-agent.md`
+- `../design-space/patterns/contract-pattern.md`
 - `../design-space/frontier/agentic-commerce-and-protocols.md`
 
 ## 跨组织协作协议
@@ -125,9 +136,9 @@ worker_output:
 共享外部对象 → Shared World Model + arbitration
 持续运行 → Event-driven + heartbeat + idempotency
 高风险或歧义 → Human-in-the-loop
-去中心化 + 能力重叠 → Market-Based Coordination
-需要对抗性推理验证 → Debate-Based Convergence
-Agent 数量大 + 低耦合 → Stigmergic Communication
+去中心化 + 能力重叠 → Market-Based Coordination [研究前沿]
+需要对抗性推理验证 → Debate-Based Convergence [研究前沿]
+Agent 数量大 + 低耦合 → Stigmergic Communication [研究前沿]
 高可靠性 + 成本可接受 → Ensemble / Voting
 ```
 
@@ -138,82 +149,31 @@ Agent 数量大 + 低耦合 → Stigmergic Communication
 
 ## 去中心化协作形态
 
-前面的范式共享一个隐含假设：存在某个角色知道全局任务结构。Coordinator 知道怎么拆分，Worker 知道自己是 Worker，Peer 至少知道对方存在。下面四种形态放弃这个假设的不同部分，换来不同的可扩展性和鲁棒性。
+前面的范式都假设存在某个角色知道全局任务结构。下面四种形态放弃这个假设的不同部分，换来不同的可扩展性和鲁棒性。它们与 `agent-typology.md` 中的"涌现协作型"对应。
 
-它们与 `agent-typology.md` 中的"涌现协作型"对应，是该形态在协作协议层面的具体展开。
+### 研究前沿模式
 
-### Market-Based Coordination
+> 以下三种模式目前处于研究探索阶段，尚无规模化生产验证。
 
-想象一个没有项目经理的工程团队：任务被贴到公告板上，每个人根据自己的能力和当前负载决定是否接单，接单前先报价。
+| 模式 | 核心机制 | 适用场景 | 主要风险 | 成熟度 |
+|---|---|---|---|---|
+| **Market-Based** | 任务拍卖：Agent 根据能力和负载竞标，Settlement 记录反哺价格信号。密封拍卖 + 事后质量审计防止价格操纵 | 任务可独立完成、输出可事后评估、多 Agent 能力重叠（如多模型 API 路由） | 冷启动盲拍；博弈导致价格失真 | theoretical |
+| **Debate-Based** | 对抗性推理：独立推理 → 附证据陈述 → 交叉质询 → 裁决。裁决分层：规则初筛 → Agent 复裁 → 高冲突升级人类 | 需要多角度深度分析、结论需可辩护 | 辩论循环不收敛（需硬性轮次上限）；裁决者偏见 | theoretical |
+| **Stigmergy** | 间接通信：Agent 在共享环境中留下带衰减的信号（标记），通信成本 O(n) vs 直接通信 O(n²) | Agent 数量大且动态变化、任务低耦合、通信基础设施不可靠 | 收敛性难保证；调试几乎不可能；信号冲突需额外处理 | theoretical |
 
-核心对象：
-
-- **TaskAuction**：一次任务拍卖。包含任务描述、质量要求、截止时间、预算上限。
-- **Bid**：Agent 的出价，包含预估成本（token / 时间 / 工具调用次数）、预估完成时间、Agent 自评的能力匹配度。
-- **Settlement**：拍卖结果。记录中标者、实际成本、质量评分，作为后续拍卖的历史参考。
-
-竞标价格不是凭空喊的——它需要基于 Cost Plane 的真实预算约束。一个 Agent 报价 10k token 完成代码审查，这个报价的可信度取决于它历史上类似任务的实际消耗。Settlement 记录反哺 Cost Plane，形成价格信号的正反馈循环。
-
-适用场景比较明确：任务可以独立完成、输出质量可以事后评估、多个 Agent 具备重叠能力。典型例子是多模型 API 网关的路由——每个模型就是一个 Agent，路由器就是拍卖师，价格信号就是延迟 × 成本 × 质量的综合评分。
-
-风险在冷启动和博弈。没有历史报价时，第一轮拍卖本质上是盲拍。如果 Agent 能观察到彼此的报价，可能出现价格操纵——总是报比对手低一点的价格，而不是基于真实成本报价。应对方式是密封拍卖（sealed-bid）加上事后质量审计：报价低但交付差的 Agent，在后续拍卖中竞争力下降。
-
-
-### Debate-Based Convergence
-
-单个模型做复杂推理时，错误往往"看起来很对"——因为没有人质疑。Debate-Based Convergence 的核心思路是让质疑制度化。
-
-流程不是线性的"生成→检查"，而是对抗性的：
-
-1. **独立推理**：多个 Agent 各自分析同一问题，互不可见。
-2. **陈述**：每个 Agent 提出 Claim（主张），附带 Argument（论证），论证必须包含可检验的 Evidence（证据引用）。
-3. **交叉质询**：Agent A 读到 Agent B 的 Claim 后，可以提出 Rebuttal（反驳），反驳同样必须附带证据。被反驳方可以修正、坚持（附加更强证据）或撤回。
-4. **裁决**：由独立的 Judge Agent 或预定义规则产出 Verdict。裁决依据是证据强度和论证一致性，而不是"谁说得更自信"。
-
-这里的关键设计决策是**裁决者是谁**。三种选择各有取舍：规则裁决（如证据数量、来源权威性打分）最透明但最死板；第三方 Agent 裁决灵活但引入了裁决者偏见；人类裁决最可靠但不可扩展。实践中常用规则初筛 + Agent 复裁 + 高冲突时升级到人类的分层策略。
-
-优势不只是"减少幻觉"——辩论过程本身就是推理质量的可观测信号。如果三个 Agent 独立推理后结论一致且论证路径不同，这个结论的置信度远高于单个 Agent 的输出。反之，如果辩论三轮仍无法收敛，这本身就说明问题存在真正的歧义，不应该强行给出唯一答案。
-
-风险是收敛效率。辩论可能陷入循环——A 反驳 B，B 反驳 A 的反驳，无限递归。需要硬性的轮次上限和"无法收敛"的显式输出路径。Constitutional AI 中的 critique-revision 可以视为退化版本：只有一个 Agent 自我辩论，没有真正的对抗性。
-
-
-### Stigmergic Communication
-
-直接通信的代价是 O(n²)——10 个 Agent 互相通信需要 90 条消息通道。Stigmergy 把通信成本降到 O(n)：每个 Agent 只与共享环境交互，不需要知道其他 Agent 的存在。
-
-核心机制借鉴蚁群：蚂蚁不会开会讨论觅食路线，它们在路上留下信息素，后来的蚂蚁根据信息素浓度选择路径。浓度高的路径被更多蚂蚁选择，留下更多信息素，形成正反馈。信息素会自然衰减（Decay），防止过时信号误导后来者。
-
-映射到 Agent 系统：
-
-- **SharedEnvironment**：所有 Agent 可读写的共享状态空间。可以是数据库、文件系统、共享内存。
-- **Signal**：Agent 在环境中留下的标记。比如"这个文件我已经审查过，发现 3 个问题"——不是发消息告诉其他 Agent，而是在文件旁边打一个标记。
-- **Decay**：信号的时效性。24 小时前的审查标记，在代码已经变更后应该自动失效。
-
-软件工程中最成功的 Stigmergy 实例是 Git：开发者不需要实时通信，他们通过 commit 修改共享仓库，其他人 pull 时感知变化。CI 状态徽章是信号，分支命名约定是弱协议，merge conflict 是信号冲突的显式化。
-
-优势是天然可扩展——加入第 101 个 Agent 不需要修改前 100 个 Agent 的任何配置。劣势是收敛性极难保证，调试几乎不可能（你无法 replay 100 个 Agent 与环境的交互序列来复现一个 bug），信号冲突（两个 Agent 同时修改同一个环境对象）需要额外机制处理。
-
-适用场景：Agent 数量多且动态变化、任务之间耦合度低、通信基础设施不可靠或成本高。不适合需要严格一致性的场景。
-
+关于 Stigmergy 的工程类比：Git 的 commit/pull/CI 徽章机制具有 Stigmergy 的部分特征（间接通信、信号衰减），但 Git 有明确的冲突解决协议和版本历史，不属于严格意义上的 Stigmergy 系统。
 
 ### Ensemble / Voting
 
-最简单的多 Agent 协作：让 N 个 Agent 各自独立做同一件事，然后投票。
+N 个 Agent 独立处理同一任务，通过投票聚合结果。
 
-核心对象只有三个：
+核心对象：**Candidate**（各 Agent 的独立输出）、**VotingRule**（majority / 加权 / Borda count）、**Aggregator**（执行投票）。
 
-- **Candidate**：每个 Agent 的独立输出。
-- **VotingRule**：聚合规则。多数投票（majority）、加权投票（按历史准确率加权）、排名选择（Borda count）。
-- **Aggregator**：执行投票并输出最终结果。
+关键约束：
 
-优势是实现简单、完全可并行、在理论上能提高可靠性。N 个独立判断者多数正确的概率高于单个判断者——这是 Condorcet 陪审团定理的直接应用。
-
-但"独立"这个前提在 LLM 场景下几乎不成立。同族模型（比如三个 GPT-4o 实例）的错误高度相关——它们在同一个问题上犯错的概率远高于随机独立。提高 ensemble 有效性的方式：使用不同模型族（GPT + Claude + Gemini）、使用不同 prompt 策略（CoT vs direct vs few-shot）、或在输入侧引入随机扰动。
-
-成本是线性增长的：N 个 Agent 意味着 N 倍的 token 消耗。所以 Ensemble 通常只用于高可靠性要求且单次成本可接受的场景——比如安全分类、关键事实判断——而不是日常对话。
-
-与 Debate-Based 的区别：Ensemble 中 Agent 互不可见，各自输出后由外部聚合；Debate 中 Agent 看到彼此的输出并交互式改进。Ensemble 更快但更浅，Debate 更慢但更深。
-
+- **独立性前提不成立**：同族模型错误高度相关。提高有效性的方式：跨模型族（GPT + Claude + Gemini）、跨 prompt 策略（CoT / direct / few-shot）、输入侧随机扰动。
+- **成本线性增长**：N 个 Agent = N 倍 token 消耗，只适合高可靠性要求且单次成本可接受的场景（安全分类、关键事实判断）。
+- **与 Debate 的区别**：Ensemble 中 Agent 互不可见，外部聚合，更快更浅；Debate 中 Agent 交互式改进，更慢更深。
 
 ### 去中心化形态的选择指引
 
@@ -224,4 +184,4 @@ Agent 数量大 + 动态变化 + 低耦合 → Stigmergy
 高可靠性 + 单次成本可接受 → Ensemble / Voting
 ```
 
-这四种形态不互斥。一个系统可以用 Market-Based 分配任务，每个任务内部用 Ensemble 提高可靠性，跨任务的事实核查用 Debate 收敛。关键是每一层协作的通信成本和收敛保证是否匹配场景需求。
+四种形态不互斥，可在不同层级组合使用。选择依据是每一层协作的通信成本和收敛保证是否匹配场景需求。

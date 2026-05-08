@@ -1,6 +1,6 @@
 # MCP Trust Boundary
 
-> **Evidence Status** — grounded. 多个项目（Claude Code、Cursor、Continue 等）都在用 MCP 扩展工具面，但对第三方 Server 的信任处理差异很大，尚处于早期探索阶段。
+> **Evidence Status** — production-validated. Claude Code 的 6 层配置作用域、5 种传输类型安全边界、per-tool 权限、Session 失效恢复、Elicitation 协议；Warp 的项目级 MCP 隔离；Codex 的工具注解系统。详见 `../../architecture/planes/security/overview.md` 的 MCP 信任管理章节。
 
 MCP（Model Context Protocol）让 Agent 可以通过外部 Server 获得新能力——访问数据库、调用 API、操作文件系统。但每接入一个 Server，能力扩大的同时攻击面也在扩大。
 

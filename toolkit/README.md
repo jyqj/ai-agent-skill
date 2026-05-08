@@ -1,6 +1,8 @@
 # Toolkit
 
-> **Evidence Status** — synthesized. 降低开发者和 AI 使用本 skill 的认知负荷；把问题路由到最少必要文件。
+> **Evidence Status** — synthesized. 操作层；从主干知识压缩成构建、诊断、升级和评审入口。
+
+本目录是知识库的操作入口层，详见 [SKILL.md](../SKILL.md)。
 
 ## 使用流程
 

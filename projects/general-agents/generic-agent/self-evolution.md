@@ -166,3 +166,71 @@ Team Worker A ←→ Team Worker B ←→ Team Worker C
 - **Skill 数量**：从 0 → 50+
 - **平均任务轮次**：从 10+ → 2-3
 - **重复任务耗时**：从分钟级 → 秒级
+
+---
+
+## Plan Mode 五阶段（第二轮审计补充）
+
+复杂任务触发 Plan Mode，将自由推理约束为五阶段流水线：
+
+```
+探索(Explore) → 规划(Plan) → 执行(Execute) → 验证(Verify) → 修复(Fix)
+```
+
+- **探索**：skill_search + 文件扫描 + 环境检测，禁止修改
+- **规划**：输出编号步骤计划，每步对应具体工具调用
+- **执行**：按计划逐步执行，偏离时回退到规划
+- **验证**：运行测试/检查输出，与预期比对
+- **修复**：验证失败时定向修复，最多 3 轮后升级为 ask_user
+
+阶段转换由 system prompt 中的状态机指令驱动，Agent 在响应中声明当前阶段。
+
+---
+
+## Subagent 文件 IO 协议（第二轮审计补充）
+
+主 Agent 可通过 `run_subagent` 工具启动独立子进程，进程间通过文件系统通信：
+
+```python
+# 协议目录结构
+subagent_dir/
+  input.txt      # 主 Agent 写入任务描述
+  output.txt     # Subagent 写入执行结果
+  reply.txt      # Subagent 需要主 Agent 介入时写入问题
+  status.txt     # running / done / need_help / failed
+```
+
+Subagent 是完整的 agent_loop 实例（独立进程、独立上下文窗口），共享同一套记忆层但拥有独立工作记忆。
+主 Agent 轮询 `status.txt`，发现 `need_help` 时读取 `reply.txt` 并写回 `input.txt`。
+**设计价值**：突破单上下文窗口限制，支持并行长任务。
+
+---
+
+## Supervisor Mode 监察者模式（第二轮审计补充）
+
+在 Subagent 协议之上，Supervisor Mode 提供更高层的编排：
+
+- 主 Agent 切换为 Supervisor 角色，不直接执行工具，只分配任务给 Subagent
+- 每轮审查所有活跃 Subagent 的 status/output，决定：继续等待 / 介入指导 / 终止并接管
+- 超时或连续失败的 Subagent 被终止，任务回收到 Supervisor 队列
+- Supervisor 自身也受 Plan Mode 约束，先规划任务分解再分发
+
+---
+
+## Reflect 事件驱动框架（第二轮审计补充）
+
+`reflect/` 目录实现事件驱动的自省机制，核心是 `check() → prompt` 反射器模式：
+
+```python
+class BaseReflector:
+    def check(self, context) -> Optional[str]:
+        """检查条件，返回反射 prompt 或 None（无需反射）"""
+        ...
+```
+
+三个内置反射器：
+1. **LoopDetector**：检测连续 N 轮相同工具调用 + 相同失败，注入 "你正在重复失败，换一种方法"
+2. **GoalDriftDetector**：比对当前行为与原始任务描述的语义距离，超阈值时注入 "回到原始目标"
+3. **ResourceMonitor**：检测 token 消耗 / 轮次 / 时间，接近限制时注入 "资源紧张，精简行动"
+
+反射器在 `turn_end_callback` 中依次执行，命中的 prompt 追加到下轮消息。

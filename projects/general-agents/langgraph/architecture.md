@@ -1,6 +1,6 @@
 # LangGraph 架构分析
 
-> **Evidence Status**: grounded
+> **Evidence Status**: synthesized. 基于 LangGraph 官方文档与社区资料的架构综合，非源码级分析。
 > **来源**: [LangGraph 官方文档](https://langchain-ai.github.io/langgraph/) | [LangChain State of AI Agents 2026](https://www.langchain.com/stateofaiagents) | [Agent Architecture Patterns Taxonomy 2026](https://www.digitalapplied.com/blog/agent-architecture-patterns-taxonomy-2026)
 
 ## 项目概述

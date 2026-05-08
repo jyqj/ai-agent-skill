@@ -165,7 +165,9 @@ README.md（本文）
 
 ## 验证与评估扩展
 
-本品类的核心任务涉及主观性判断，标准 postcondition 验证不完全适用：
+人格一致性、情感回应质量和关系健康度无法用客观 postcondition 覆盖，需要扩展验证维度：
 
-- 验证哲学：`../../concepts/beyond-verification.md` — 从 postcondition 到 resonance / longitudinal / intersubjective 的验证语义扩展
-- 主观性评估：`../../evaluation/subjective-eval.md` — 用户满意度、一致性、对齐度、关系健康度等维度的评估框架
+- 人格一致性：跨会话的人格特质稳定性、边界守护有效性
+- 关系健康度：依赖程度监测、安全边界触发率
+- 验证哲学：`../../concepts/beyond-verification.md` — resonance / longitudinal / intersubjective 验证
+- 评估框架：`../../evaluation/subjective-eval.md` — 一致性、对齐度、关系健康度等维度

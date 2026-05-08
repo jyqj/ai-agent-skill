@@ -2,7 +2,7 @@
 
 > 编制时间：2026-05-07
 > 覆盖范围：2024-2026 年间 AI Agent 系统在生产环境中的重大事故、安全事件和教训
-> 分类维度：架构域（对应 ai-agent-architecture-skill 的 9 域 24 plane 体系）
+> 分类维度：架构域（对应 ai-agent-architecture-skill 的 9 域 25 plane 体系）
 
 ---
 

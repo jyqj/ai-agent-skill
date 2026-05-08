@@ -1,6 +1,6 @@
 # Step Finance 4,000 万美元 DeFi 损失事件
 
-> **Evidence Status** — grounded.
+> **Evidence Status** — mixed（基于新闻报道与第三方安全分析，非官方技术复盘）.
 > - [5 Real AI Agent Security Breaches in 2026 - Beam.ai](https://beam.ai/agentic-insights/ai-agent-security-breaches-2026-lessons)
 
 ---

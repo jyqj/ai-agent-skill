@@ -201,6 +201,94 @@ def approval_callback(cli, command: str, description: str) -> str:
 
 ---
 
+## Plugin 四源发现 + Lifecycle Hooks（第二轮审计补充）
+
+Plugin 通过四种来源自动发现：
+
+1. **内置**：`gateway/plugins/` 目录下的 Python 模块
+2. **配置声明**：`config.yaml` 的 `plugins:` 列表
+3. **入口点**：`entry_points(group='hermes.gateway.plugins')`
+4. **动态加载**：运行时通过 `gateway.load_plugin(path)` 热加载
+
+每个 Plugin 可注册 21 种 lifecycle hook（涵盖消息、会话、agent、cron 全生命周期）：
+
+```python
+class GatewayPlugin(ABC):
+    # 消息生命周期
+    async def on_message_received(self, event: MessageEvent): ...
+    async def on_message_before_agent(self, event: MessageEvent): ...
+    async def on_message_after_agent(self, result: AgentResult): ...
+    async def on_message_send(self, platform: str, chat_id: str, content: str): ...
+    # 会话生命周期
+    async def on_session_create(self, session_key: str): ...
+    async def on_session_resume(self, session_key: str): ...
+    async def on_session_end(self, session_key: str): ...
+    # Agent 生命周期
+    async def on_agent_start(self, agent: AIAgent): ...
+    async def on_agent_tool_call(self, tool_name: str, args: dict): ...
+    async def on_agent_error(self, error: Exception): ...
+    # ... 共 21 种
+```
+
+---
+
+## Stream Consumer 流式桥（第二轮审计补充）
+
+Agent 输出通过 StreamConsumer 桥接到平台适配器，支持分块发送：
+
+```python
+class StreamConsumer:
+    def __init__(self, adapter: BasePlatformAdapter, chat_id: str):
+        self._buffer = ""
+        self._flush_interval = 1.0  # 秒
+
+    async def feed(self, chunk: str):
+        self._buffer += chunk
+        # 遇到段落边界或缓冲超时时刷新
+        if self._should_flush():
+            await self._adapter.send(self._chat_id, self._buffer)
+            self._buffer = ""
+```
+
+**洞察**：解决"LLM 逐 token 输出"与"平台消息粒度"的阻抗不匹配。按段落边界聚合避免消息碎片化。
+
+---
+
+## PlatformRegistry + Channel Directory（第二轮审计补充）
+
+`PlatformRegistry` 管理所有已注册平台适配器及其能力声明：
+
+```python
+class PlatformRegistry:
+    def get_capabilities(self, platform: str) -> PlatformCapabilities:
+        # 返回该平台支持的功能：文本/图片/语音/文件/反应/线程
+        ...
+    def resolve_channel(self, name: str) -> Optional[ChannelInfo]:
+        # Channel Directory：人类友好名称 → platform:chat_id
+        # 如 "home" → "telegram:123456", "work" → "slack:C0123"
+        ...
+```
+
+Channel Directory 由 `config.yaml` 的 `channels:` 段定义，支持 Cron 任务和跨平台投递使用人类友好标签。
+
+---
+
+## Session Mirror（第二轮审计补充）
+
+Session Mirror 允许将一个会话的输出同步到另一个平台/频道（只读镜像）：
+
+```python
+# config.yaml
+session_mirrors:
+  - source: "telegram:user_123"
+    target: "discord:channel_456"
+    filter: "final_only"  # 仅镜像最终结果，不含中间思考
+```
+
+用途：用户在 Telegram 交互，团队在 Discord 频道实时观察 agent 输出。
+
+---
+
 ## SQLite 会话存储
 
 ```python

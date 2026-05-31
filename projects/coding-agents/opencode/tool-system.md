@@ -465,7 +465,7 @@ function tryReplace(content: string, old: string, new_: string, replacers: Gener
 - 每个 Replacer 实现为 Generator，`yield` 所有可能的候选匹配位置。
 - 统一的**唯一性检查**：只有某个策略恰好产生 1 个候选时才执行替换，避免歧义替换。
 - 多候选意味着该策略精度不足，自动降级到更宽松的下一级策略。
-- 这种 Generator + 唯一性守卫的组合，比简单的 `if/else` 降级更安全——宽松策略不会误替换多个位置。
+- 这种 Generator + 唯一性守卫的组合，比简单的 `if/else` 降级更安全，宽松策略不会误替换多个位置。
 
 ---
 
@@ -500,7 +500,7 @@ Level 3: Symbol 范围修正
 - **28 种语言自动 server 管理**：OpenCode 内置了 TypeScript、Rust、Go、Python、Java 等 28 种语言的 LSP server 配置。
 - 启动时根据项目文件类型自动检测并启动对应 LSP server，无需用户配置。
 - LSP server 生命周期与 Session 绑定，会话结束自动清理。
-- Level 1（自动诊断）是隐式的——agent 不需要主动调用，edit 后自动获得反馈。Level 2 和 3 是显式的——agent 按需调用。
+- Level 1（自动诊断）是隐式的，agent 不需要主动调用，edit 后自动获得反馈。Level 2 和 3 是显式的，agent 按需调用。
 
 ---
 

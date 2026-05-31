@@ -6,7 +6,7 @@
 
 Learning 模块从成功任务中提炼可复用技能，从失败中改进 Harness 设计。
 
-成熟 Learning 不是“把成功路径直接存起来”，而是：
+成熟 Learning 遵循一条从提炼到验证再到治理的完整流水线：
 
 ```text
 verified trace → distilled candidate → replay / second-use validation → governed activation → monitored retirement

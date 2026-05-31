@@ -30,6 +30,86 @@
 | ConfigFingerprint | immutable identity | 是 | Operations | 行为配置追踪，不代表 skill 自身状态 |
 | CandidateRecord | tracked | 是 | Learning & Adaptation | 候选经验、作用域、证据和失效条件 |
 
+下图展示核心数据对象之间的流转关系与关键属性:
+
+```mermaid
+classDiagram
+    direction LR
+
+    class RawInputRef {
+        +raw_id: string
+        +modality: enum
+        +immutable: true
+    }
+
+    class Observation {
+        +observation_id: obs_...
+        +confidence: 0.0~1.0
+        +trust_lane: enum
+        +freshness: datetime
+        +transform_chain: list
+    }
+
+    class TaskEnvelope {
+        +task_id: task_...
+        +permissions: scope
+        +depth_limit: int
+        +immutable: true
+    }
+
+    class Decision {
+        +decision_id: dec_...
+        +intent: string
+        +reasoning_mode: enum
+        +append_only: true
+    }
+
+    class ToolCall {
+        +tool_call_id: call_...
+        +tool_id: string
+        +args: object
+        +intended_effect: EffectType
+        +reversibility: enum
+    }
+
+    class ExecutionResult {
+        +result_id: res_...
+        +tool_call_id: call_...
+        +status: success|error
+        +payload: object
+        +append_only: true
+    }
+
+    class EffectRecord {
+        +effect_id: eff_...
+        +verification_status: enum
+        +consistency_model: enum
+        +compensation: object
+        +append_only: true
+    }
+
+    class ContextPack {
+        +ephemeral: true
+        +可重建: true
+    }
+
+    class VerificationResult {
+        +conclusion: enum
+        +evidence_refs: list
+    }
+
+    RawInputRef --> Observation : 采集与转换
+    Observation --> TaskEnvelope : 触发任务创建
+    Observation --> ContextPack : 组装上下文
+    TaskEnvelope --> Decision : 约束决策空间
+    ContextPack --> Decision : 提供模型输入
+    Decision --> ToolCall : 生成行动
+    ToolCall --> ExecutionResult : 工具执行返回
+    ExecutionResult --> EffectRecord : 记录实际效果
+    EffectRecord --> VerificationResult : 验证效果
+    VerificationResult --> Observation : 验证产生新观察
+```
+
 ## 2. 关键 schema
 
 ### 2.1 Observation
@@ -37,7 +117,7 @@
 ```yaml
 observation:
   observation_id: obs_...
-  raw_refs: []
+  raw_refs: []                # 统一名称: evidence_refs — 见 glossary.md#evidence_refs
   modality: text | image | audio | video | event | structured_data
   transform_chain:
     - step: asr | ocr | html_parse | chunk | summarize | embed | rerank | normalize
@@ -126,7 +206,7 @@ effect_record:
   intended_effect: object
   actual_observation_refs: []
   verification_status: unverified | verified | failed | partially_verified | pending | not_required
-  verification_evidence: []
+  verification_evidence: []   # 统一名称: evidence_refs — 见 glossary.md#evidence_refs
   consistency_model: strong | eventual | unknown
   compensation:
     available: true
@@ -256,7 +336,7 @@ resource_plan:
 | Fresh observations outrank stale memory | 最新可信观察优先于长期记忆 |
 | Verification writes explicit status | 未验证、部分验证、失败都必须显式记录 |
 | Interaction is state-changing | 用户纠正、审批、教学会改变任务或记忆状态 |
-| Cost is a design object | 成本预算不是日志字段，而是执行策略输入 |
+| Cost is a design object | 成本预算是执行策略输入，而非仅作日志字段 |
 
 
 ### 2.9 CandidateRecord

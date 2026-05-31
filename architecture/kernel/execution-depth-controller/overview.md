@@ -41,7 +41,7 @@ Execution Depth = Goal Persistence × Representation Quality × State Continuity
 
 ## 3. Deep Execution Controller
 
-Controller 不直接“思考答案”，而是决定 Agent 应该继续深入、验证、恢复、请求审批，还是停止交付。
+Controller 负责决定 Agent 应该继续深入、验证、恢复、请求审批，还是停止交付。
 
 ```text
 NEW_TASK
@@ -64,6 +64,35 @@ VERIFY_MILESTONE
 FINAL_VERIFY (claim + effect + risk)
   ↓
 DELIVER
+```
+
+下图展示执行深度控制环——任务进入后经深度评估、预算扣减、里程碑执行与验证，最终收束回 Agent Loop:
+
+```mermaid
+flowchart TD
+    NT["新任务进入"] --> RG["表示质量门控\nRepresentation Gate"]
+    RG --> SD["深度评估\nSelect Depth"]
+    SD --> BT["构建任务图\nBuild Task Graph"]
+    BT --> RM["执行里程碑\nRun Milestone"]
+    RM --> BD["预算扣减\nBudget Deduct"]
+    BD --> VM["验证里程碑\nVerify Milestone"]
+    VM -->|通过| CP["Checkpoint"]
+    CP --> NM{"还有下一\n里程碑?"}
+    NM -->|是| RM
+    NM -->|否| FV["最终验证\nFinal Verify"]
+    FV --> DL["交付\nDeliver"]
+    DL --> AL["回到 Agent Loop"]
+    VM -->|状态过期| RS["刷新状态\nRefresh State"]
+    RS --> RM
+    VM -->|失败| RC["恢复策略\nRecover"]
+    RC --> RM
+    VM -->|高风险| RA["请求审批\nRequest Approval"]
+    RA --> RM
+    VM -->|预算耗尽| SE["携证据停止\nStop with Evidence"]
+
+    style NT fill:#e8f4fd,stroke:#369
+    style SE fill:#fee,stroke:#c00,color:#900
+    style AL fill:#efe,stroke:#393
 ```
 
 ### Controller 职责
@@ -168,7 +197,7 @@ def decide_next_action(task, state, policy):
 | Branch Budget | 最多并行分支或 worker 数 |
 | Freshness Budget | 多久必须刷新一次 world state |
 
-预算的目的不是让 Agent 变笨，而是避免“无限深入、无限修复、无限分支、无限 stale state”。
+预算的目的是避免”无限深入、无限修复、无限分支、无限 stale state”等退化循环。
 
 ## 6. 执行深度的 9 个瓶颈
 
@@ -183,6 +212,72 @@ def decide_next_action(task, state, policy):
 | Effect Verification Gap | 执行了动作，但没证明正确 | postcondition + read-after-write + effect ledger |
 | Approval Drag | 审批太多导致执行断裂 | 风险动作批量/分级审批 |
 | Merge Failure | 多 Worker 输出冲突 | output contract/conflict policy/merge strategy |
+
+### 9 个瓶颈编号索引与 BR-01 关联
+
+以下为 9 个瓶颈的统一编号，每个瓶颈均体现原则 **BR-01（Agent 必须在显式资源预算下运行）** 的不同侧面：资源有限意味着每个瓶颈都可能导致预算浪费或耗尽。
+
+| 编号 | 瓶颈名称 | BR-01 关联说明 |
+|------|---------|---------------|
+| BN-01 | Weak Representation | 输入表示有损导致后续步骤返工，浪费 token 和工具预算 |
+| BN-02 | Goal Drift | 目标偏移导致无效步骤消耗预算，违反"预算内够好"原则 |
+| BN-03 | State Loss | 状态丢失迫使重复执行已完成工作，直接消耗 step/tool 预算 |
+| BN-04 | Context Rot | 上下文腐烂导致关键信息被噪音淹没，增加无效推理的 token 成本 |
+| BN-05 | Tool Fragility | 工具失败后盲目重试耗尽 retry 预算，未能触发策略切换 |
+| BN-06 | World State Staleness | 依赖过期状态做出错误决策，导致动作失败和预算浪费 |
+| BN-07 | Effect Verification Gap | 缺少效果验证导致 Ghost Success 累积，后期修复成本远高于即时验证 |
+| BN-08 | Approval Drag | 审批过多导致 human budget 耗尽，执行流程断裂 |
+| BN-09 | Merge Failure | 多 Worker 输出冲突消耗额外协调预算，严重时需要全部重做 |
+
+原则详情见 [`concepts/foundations/PRINCIPLE-INDEX.md`](../../../concepts/foundations/PRINCIPLE-INDEX.md)。
+
+下图展示 BN-01 至 BN-09 九个瓶颈在执行链路中的分布——从输入表示到多 Worker 合并，每个环节都可能耗尽预算:
+
+```mermaid
+flowchart TD
+    subgraph 输入层
+        BN1["BN-01 Weak Representation\n输入有损 → 返工浪费预算"]
+    end
+
+    subgraph 规划层
+        BN2["BN-02 Goal Drift\n目标偏移 → 无效步骤"]
+    end
+
+    subgraph 状态层
+        BN3["BN-03 State Loss\n状态丢失 → 重复执行"]
+        BN4["BN-04 Context Rot\n上下文腐烂 → 无效推理"]
+        BN6["BN-06 World State Staleness\n状态过期 → 错误决策"]
+    end
+
+    subgraph 执行层
+        BN5["BN-05 Tool Fragility\n工具脆弱 → 盲目重试"]
+        BN7["BN-07 Effect Verification Gap\n验证缺失 → Ghost Success"]
+    end
+
+    subgraph 协调层
+        BN8["BN-08 Approval Drag\n审批过多 → 流程断裂"]
+        BN9["BN-09 Merge Failure\n输出冲突 → 全部重做"]
+    end
+
+    BN1 --> BN2
+    BN2 --> BN3
+    BN3 --> BN5
+    BN4 --> BN5
+    BN6 --> BN5
+    BN5 --> BN7
+    BN7 --> BN8
+    BN8 --> BN9
+
+    style BN1 fill:#fff3e0,stroke:#e65100
+    style BN2 fill:#fff3e0,stroke:#e65100
+    style BN3 fill:#fce4ec,stroke:#c62828
+    style BN4 fill:#fce4ec,stroke:#c62828
+    style BN5 fill:#ffebee,stroke:#b71c1c
+    style BN6 fill:#fce4ec,stroke:#c62828
+    style BN7 fill:#ffebee,stroke:#b71c1c
+    style BN8 fill:#f3e5f5,stroke:#6a1b9a
+    style BN9 fill:#f3e5f5,stroke:#6a1b9a
+```
 
 ## 7. 最小深执行闭环
 

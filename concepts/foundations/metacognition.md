@@ -6,7 +6,7 @@
 
 一个 Agent 能做对事情，靠的是认知能力；一个 Agent 能知道自己做不对什么、并据此调整策略，靠的是元认知能力。`agent-epistemics.md` 给出了"未知"的类型清单（Unobserved、Low-confidence、Stale、Conflicted...），元认知回答的是下一步问题：Agent 如何检测自己处于哪种未知状态？检测到之后如何调整策略？
 
-在当前 LLM Agent 中，元认知失败是最常见也最隐蔽的错误来源——Agent 不是不能做，而是不知道自己不能做，于是自信地输出了错误结果。
+在当前 LLM Agent 中，元认知失败是最常见也最隐蔽的错误来源：Agent 不知道自己不能做，于是自信地输出了错误结果。
 
 ## 1. 元认知的两个层次
 
@@ -55,7 +55,7 @@
 **过度自信（Overconfidence）**
 
 - 表现：Agent 声称"已完成"但实际未完成；给出确定性结论但证据不足；跳过验证步骤
-- 原因：LLM 的训练目标是生成流畅的文本，不是准确评估自身可靠性；助手模式的训练倾向于给出确定答案
+- 原因：LLM 的训练目标是生成流畅的文本，而非准确评估自身可靠性；助手模式的训练倾向于给出确定答案
 - 后果：幻觉、错误结论被当作事实传播、效果未验证就声称成功
 - Agent 架构中的症状：Confidence 字段总是 high，UnknownRecord 几乎为空，Verify 步骤被跳过
 
@@ -68,7 +68,7 @@
 
 ### 校准的工程化方法
 
-1. **置信度不是模型输出的一个数字**，而是多个信号的综合判断：
+1. **置信度应由多个信号综合判断**，而非取模型自报的单一数字：
    - 证据的数量和质量（EvidenceRef 的数量和来源可靠性）
    - 信息的新鲜度（Freshness）
    - 推理链的长度（链越长，累积误差越大）
@@ -137,7 +137,7 @@
 - 总是用 Plan-Execute（先规划后执行）处理需要快速迭代的探索性任务
 - 总是用单 Agent 处理需要多角色协作的任务
 
-策略僵化的根源通常是 Harness 设计中没有为范式切换提供机制——不是 Agent "选择"了错误的范式，而是它"只有"一个范式可用。
+策略僵化的根源通常是 Harness 设计中没有为范式切换提供机制：Agent 并非"选择"了错误的范式，而是只有一个范式可用。
 
 ### 动态策略切换的触发条件
 
@@ -186,12 +186,12 @@
 
 ## 7. 与知识库其他部分的连接
 
-元认知不是一个独立的模块，而是贯穿 Agent 架构多个层面的横切关注点：
+元认知是贯穿 Agent 架构多个层面的横切关注点：
 
 | 元认知能力 | 知识库中的对应 |
 |---|---|
 | 置信度校准 | `../agent-epistemics.md` -- Confidence 对象 |
-| Depth 判断 | `../../architecture/controllers/execution-depth/overview.md` |
+| Depth 判断 | `../../architecture/kernel/execution-depth-controller/overview.md` |
 | 策略选择 | `../../paradigms/paradigm-routing.md` |
 | 未知状态检测 | `../agent-epistemics.md` -- UnknownRecord |
 | 学习意识 | `../../architecture/learning/` 目录 |
@@ -201,7 +201,7 @@
 
 - 未知的类型清单：`../agent-epistemics.md`
 - 范式路由的工程实现：`../../paradigms/paradigm-routing.md`
-- 执行深度控制：`../../architecture/controllers/execution-depth/overview.md`
+- 执行深度控制：`../../architecture/kernel/execution-depth-controller/overview.md`
 - 学习与适应机制：`../../architecture/learning/overview.md`
 - 意向立场与目标归因：`./intentional-stance.md`
 - BDI 与预测误差：`./bdi-and-active-inference.md`

@@ -111,7 +111,7 @@ graph TD
 | 项目 | 拒绝后行为 | 升级路径 | 安全硬限制 |
 |------|-----------|---------|-----------|
 | **Codex** | `ToolError::Rejected(reason)` 返回给模型 | 沙箱拒绝 → 用户确认 → 无沙箱重试 | Guardian LLM 风险评分 80-100 直接拒绝 |
-| **Claude Code** | hooks `beforeToolUse` 可阻止执行 | 无显式升级——被拒绝的操作返回错误给模型 | feature flags 控制哪些能力可用 |
+| **Claude Code** | hooks `beforeToolUse` 可阻止执行 | 无显式升级，被拒绝的操作返回错误给模型 | feature flags 控制哪些能力可用 |
 | **OpenCode** | `Permission.Ruleset` 按工具分级（allow/ask/deny） | `ask` 级别的操作暂停等待用户确认 | `plan` agent 默认 `"*": "deny"` 只允许读操作 |
 | **Hermes** | 三层审批：正则 → 智能评估 → 用户确认 | 超时默认拒绝（`return "deny"`） | `DELEGATE_BLOCKED_TOOLS` 冻结集合不可绕过 |
 | **Warp** | `CommandExecutionPermission::Denied(reason)` 带原因返回 | `AutonomyForceDisabled` 不可覆盖；其他原因可由用户设置覆盖 | `ProtectedPath` 即使用户设置允许也不可写 |
@@ -176,7 +176,7 @@ graph TD
 
 ## 6. 未消化的观察
 
-1. **"让模型决定恢复策略"的有效性边界**：Claude Code 和 GenericAgent 都把错误信息扔回给模型，让模型自己选择下一步。这在简单工具错误时工作良好，但当错误涉及系统级问题（如速率限制、沙箱权限）时，模型的决策质量存疑。是否存在一个明确的边界——哪些错误应该由系统处理，哪些可以委托给模型？
+1. **"让模型决定恢复策略"的有效性边界**：Claude Code 和 GenericAgent 都把错误信息扔回给模型，让模型自己选择下一步。这在简单工具错误时工作良好，但当错误涉及系统级问题（如速率限制、沙箱权限）时，模型的决策质量存疑。是否存在一个明确的边界：哪些错误应该由系统处理，哪些可以委托给模型？
 
 2. **压缩失败的恢复**：Hermes 在压缩失败 3 次后直接抛 `ContextOverflowError` 终止。OpenCode 在压缩失败后重放用户消息（去除媒体）作为兜底。Claude Code 有 `hasAttemptedReactiveCompact` 标记但没有看到最终的兜底策略。压缩本身失败时，最佳的恢复策略是什么？目前没有项目给出令人满意的答案。
 

@@ -1,5 +1,7 @@
 # AI Agent 架构语料汇总 (2025-2026)
 
+> **Evidence Status** — grounded. 多源采集语料汇总，采集时间 2026-05-07。
+
 > 采集时间：2026-05-07
 > 覆盖范围：生产级 Agent 架构模式、主流框架、Harness 工程、开放标准
 
@@ -141,7 +143,7 @@ Anthropic 为前端/全栈开发引入 **Planner-Generator-Evaluator** 三 Agent
 - 评估器通过 few-shot 学习校准评分标准（设计质量、原创性、工艺、功能性）
 - 契约机制：sprint 前生成器与评估器约定可验证交付物和测试标准
 
-**成本对比**：单 Agent（20 分钟，$9）vs 完整 harness（6 小时，$200）——后者成本高 20 倍但核心功能实际可用。
+**成本对比**：单 Agent（20 分钟，$9）vs 完整 harness（6 小时，$200），后者成本高 20 倍但核心功能实际可用。
 
 **演进洞察**：随着模型能力提升，harness 需定期"去肥"（remove unnecessary components），避免过度工程化。升级到 Opus 4.6 后，单连续会话 + 自动 compaction 即可处理之前需要跨 session 上下文重置的长任务。
 
@@ -192,7 +194,7 @@ Anthropic 为前端/全栈开发引入 **Planner-Generator-Evaluator** 三 Agent
 
 > **Agent = Model + Harness**
 >
-> AI 的定义性瓶颈不再是模型原始能力，而是 **Agent Harness**——围绕模型的运行时基础设施，将概率性推理转化为可靠、确定性行动，管理上下文、工具执行、安全控制和会话记忆。
+> AI 的定义性瓶颈已从模型原始能力转移到 **Agent Harness**：围绕模型的运行时基础设施，将概率性推理转化为可靠、确定性行动，管理上下文、工具执行、安全控制和会话记忆。
 
 ### 5.2 三层架构
 
@@ -302,7 +304,7 @@ Google 于 Cloud NEXT 2025 发布 ADK，开源的 code-first 框架，覆盖 Age
 ### 7.1 AGENTS.md
 
 OpenAI 于 2025 年 8 月发布，为 AI 编码 Agent 提供项目级指导的通用标准：
-- 设计哲学：**极致简单**——单文件、纯 Markdown、可选元数据、人类优先、工具无关
+- 设计原则：**极致简单**，单文件、纯 Markdown、可选元数据、人类优先、工具无关
 - 已被 **60,000+ 开源项目**和主流 Agent 框架采用（Amp, Codex, Cursor, Devin, Factory, Gemini CLI, GitHub Copilot, Jules, VS Code）
 - 三种加载模式：`always_apply`（自动加载）、`agent_requested`（Agent 按需）、`manual`（显式调用）
 

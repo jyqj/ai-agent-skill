@@ -47,3 +47,4 @@ review_result:
 1. `../index/design-checklist.md`
 2. `../concepts/foundations/principle-obligation-eval-map.md`
 3. `../architecture/plane-interaction-matrix.md`
+4. 详细运行时契约见 `../synthesis/local-agent-runtime-practices.md#运行时契约检查表`

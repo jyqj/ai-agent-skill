@@ -125,7 +125,7 @@ graph LR
 
 **共识**：所有生产系统（Hermes, Codex, Warp, OpenCode）都有某种形式的状态持久化。
 
-**分歧**：Claude Code 作为生产系统却没有显式持久化——它依赖的是"对话本身就是状态"的设计哲学，加上多层压缩确保上下文不溢出。这个设计在 CLI 场景下可行，但不适合需要跨进程恢复的场景。
+**分歧**：Claude Code 作为生产系统却没有显式持久化。它依赖的是"对话本身就是状态"的设计思路，加上多层压缩确保上下文不溢出。这个设计在 CLI 场景下可行，但不适合需要跨进程恢复的场景。
 
 ### 3.5 单线程 vs 多线程
 
@@ -138,7 +138,7 @@ graph LR
 | Warp | 多任务并行 | `HashMap<TaskId, Vec<AIAgentInput>>` | `OrchestrationEventService` 跨 Agent 消息传递 |
 | GenericAgent | 单线程 | 串行 | 无 |
 
-**共识**：工具并发不是默认行为——所有支持并发的项目（Hermes, Codex, Warp）都有显式的安全检查门控。
+**共识**：工具并发不是默认行为。所有支持并发的项目（Hermes, Codex, Warp）都有显式的安全检查门控。
 
 **分歧**：GenericAgent 和 Claude Code 选择完全串行，理由是简单可调试；Hermes 选择条件并发，在安全时并行以提高吞吐；Warp 最激进，支持多任务并行+多模型路由。
 
@@ -190,9 +190,9 @@ graph TD
 
 以下是从横向对比中浮现但尚未形成确定结论的问题：
 
-1. **Generator 模式与崩溃恢复的矛盾**：Claude Code 和 GenericAgent 都没有持久化机制。Generator 的 lazy evaluation 天然不友好于 checkpoint——你很难在 `yield` 之间插入一个"保存到磁盘"的语义。OpenCode 用 Effect.js 解决了这个问题，但代价是引入了整套代数效应系统。是否存在更轻量的方案？
+1. **Generator 模式与崩溃恢复的矛盾**：Claude Code 和 GenericAgent 都没有持久化机制。Generator 的 lazy evaluation 天然不友好于 checkpoint：很难在 `yield` 之间插入"保存到磁盘"的语义。OpenCode 用 Effect.js 解决了这个问题，但代价是引入了整套代数效应系统。是否存在更轻量的方案？
 
-2. **预算模型的缺失**：Claude Code 和 Warp 没有 Hermes 那样的显式 `IterationBudget`。Claude Code 依赖 `turnCount` 和外部 token 限制，Warp 依赖服务端限制。在 API 成本持续下降的趋势下，精细预算控制的 ROI 是否在降低？还是相反——随着 Agent 自主性增强，预算控制会变得更重要？
+2. **预算模型的缺失**：Claude Code 和 Warp 没有 Hermes 那样的显式 `IterationBudget`。Claude Code 依赖 `turnCount` 和外部 token 限制，Warp 依赖服务端限制。在 API 成本持续下降的趋势下，精细预算控制的 ROI 是否在降低？还是相反，随着 Agent 自主性增强，预算控制会变得更重要？
 
 3. **Doom Loop 检测的位置**：OpenCode 把它放在主循环（`SessionProcessor`），Hermes 通过预算压力注入间接处理，GenericAgent 通过轮次警告（`turn % 35`）处理。哪种方式更有效？OpenCode 的方式更精确（检测相同工具调用模式），但 Hermes 的方式更简单（纯计数）。这背后可能反映的是"检测循环"和"防止循环"是两个不同的问题。
 

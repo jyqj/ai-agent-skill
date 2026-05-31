@@ -19,7 +19,7 @@ Education Agent 的闭环天然分为两层，对应 ITS 研究中的 inner loop
 
 ### Inner Loop（步骤级）
 
-每一步交互的微循环——对应一个问题或一次解释：
+每一步交互的微循环，对应一个问题或一次解释：
 
 ```text
 呈现问题/解释
@@ -33,7 +33,7 @@ Education Agent 的闭环天然分为两层，对应 ITS 研究中的 inner loop
 
 ### Outer Loop（任务级）
 
-跨多个步骤的宏循环——对应一节课或一个学习主题：
+跨多个步骤的宏循环，对应一节课或一个学习主题：
 
 ```text
 评估当前主题掌握度
@@ -48,7 +48,7 @@ Education Agent 的闭环天然分为两层，对应 ITS 研究中的 inner loop
 
 ### Meta Loop（路径级）
 
-跨多个会话的长期循环——对应整个学习旅程：
+跨多个会话的长期循环，对应整个学习旅程：
 
 ```text
 定期评估整体进度
@@ -59,6 +59,45 @@ Education Agent 的闭环天然分为两层，对应 ITS 研究中的 inner loop
 ```
 
 时间尺度：天到月。关注**长期学习成果**。
+
+下图展示三层时间尺度的嵌套循环结构，外层包含内层，每层有各自的反馈信号:
+
+```mermaid
+flowchart TB
+    subgraph Meta["Meta Loop — 路径级（天~月）"]
+        direction TB
+        M1["定期评估整体进度"] --> M2["计划 vs 实际对比"]
+        M2 --> M3["遗忘检测<br/>→ 间隔复习触发"]
+        M3 --> M4["调整学习路径"]
+        M4 --> M5["重新评估目标可达性"]
+        M5 -.->|"反馈: 长期进度 + 遗忘曲线"| M1
+
+        subgraph Outer["Outer Loop — 任务级（分钟~小时）"]
+            direction TB
+            O1["评估当前主题掌握度"] --> O2["选择教学活动<br/>（讲解/练习/评估）"]
+            O2 --> O3["执行 Inner Loop（多轮）"]
+            O3 --> O4{"达到学习目标?"}
+            O4 -->|"是"| O5["进入下一主题"]
+            O4 -->|"否"| O6["回退补强 / 继续深化"]
+            O5 --> O7["更新学习路径与课程进度"]
+            O6 --> O7
+            O7 -.->|"反馈: mastery 估计 + 参与度"| O1
+
+            subgraph Inner["Inner Loop — 步骤级（秒~分钟）"]
+                direction TB
+                I1["呈现问题 / 解释"] --> I2["学习者回应"]
+                I2 --> I3["判断对错 +<br/>分析错误模式"]
+                I3 --> I4["提供反馈 /<br/>提示 / 追问"]
+                I4 --> I5["更新知识点<br/>mastery 估计"]
+                I5 -.->|"反馈: 即时理解度"| I1
+            end
+        end
+    end
+
+    style Meta fill:#eaf2f8,stroke:#2980b9,color:#000
+    style Outer fill:#fef9e7,stroke:#f39c12,color:#000
+    style Inner fill:#eafaf1,stroke:#27ae60,color:#000
+```
 
 ## Happy Path
 

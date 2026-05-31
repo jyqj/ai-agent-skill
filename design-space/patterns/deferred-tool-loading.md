@@ -4,7 +4,7 @@
 
 ## 问题
 
-Agent 的工具越多，每轮对话传给模型的 tool schema 就越大。一个典型的工具定义（name + description + parameters JSON Schema）约 200-500 tokens；当工具数超过 30 个时，schema 本身就占用 6K-15K tokens，超过 100 个时可能达到 50K+ tokens。这些 token 在绝大多数轮次中是浪费的——模型在单轮中通常只调用 1-3 个工具。
+Agent 的工具越多，每轮对话传给模型的 tool schema 就越大。一个典型的工具定义（name + description + parameters JSON Schema）约 200-500 tokens；当工具数超过 30 个时，schema 本身就占用 6K-15K tokens，超过 100 个时可能达到 50K+ tokens。这些 token 在绝大多数轮次中是浪费的，因为模型在单轮中通常只调用 1-3 个工具。
 
 粗暴的解决方案（如按类别分组、只传最常用工具）要么需要预先知道用户意图，要么会遗漏低频但关键的工具。
 
@@ -60,6 +60,23 @@ ToolSearch 支持三种查询模式：
 | 名称约束搜索 | `+prefix keyword` | 限定名称前缀，再按关键词排序 |
 
 关键词搜索匹配范围包括工具名、description 和 searchHint。结果数量通过 `max_results` 参数控制（默认 5）。
+
+下图展示工具从精简到可调用的状态流转:
+
+```mermaid
+stateDiagram-v2
+    [*] --> deferred : 启动时注册
+
+    deferred --> searching : 模型调用 ToolSearch
+    searching --> callable : schema 加载成功
+    searching --> deferred : 未匹配到 / 加载失败
+
+    callable --> callable : 后续轮次直接可用
+
+    note right of deferred : 仅名称 + searchHint<br/>不含参数 schema<br/>不可直接调用
+    note right of searching : select:精确选择<br/>关键词搜索<br/>+前缀约束搜索
+    note right of callable : 完整 JSON Schema 已注入<br/>模型可立即调用
+```
 
 ### Token 收益
 

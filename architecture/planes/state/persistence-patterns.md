@@ -123,4 +123,4 @@ graph LR
     GA -->|"可跨会话<br/>结构化 KV"| MULTI2["多会话（结构化）"]
 ```
 
-关键取舍：`working` checkpoint 的优势是简单、结构化、可跨会话；劣势是依赖模型主动调用 `update_working_checkpoint`——如果模型忘了调用，信息就丢了。Claude Code 的 CompactBoundary 不依赖模型主动行为（由 harness 自动标记），但只在单会话内有效。
+关键取舍：`working` checkpoint 的优势是简单、结构化、可跨会话；劣势是依赖模型主动调用 `update_working_checkpoint`，如果模型忘了调用，信息就丢了。Claude Code 的 CompactBoundary 不依赖模型主动行为（由 harness 自动标记），但只在单会话内有效。

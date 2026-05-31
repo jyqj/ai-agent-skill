@@ -55,7 +55,7 @@ failure_record:
 
 ## Recovery Budget
 
-恢复必须有预算，否则系统会从“会自修复”退化成“会死循环”。
+恢复必须有预算，否则系统会从”可自修复”退化成”死循环”。
 
 ```yaml
 recovery_budget:
@@ -71,7 +71,7 @@ recovery_budget:
 
 > Evidence Status: **production-validated** — hermes-agent、Codex、Claude Code 三个项目独立收敛到同一模式。
 
-传统恢复是 retry / fallback / abort 三叉树——每次只走一条分支。生产系统的实际做法是把恢复拆成**多个正交决策位**，同一错误可同时触发多个动作。
+传统恢复是 retry / fallback / abort 三叉树，每次只走一条分支。生产系统的实际做法是把恢复拆成**多个正交决策位**，同一错误可同时触发多个动作。
 
 hermes-agent 的 `ClassifiedError` 包含 4 个独立布尔位：`should_retry`、`should_rotate_credential`（402 计费耗尽）、`should_compress`（prompt-too-long）、`should_fallback`（持续 rate limit 切换模型）。一次 402 可以同时触发 rotate + retry。
 
@@ -109,9 +109,9 @@ Claude Code 对特定错误类型有精确映射：prompt-too-long → 反应式
 
 > Evidence Status: **production-validated** — Claude Code BQ 遥测数据验证。
 
-Recovery Budget 管的是总量上限，但还有一种更具体的浪费模式：**连续失败不停重试**。Claude Code 遥测数据表明 1,279 个会话出现 50+ 连续失败，每天浪费约 250K 次 API 调用。
+Recovery Budget 管的是总量上限，但还有一种更具体的浪费模式：**连续失败不停重试**。Claude Code 遥测数据表明 1,279 个会话出现 50+ 连续失败，每天浪费约 250K 次 API 调用。详细的分类管道和恢复策略映射见 [recovery-decision-tree.md](./recovery-decision-tree.md)。
 
-**模式**：维护 `consecutive_failures` 计数器，每次失败 +1，任何一次成功立即重置为 0。计数器达到阈值时触发熔断——不再自动重试，而是升级或停止。
+**模式**：维护 `consecutive_failures` 计数器，每次失败 +1，任何一次成功立即重置为 0。计数器达到阈值时触发熔断，转为升级或停止。
 
 ```yaml
 consecutive_failure_breaker:
@@ -121,13 +121,13 @@ consecutive_failure_breaker:
   evidence: "Claude Code BQ: 1,279 sessions × 50+ consecutive failures = ~250K wasted API calls/day"
 ```
 
-与 Recovery Budget 的 `max_total_retries` 互补：Budget 管总量，连续失败熔断管**模式**——即使总量未耗尽，连续失败也意味着当前策略无效，应切换而非继续。
+与 Recovery Budget 的 `max_total_retries` 互补：Budget 管总量，连续失败熔断管**模式**。即使总量未耗尽，连续失败也意味着当前策略无效，应切换而非继续。
 
 ## 循环检测与退出（Doom Loop Detection）
 
 > Evidence Status: **production-validated** — OpenCode、GenericAgent、Claude Code、Hermes 四个项目独立实现了循环检测机制。
 
-Recovery Budget 定义了重试上限，但仅靠计数器不够——Agent 可能在不同 action 之间来回切换而不触发同一 action 的计数上限，形成 **Doom Loop**（恢复死循环）。生产系统对此有明确的检测和退出策略：
+Recovery Budget 定义了重试上限，但仅靠计数器不够。Agent 可能在不同 action 之间来回切换而不触发同一 action 的计数上限，形成 **Doom Loop**（恢复死循环）。生产系统对此有明确的检测和退出策略：
 
 - **OpenCode**：`DOOM_LOOP_THRESHOLD = 3`，连续出现相同错误 >= 3 次时触发 compact（压缩上下文释放空间）或直接停止执行
 - **GenericAgent**：渐进式恢复——1 次失败 → 理解错误原因，2 次 → 探测环境，3 次 → 换方案或请求人工介入
@@ -235,7 +235,7 @@ FailureRecord 由 Recovery Plane 生成并记录，由 [Learning Plane](../../le
 
 > Evidence Status: **grounded** — GenericAgent 的 turn-based 恢复策略代码级验证。
 
-长会话中失败的含义随 turn 数递进变化。GenericAgent 的实现揭示了一个关键洞察：**早期失败通常是参数/工具问题，中期失败是上下文丢失，晚期失败是任务本身超出能力边界**。
+长会话中失败的含义随 turn 数递进变化。GenericAgent 的实现验证了一条规律：**早期失败通常是参数/工具问题，中期失败是上下文丢失，晚期失败是任务本身超出能力边界**。详细的决策矩阵和 Turn 阈值映射见 [recovery-decision-tree.md §5.4](./recovery-decision-tree.md#54-递进式失败诊断)。
 
 | Turn 阈值 | 诊断假设 | 恢复动作 |
 |---|---|---|

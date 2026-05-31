@@ -7,8 +7,8 @@
 ## 架构总览
 
 Warp 的 skill 系统分为两层：
-1. **crates/ai/src/skills/** — 底层解析和发现（纯逻辑，无 UI 依赖）
-2. **app/src/ai/skills/** — 应用层管理（文件监控、UI 集成、生命周期）
+1. **crates/ai/src/skills/**：底层解析和发现（纯逻辑，无 UI 依赖）
+2. **app/src/ai/skills/**：应用层管理（文件监控、UI 集成、生命周期）
 
 ```text
 crates/ai/src/skills/
@@ -75,7 +75,7 @@ pub static SKILL_PROVIDER_DEFINITIONS: LazyLock<Vec<SkillProviderDefinition>> =
     ]);
 ```
 
-**关键洞察**：Warp 不只支持自己的 skill 格式，而是兼容 10 种 agent 工具的 skill 目录。这意味着一个 repo 中来自 Claude Code、Codex、Cursor 等不同 agent 的 skills 都能被 Warp 发现和使用。
+Warp 兼容 10 种 agent 工具的 skill 目录（`.agents/`, `.claude/`, `.codex/`, `.cursor/` 等）。一个 repo 中来自 Claude Code、Codex、Cursor 等不同 agent 的 skills 都能被 Warp 发现和使用。
 
 ## Skill 解析
 
@@ -126,7 +126,7 @@ fn parse_skill_internal(path: &Path, provider: SkillProvider, scope: SkillScope)
 }
 ```
 
-**设计洞察**：
+**设计要点**：
 - Skill 解析是**容错**的：没有 frontmatter 也能从路径和内容推导 name/description
 - Description 有 512 字符限制，且在句子边界截断
 - 提供两个入口：`parse_skill`（自动检测 provider）和 `parse_bundled_skill`（强制 Warp + Bundled）
@@ -201,7 +201,7 @@ impl SkillManager {
 }
 ```
 
-**设计洞察**：
+**设计要点**：
 - SkillManager 是 **SingletonEntity**，全局唯一实例
 - 通过 SkillWatcher 实时响应文件变更（创建/修改/删除 skill）
 - 内置 skills 有条件激活：Always / 需要 MCP / 需要文件存在

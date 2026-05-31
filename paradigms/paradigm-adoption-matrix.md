@@ -117,7 +117,69 @@
 | Personal Memory | mempalace | 三层记忆 + 自动提取 |
 | Agent Platform | VCPToolBox | 插件 manifest + 多运行时 |
 
-## D. 使用方式
+## D. 范式采用聚类
+
+下图展示参考项目与范式组合的采用关系（同色节点属于同一范式维度）:
+
+```mermaid
+flowchart LR
+    subgraph 推理["推理范式"]
+        PE["Plan-Execute"]
+        RA["ReAct"]
+        OV["ORDA-VU"]
+    end
+
+    subgraph 协作["协作范式"]
+        SS["Single+Sub"]
+        MK["Multi+Kanban"]
+        SE["Single+Escalate"]
+    end
+
+    subgraph 控制["控制范式"]
+        HG["Hook+Gate+Guardian"]
+        PO["Policy Engine"]
+        SR["Staged Rollout"]
+        SP["Strict Policy"]
+    end
+
+    subgraph 项目["参考项目"]
+        CC["Claude Code"]
+        CX["Codex"]
+        OC["OpenCode"]
+        HM["Hermes"]
+        WP["Warp"]
+    end
+
+    CC --> PE
+    CC --> SS
+    CC --> HG
+    CX --> PE
+    CX --> SS
+    CX --> HG
+    OC --> RA
+    OC --> SS
+    OC --> HG
+    HM --> OV
+    HM --> MK
+    HM --> PO
+    HM --> SR
+    WP --> RA
+    WP --> SE
+    WP --> SP
+
+    style PE fill:#e1f5fe,stroke:#0288d1
+    style RA fill:#e1f5fe,stroke:#0288d1
+    style OV fill:#e1f5fe,stroke:#0288d1
+    style SS fill:#fff3e0,stroke:#f57c00
+    style MK fill:#fff3e0,stroke:#f57c00
+    style SE fill:#fff3e0,stroke:#f57c00
+    style HG fill:#e8f5e9,stroke:#388e3c
+    style PO fill:#e8f5e9,stroke:#388e3c
+    style SR fill:#e8f5e9,stroke:#388e3c
+    style SP fill:#e8f5e9,stroke:#388e3c
+```
+
+## E. 使用方式
 
 ```text
 1. 在主表中找到你的品类行

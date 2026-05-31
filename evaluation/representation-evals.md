@@ -2,7 +2,7 @@
 
 > **Evidence Status** — synthesized. Representation Layer 对 raw ref 保留、有损转换标记、freshness 和 trust tier 的设计要求。
 
-表示层（Representation Layer）是模型推理的输入质量底线——如果输入就是错的，后续推理再好也无济于事。本评估专门验证 Agent 对原始输入的处理质量。
+表示层（Representation Layer）是模型推理的输入质量底线：如果输入就是错的，后续推理再好也无济于事。本评估专门验证 Agent 对原始输入的处理质量。
 
 ## 为什么单独测表示层
 

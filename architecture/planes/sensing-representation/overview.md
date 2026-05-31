@@ -185,3 +185,9 @@ replayable: boolean
 - **NagaAgent**：Chat / Voice / Avatar / MCP 多入口，见 `projects/companion-agents/naga-agent/README.md`
 - **Nocturne Memory**：disclosure routing 强调按条件呈现记忆，见 `projects/memory-systems/nocturne-memory/context-engineering.md`
 - **MemPalace**：原文存储 + 结构化检索，见 `projects/memory-systems/mempalace/README.md`
+
+## OpenClaw: Multi-Channel Representation
+
+> **Evidence**: OpenClaw 20+ channel adapters
+
+OpenClaw 将 20+ 异构渠道（WhatsApp/Telegram/Discord/Slack/iMessage/IRC/Matrix 等）统一为 ChannelInboundMessage / ChannelOutboundReply 接口。每个渠道 adapter 处理 transport、account metadata、allowlist policy 和 turn management。参见 `projects/personal-assistants/openclaw/channel-adapter-pattern.md` 和 `patterns/channel-adapter.md`。

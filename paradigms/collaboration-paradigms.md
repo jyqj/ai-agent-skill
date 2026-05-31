@@ -102,11 +102,11 @@ worker_output:
 
 **Diamond Pattern**：主 Agent 将用户请求分发给多个专家 Agent（如搜索专家、数据库专家、知识库专家），各专家独立生成结果，最后由统一的 Rephraser/Mixer 将多源结果整合为一致风格的输出。Rephraser 还承担安全过滤和格式统一职责。适合需要多源信息但对外呈现统一口径的场景。
 
-**Response Mixer**：与 Diamond 类似但更精细——Mixer 不是简单拼接，而是从各专家输出中选取最优片段重新组合。评估标准可以是置信度、信息密度或与用户意图的匹配度。代价是 Mixer 本身需要足够的推理能力来判断"哪段更好"。
+**Response Mixer**：与 Diamond 类似但更精细。Mixer 从各专家输出中选取最优片段重新组合，评估标准可以是置信度、信息密度或与用户意图的匹配度。代价是 Mixer 本身需要足够的推理能力来判断"哪段更好"。
 
-**Adaptive Loop**：迭代式协作——初始 Agent 生成结果 → Evaluator 评估不满足标准 → 反馈改进方向 → Agent 重新生成。循环直到满足标准或达到轮次上限。关键是 Evaluator 的反馈必须是可操作的（指出具体不足），而非笼统的"不够好"。
+**Adaptive Loop**：迭代式协作。初始 Agent 生成结果 → Evaluator 评估不满足标准 → 反馈改进方向 → Agent 重新生成。循环直到满足标准或达到轮次上限。关键是 Evaluator 的反馈必须是可操作的（指出具体不足），而非笼统的"不够好"。
 
-**Peer-to-Peer 自纠错**：两个或多个 Agent 互为 Reviewer，交替生成和审查。Agent A 生成 → Agent B 审查并标注问题 → Agent A 修正 → Agent B 复审。与 Critic 模式的区别在于角色对称——每个 Agent 既是生产者也是审查者，减少单一视角盲区。适合需要高准确性但无权威裁判的场景。
+**Peer-to-Peer 自纠错**：两个或多个 Agent 互为 Reviewer，交替生成和审查。Agent A 生成 → Agent B 审查并标注问题 → Agent A 修正 → Agent B 复审。与 Critic 模式的区别在于角色对称：每个 Agent 既是生产者也是审查者，减少单一视角盲区。适合需要高准确性但无权威裁判的场景。
 
 详见：
 - `../design-space/patterns/contract-agent.md`
@@ -125,6 +125,63 @@ worker_output:
 
 相关文件：`../architecture/planes/orchestration/overview.md`、`../architecture/planes/orchestration/communication.md`、`../architecture/planes/orchestration/shared-world-model.md`、`../design-space/patterns/worker-orchestration.md`、`../design-space/patterns/subagent.md`。
 
+
+## 多 Agent 协作拓扑
+
+下图展示四种核心协作拓扑的结构对比:
+
+```mermaid
+flowchart TB
+    subgraph 主从模式["主从模式 Supervisor-Worker"]
+        direction TB
+        S1["Supervisor\n(规划+分派)"]
+        W1a["Worker A"]
+        W1b["Worker B"]
+        W1c["Worker C"]
+        S1 -->|"分派任务"| W1a
+        S1 -->|"分派任务"| W1b
+        S1 -->|"分派任务"| W1c
+        W1a -->|"结果"| S1
+        W1b -->|"结果"| S1
+        W1c -->|"结果"| S1
+    end
+
+    subgraph 对等模式["对等模式 Peer Review"]
+        direction TB
+        P2a["Agent A\n(生产+审查)"]
+        P2b["Agent B\n(生产+审查)"]
+        P2c["Agent C\n(生产+审查)"]
+        P2a <-->|"互审"| P2b
+        P2b <-->|"互审"| P2c
+        P2a <-->|"互审"| P2c
+    end
+
+    subgraph 分层模式["分层模式 Coordinator-Worker"]
+        direction TB
+        C3["Coordinator"]
+        T3a["Team Lead A"]
+        T3b["Team Lead B"]
+        W3a1["Worker"]
+        W3a2["Worker"]
+        W3b1["Worker"]
+        C3 --> T3a
+        C3 --> T3b
+        T3a --> W3a1
+        T3a --> W3a2
+        T3b --> W3b1
+    end
+
+    subgraph 黑板模式["黑板模式 Blackboard"]
+        direction TB
+        BB["共享黑板\n(WorldState)"]
+        B4a["Agent A"]
+        B4b["Agent B"]
+        B4c["Agent C"]
+        B4a -->|"读写"| BB
+        B4b -->|"读写"| BB
+        B4c -->|"读写"| BB
+    end
+```
 
 ## 决策树速用
 

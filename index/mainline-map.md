@@ -12,7 +12,7 @@
 
 ```mermaid
 flowchart TD
-  F[Front Door: START-HERE] --> T[Toolkit Facade]
+  F[唯一入口: START-HERE] --> T[Toolkit 工具集]
   F --> M[Mainline Map]
   M --> P0[L0 Philosophy]
   P0 --> P1[L1 Concepts]

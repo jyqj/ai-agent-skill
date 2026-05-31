@@ -52,6 +52,51 @@ credential_pool
 
 磁盘写入使用原子操作（写临时文件 + rename）避免并发读写竞态。内存层提供快速访问，磁盘层保证跨进程一致性。
 
+下图展示凭证的状态流转及转换条件:
+
+```mermaid
+stateDiagram-v2
+    [*] --> active : 凭证加载入池
+
+    active --> rate_limited : 收到 429 / should_rotate_credential
+    active --> banned : 凭证吊销 / auth_invalid
+
+    rate_limited --> cooling : cooldown 计时开始
+    cooling --> active : cooldown 到期 / provider reset_at 到达
+    cooling --> banned : 连续失败超过阈值
+
+    banned --> [*] : 移出凭证池
+
+    note right of active : 可被选择策略选中
+    note right of rate_limited : 标记为不可用,等待冷却
+    note right of cooling : 指数退避或按 provider reset_at
+    note left of banned : 永久不可用,需人工介入
+```
+
+下图展示凭证池轮询选取流程:
+
+```mermaid
+flowchart TD
+    START["开始选取凭证"] --> ITER["遍历凭证池"]
+    ITER --> CHK{"当前凭证状态"}
+
+    CHK -->|"非 active"| SKIP["跳过该凭证"]
+    SKIP --> MORE{"还有更多凭证?"}
+    MORE -->|"是"| ITER
+
+    CHK -->|"active"| LEASE{"lease 未满?<br/>并发数 < max_concurrent"}
+    LEASE -->|"否"| SKIP
+    LEASE -->|"是"| STRATEGY{"按选择策略评估"}
+
+    STRATEGY --> SELECT["选中凭证"]
+    SELECT --> ACQ["acquire_lease()<br/>并发计数 +1"]
+    ACQ --> CALL["执行 API 调用"]
+    CALL --> REL["release_lease()<br/>并发计数 -1"]
+    REL --> UPDATE["根据调用结果<br/>更新凭证状态"]
+
+    MORE -->|"否"| EXHAUST["凭证池耗尽<br/>等待或报错"]
+```
+
 ### Exhaustion Cooldown 与 Reset
 
 当凭证因配额耗尽被标记为不可用时：
@@ -126,3 +171,21 @@ credential.release_lease()   ← 并发计数 -1
 - Hermes: `credential_pool.py` — 多凭证故障转移引擎（1585 行）
 - Hermes: `CredentialSelector` — 四种选择策略实现
 - Hermes: `OAuthTokenSync` — 跨进程 OAuth token 双层同步
+
+## Session-Scoped Auth Overrides (OpenClaw)
+
+> **Evidence**: OpenClaw — per-session provider/model selection
+
+OpenClaw 在全局 credential pool 之上新增了 session 级别的覆盖机制：
+
+**层级**：Global defaults → Agent defaults → Session overrides
+- 每个 session 可独立选择 provider / model / auth profile
+- OAuth refresh + cooldown 与 session lifetime 同步
+- Auth profile fallback chains 支持 round-robin
+
+**DM Pairing 对凭证的影响**：
+- 未配对设备使用受限 auth profile（或拒绝服务）
+- 配对后解锁完整 credential pool
+- 设备断开自动降级 auth scope
+
+**与全局 Pool 的交互**：session override 不覆盖全局 pool 的 exhaustion cooldown。当全局 pool 中某 provider 进入 cooldown，即使 session 指定了该 provider，也会 fallback 到下一个可用 profile。

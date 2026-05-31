@@ -29,7 +29,7 @@ contract:
 
 ## 协商机制
 
-Contract 不是单方面下发——Agent 可以在接受前协商：
+Contract 支持双向协商，Agent 可以在接受前提出修改：
 
 1. **澄清**：Task 描述模糊时，Agent 请求补充约束或示例。
 2. **反提议**：Agent 评估后认为 budget 不足或 scope 不合理，返回修改建议。

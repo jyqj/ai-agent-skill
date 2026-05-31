@@ -7,7 +7,7 @@
 
 Model Capability Profile 是描述模型行为特征的结构化对象，供 Harness 在范式选择、routing、预算分配和评估时使用。
 
-它不是模型的 benchmark 分数汇总，而是面向 Harness 工程的操作性描述——每个字段直接对应一个 Harness 决策点。概念层面的讨论见 `../concepts/model-capability.md`。
+它是面向 Harness 工程的操作性描述，每个字段直接对应一个 Harness 决策点（如范式选择、routing、预算分配）。概念层面的讨论见 `../concepts/model-capability.md`。
 
 ## Schema
 
@@ -165,7 +165,7 @@ model_capability_profile:
   last_evaluated: 2026-05-01T00:00:00Z
 ```
 
-**定位**：最强推理能力 + Adaptive Thinking 自主调节推理深度。SWE-bench Verified 87.6%。适合作为 Planner、复杂 ReAct Agent 的核心模型。成本高，应通过模型路由仅在复杂任务时使用。Interleaved thinking 在工具调用间自动停下思考，对 agentic 工作流至关重要。
+**定位**：最强推理能力 + Adaptive Thinking 自主调节推理深度。SWE-bench Verified 87.6%。适合作为 Planner、复杂 ReAct Agent 的核心模型。成本高，应通过模型路由仅在复杂任务时使用。Interleaved thinking 在工具调用间自动停下思考，是多步 agentic 工作流的关键支撑。
 
 ### Claude Sonnet 4.6（平衡型）
 
@@ -328,6 +328,21 @@ model_capability_profile:
 ```
 
 **定位**：超长上下文窗口（1M token 标称，有效利用 ~800K）。动态思考模式根据 prompt 复杂度自动调整推理深度（类似 Claude 的 Adaptive Thinking）。适合需要处理大量文档/代码库的 Agent 任务。内置 Google 生态工具集成。工具调用可靠性稍弱，建议配合 retry/repair 层。
+
+下图按推理深度（纵轴）和工具调用可靠性（横轴）将上述模型定位到四象限:
+
+```mermaid
+quadrantChart
+    title 模型能力象限：推理深度 vs 工具可靠性
+    x-axis "工具可靠性 低" --> "工具可靠性 高"
+    y-axis "推理深度 浅" --> "推理深度 深"
+
+    Opus 4.7: [0.95, 0.92]
+    Sonnet 4.6: [0.80, 0.55]
+    GPT-4o: [0.72, 0.50]
+    o4-mini: [0.60, 0.85]
+    Gemini 2.5 Pro: [0.55, 0.80]
+```
 
 ---
 

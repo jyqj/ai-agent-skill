@@ -12,4 +12,4 @@
 | **SICA** | 迭代自改进循环：审查历史 → 选最佳版本 → 修改 → 测试 → 记录 | Coding Agent 自进化 |
 | **AlphaEvolve** | 多模型集成（Flash 初稿 + Pro 精化）→ 自动评估 → 迭代优化 | 算法发现、系统优化 |
 
-SICA 的工具演化路径值得注意：Basic file-overwriting → Smart Editor → Diff-Enhanced → AST Symbol Locator → Hybrid。这说明 Agent 不仅优化策略，还能**优化自身工具链**——与本 plane 的 CandidateRecord 和 Skill Curator 模式呼应。
+SICA 的工具演化路径：Basic file-overwriting → Smart Editor → Diff-Enhanced → AST Symbol Locator → Hybrid。这说明 Agent 不仅优化策略，还能**优化自身工具链**，与本 plane 的 CandidateRecord 和 Skill Curator 模式呼应。

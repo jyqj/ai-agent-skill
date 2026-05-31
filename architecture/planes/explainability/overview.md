@@ -3,6 +3,8 @@
 > **所属域**：8. Reflection & Learning — 决策解释与置信度表达
 >
 > **Evidence Status** — theoretical. 从 Interaction Plane（progressive disclosure）、Observability Plane（trace）、agent-epistemics（置信度）中提取解释性需求；结合生产 Agent 用户反馈中的高频痛点。降级理由：核心机制（推理回放 DecisionReplay、ExplanationRecord schema、自动解释触发规则、置信度自然语言映射函数）均为本框架设计，尚未在任何参考项目中被显式实现或验证。Claude Code 的 Progressive Disclosure 和 Hermes 的渐进信息披露仅为间接实践，不构成对本 Plane 完整框架的生产验证。
+>
+> **实验性 Plane**：Explainability 的核心机制（DecisionReplay、ExplanationRecord、置信度映射）均为本框架设计，尚未在任何生产系统中显式实现。生产采用前请先在试点项目验证。Claude Code 的 Progressive Disclosure 仅为间接实践，不构成完整验证。
 
 **Principle Refs**: MC-01, MC-03 — 解释必须显式表达不确定性；知道自己不知道什么才能诚实地向用户说明解释的边界
 
@@ -10,7 +12,7 @@
 
 Explainability Plane 把 Agent 的决策过程、推理依据和不确定性翻译成用户能理解的解释。
 
-它回答的不是"trace 里记了什么"（那是 Observability 的事），而是：
+它回答的核心问题是（区别于 Observability 的 trace 记录）：
 
 ```text
 用户问"为什么选择了这个方案"时，Agent 能回答什么？
@@ -100,7 +102,7 @@ generated_at: datetime
 
 ## 6. 自动解释触发
 
-不是所有解释都需要用户主动询问。以下场景应自动附带解释：
+以下场景应自动附带解释，无需用户主动询问：
 
 | 场景 | 自动解释类型 |
 |---|---|

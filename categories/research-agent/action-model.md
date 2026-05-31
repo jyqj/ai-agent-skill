@@ -41,7 +41,7 @@ claim present
 
 ### Conflict Gate
 
-若某个核心结论存在冲突，默认动作不是“写一个平滑段落”，而是：
+若某个核心结论存在冲突，默认动作是保留冲突并明确处理：
 
 ```text
 preserve conflict

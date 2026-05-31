@@ -24,6 +24,30 @@
   └─ 是：State + World State + Recovery + Trace
 ```
 
+下图展示总入口的三级判定流程:
+
+```mermaid
+flowchart TD
+    START(["任务进入"]) --> Q1{"用户要外部效果?"}
+    Q1 -->|"否"| A1["C0/C1 为主\n关注 claim/evidence"]
+    Q1 -->|"是"| Q2{"外部效果是否\n可逆且可验证?"}
+
+    Q2 -->|"可逆 + 可验证"| A2["C3 Verified Action"]
+    Q2 -->|"可逆但不可直接验证"| A3["C3 + human/external ack"]
+    Q2 -->|"不可逆或高影响"| A4["C4/C5 + approval\n+ compensation/rollback plan"]
+
+    A2 --> Q3{"任务会跨多轮\n跨系统或中断?"}
+    A3 --> Q3
+    A4 --> Q3
+
+    Q3 -->|"否"| A5["单任务拓扑"]
+    Q3 -->|"是"| A6["State + WorldState\n+ Recovery + Trace"]
+
+    style START fill:#f9f,stroke:#333
+    style A5 fill:#9f9,stroke:#333
+    style A6 fill:#9f9,stroke:#333
+```
+
 ## 1. 推理范式
 
 ```text
@@ -58,6 +82,43 @@
   └─ 否 → 不引入搜索复杂度
 ```
 
+下图展示推理范式的四级选择流程:
+
+```mermaid
+flowchart TD
+    R0(["推理范式选择"]) --> Q1{"任务只需\n解释/总结?"}
+    Q1 -->|"是"| A1["Direct Answer"]
+    Q1 -->|"否"| Q2{"需要外部读取?"}
+
+    Q2 -->|"否"| A1
+    Q2 -->|"是，工具结果\n不改变计划"| A2["Tool-Augmented Direct"]
+    Q2 -->|"是，工具结果\n会改变下一步"| Q3{"≥3 次依赖性\n工具调用?"}
+
+    Q3 -->|"否(1-2 次)"| A2
+    Q3 -->|"是"| Q4{"步骤可预先拆分\n且稳定?"}
+
+    Q4 -->|"是(≥80% 步骤\n成功率 ≥90%)"| A3["Plan-and-Execute\n+ step verification"]
+    Q4 -->|"否(失败率 >20%\n或顺序需运行时决定)"| A4["ReAct + stop gate\n+ recovery budget"]
+
+    A3 --> Q5{"风险高或\n写动作不可逆?"}
+    A4 --> Q5
+
+    Q5 -->|"L0-L1 可逆"| A5["按深度选择\nDirect / ReAct / Plan"]
+    Q5 -->|"L2 硬可逆"| A6["加 dry-run + 确认"]
+    Q5 -->|"L3 不可逆"| A7["Plan + Approval\n+ Verification Gate"]
+
+    A5 --> Q6{"需要探索\n多个候选方案?"}
+    A6 --> Q6
+    A7 --> Q6
+
+    Q6 -->|"是"| A8["Tree/Graph Search\n+ evaluator + branch budget"]
+    Q6 -->|"否"| A9["不引入搜索复杂度"]
+
+    style R0 fill:#f9f,stroke:#333
+    style A8 fill:#9f9,stroke:#333
+    style A9 fill:#9f9,stroke:#333
+```
+
 ## 2. 记忆范式
 
 ```text
@@ -74,6 +135,28 @@
        ├─ 项目约定 → Project Memory + validation
        ├─ 成功路径 → Skill candidate + eval gate
        └─ 多实体关系 → Graph Memory + provenance
+```
+
+下图展示记忆范式的选择流程:
+
+```mermaid
+flowchart TD
+    M0(["记忆范式选择"]) --> Q1{"信息只在\n当前任务有效?"}
+    Q1 -->|"是"| A1["Context / TaskState\n不写长期记忆"]
+    Q1 -->|"否"| Q2{"需要长期复用?"}
+
+    Q2 -->|"否"| A2["Trace only"]
+    Q2 -->|"是"| Q3{"是外部对象\n当前状态?"}
+
+    Q3 -->|"是"| A3["WorldStateSnapshot\n+ TTL"]
+    Q3 -->|"否"| Q4{"信息类型?"}
+
+    Q4 -->|"用户偏好"| A4["Disclosure\n+ user control"]
+    Q4 -->|"项目约定"| A5["Project Memory\n+ validation"]
+    Q4 -->|"成功路径"| A6["Skill candidate\n+ eval gate"]
+    Q4 -->|"多实体关系"| A7["Graph Memory\n+ provenance"]
+
+    style M0 fill:#f9f,stroke:#333
 ```
 
 ## 3. 工具范式
@@ -96,6 +179,35 @@
   └─ 否 → typed tool 优先
 ```
 
+下图展示工具范式的四条判定链:
+
+```mermaid
+flowchart TD
+    T0(["工具范式选择"]) --> Q1{"工具动作是否\n高风险或外部写入?"}
+    Q1 -->|"是"| A1["Rich/Workflow Tool\n+ policy + effect verification"]
+    Q1 -->|"否"| A2["Atomic/Static Tool"]
+
+    A1 --> Q2{"任务形态\n是否高度变化?"}
+    A2 --> Q2
+
+    Q2 -->|"是"| A3["Atomic Tool\n+ Tool Router"]
+    Q2 -->|"否"| A4["Rich Domain Tool\n/ Workflow Tool"]
+
+    A3 --> Q3{"工具来自\n第三方/MCP?"}
+    A4 --> Q3
+
+    Q3 -->|"是"| A5["MCP trust boundary\n+ capability grant\n+ output sanitization"]
+    Q3 -->|"否"| A6["常规 Tool Registry"]
+
+    A5 --> Q4{"需要生成\n临时代码处理数据?"}
+    A6 --> Q4
+
+    Q4 -->|"是"| A7["Code-as-Tool\n+ sandbox + artifact trace"]
+    Q4 -->|"否"| A8["typed tool 优先"]
+
+    style T0 fill:#f9f,stroke:#333
+```
+
 ## 4. 协作范式
 
 ```text
@@ -114,6 +226,35 @@
 是否持续运行？
   ├─ 是 → Event-driven + heartbeat + idempotency
   └─ 否 → Task-scoped orchestration
+```
+
+下图展示协作范式的三级判定流程:
+
+```mermaid
+flowchart TD
+    C0(["协作范式选择"]) --> Q1{"单 Agent 能在\n上下文和时间预算\n内完成?"}
+    Q1 -->|"是"| A1["Single Agent + Tools"]
+    Q1 -->|"否"| Q2{"任务是否\n可并行拆分?"}
+
+    Q2 -->|"是"| A2["Coordinator-Worker"]
+    Q2 -->|"否"| Q3{"是否需要\n隔离角色/视角?"}
+
+    Q3 -->|"是"| A3["Subagent / Peer review"]
+    Q3 -->|"否"| A4["Stateful single agent\n+ progressive disclosure"]
+
+    A2 --> Q4{"多个 Agent 是否\n共享外部对象?"}
+    A3 --> Q4
+
+    Q4 -->|"是"| A5["Shared World Model\n+ arbitration + locks/leases"]
+    Q4 -->|"否"| A6["OutputContract\n+ merge strategy"]
+
+    A5 --> Q5{"是否持续运行?"}
+    A6 --> Q5
+
+    Q5 -->|"是"| A7["Event-driven\n+ heartbeat + idempotency"]
+    Q5 -->|"否"| A8["Task-scoped orchestration"]
+
+    style C0 fill:#f9f,stroke:#333
 ```
 
 ## 5. 控制范式
@@ -142,6 +283,38 @@
 上线到生产了吗？
   ├─ 是 → shadow/canary + incident path + kill switch
   └─ 否 → fixture eval + local trace
+```
+
+下图展示控制范式的四级判定流程:
+
+```mermaid
+flowchart TD
+    K0(["控制范式选择"]) --> Q1{"规则能确定判定?"}
+    Q1 -->|"是"| A1["Rule / Permission Tree"]
+    Q1 -->|"否"| Q2{"语义判断\n是否低风险?"}
+
+    Q2 -->|"是"| A2["LLM Judge + rubric"]
+    Q2 -->|"否"| A3["LLM Judge + Rule\n+ Human escalation"]
+
+    A1 --> Q3{"动作会改变\n外部世界?"}
+    A2 --> Q3
+    A3 --> Q3
+
+    Q3 -->|"否"| A4["output check\n/ citation check"]
+    Q3 -->|"是"| A5["Effect verification gate"]
+
+    A5 --> Q4{"动作不可逆\n或高影响?"}
+
+    Q4 -->|"是(L2+/高影响/\n合规/首次执行)"| A6["Approval + sandbox\n/ dry-run + rollback"]
+    Q4 -->|"否(L0-L1 +\n影响小 + 有历史记录)"| A7["risk-based gate\n+ trace"]
+
+    A6 --> Q5{"上线到生产?"}
+    A7 --> Q5
+
+    Q5 -->|"是"| A8["shadow/canary\n+ incident path\n+ kill switch"]
+    Q5 -->|"否"| A9["fixture eval\n+ local trace"]
+
+    style K0 fill:#f9f,stroke:#333
 ```
 
 ## 6. 最终输出

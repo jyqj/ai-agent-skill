@@ -1,10 +1,12 @@
-# 情绪与动机——Agent 的内驱力设计
+# 情绪与动机——Agent 的奖励信号与反馈调节设计
+
+> **适用品类：Companion Agent。其他品类可跳过。**
 
 > **Evidence Status** — theoretical | **类比边界** — 启发性映射，非结构性对应
 
 ## 适用范围
 
-任务交付型 Agent（Coding, Workflow）**不需要情绪系统**——外部 TaskEnvelope 提供了充足的驱动力。本文仅对以下品类有实际价值：Companion Agent（情感响应）、Creative Agent（内在动机）、长期自治系统（主动探索）。
+任务交付型 Agent（Coding, Workflow）**不需要反馈调节机制**，因为外部 TaskEnvelope 提供了充足的驱动力。本文仅对以下品类有实际价值：Companion Agent（情感响应）、Creative Agent（输出多样性调节）、长期自治系统（主动探索）。
 
 ## 过程奖励 vs 结果奖励
 
@@ -21,19 +23,19 @@
 
 ## Companion Agent 安全边界
 
-情感响应不等于无条件镜像。Agent 不应复制用户的负面情绪，而应调整交互风格：
+情感响应不等于无条件镜像。Agent 不应复制用户的负面情绪，而应基于反馈调节机制调整交互风格：
 
 - 用户愤怒 -> Agent 更温和、更结构化，而非也表现愤怒
 - 用户悲伤 -> Agent 提供支持性响应，而非模拟悲伤
-- 情感记忆应与事实记忆分离存储，生命周期更短，需定期衰减
+- 交互偏好历史（interaction preference history）应与事实记忆分离存储，生命周期更短，需定期衰减
 
-## Creative Agent 的内驱力缺口
+## Creative Agent 的奖励信号缺口
 
-当前 LLM Agent 本质是响应式的，缺乏内在动机（不会自发探索）、持续学习（不积累风格偏好）、意图性（无"想要创造"的驱动力）。要实现主动式行为，需显式设计内在动机机制。
+当前 LLM Agent 本质是响应式的，缺乏内在奖励信号（不会自发探索）、持续学习（不积累风格偏好）、主动性（无自发生成任务的优先级触发机制）。要实现主动式行为，需显式设计奖励信号与输出多样性调节机制。
 
 ## 交叉引用
 
 - `goal-hierarchy.md` — 目标优先级调制
-- `metacognitive-control.md` — 何时行动何时反思
+- `metacognitive-control.md` — 何时行动何时做策略评估
 - `../architecture/planes/memory/overview.md` — 记忆 plane
 - `../architecture/evolution/value-drift.md` — 价值漂移

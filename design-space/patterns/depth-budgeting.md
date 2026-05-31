@@ -22,7 +22,7 @@ Depth Budget = Step + Tool + Token + Risk + Time + Branch + Retry + User Attenti
 
 **Token Budget** 控制上下文消耗。过低意味着信息不足以完成推理；过高则引入上下文污染（Context Pollution），噪声淹没关键信息。
 
-**Risk Budget** 控制自动化操作的风险上限。过低使 Agent 执行太浅，什么都需要人工确认；过高则可能越权操作——删除数据、发送邮件、修改生产配置。
+**Risk Budget** 控制自动化操作的风险上限。过低使 Agent 执行太浅，什么都需要人工确认；过高则可能越权操作，例如删除数据、发送邮件、修改生产配置。
 
 **Time Budget** 控制实际运行时间。长任务需要足够的时间窗口，但用户不应无限等待。
 
@@ -64,4 +64,4 @@ for milestone in task_graph:
 
 ## 适用场景
 
-Coding Agent、Research Agent、企业流程 Agent、长时运行 Agent——任何超过"单轮问答"复杂度的 Agent 系统都需要某种形式的深度预算。
+任何超过"单轮问答"复杂度的 Agent 系统（Coding Agent、Research Agent、企业流程 Agent、长时运行 Agent）都需要某种形式的深度预算。

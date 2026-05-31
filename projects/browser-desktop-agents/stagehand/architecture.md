@@ -5,9 +5,9 @@
 
 ## 项目概述
 
-Stagehand 由 Vercel 旗下 Browserbase 团队开发，是一个 TypeScript-first 的 AI 浏览器自动化框架。核心设计哲学是"AI 原语叠加在 Playwright 之上"——不替代 Playwright，而是在其基础上提供三个 AI 增强原语，让开发者在确定性脚本和 AI 灵活性之间自由切换。
+Stagehand 由 Vercel 旗下 Browserbase 团队开发，是一个 TypeScript-first 的 AI 浏览器自动化框架。核心设计哲学是"AI 原语叠加在 Playwright 之上"：在 Playwright 基础上提供三个 AI 增强原语，让开发者在确定性脚本和 AI 灵活性之间自由切换。
 
-这一设计使 Stagehand 成为 2026 年多数生产团队趋近的模板：混合确定性/AI 架构的代表。
+这一设计是混合确定性/AI 架构的代表，多数生产团队在 2026 年趋近于此模式。
 
 ## 核心架构
 
@@ -78,11 +78,11 @@ Stagehand 由 Vercel 旗下 Browserbase 团队开发，是一个 TypeScript-firs
 
 ### 2. 叠加而非替代
 
-不试图从零构建浏览器自动化栈，而是叠加在 Playwright 之上。这种设计让 Stagehand 能复用 Playwright 的跨浏览器支持、network interception、auth 状态管理等成熟能力，同时专注于 AI 增强。
+叠加在 Playwright 之上而非从零构建浏览器自动化栈。这种设计让 Stagehand 能复用 Playwright 的跨浏览器支持、network interception、auth 状态管理等成熟能力，同时专注于 AI 增强。
 
 ### 3. Schema-Driven Extraction
 
-`extract()` 使用 Zod schema 定义期望输出结构，LLM 的输出被强制拟合到 schema 中。这比自由文本提取更可靠，且支持 TypeScript 类型检查——开发者在编译时就能发现结构不匹配。
+`extract()` 使用 Zod schema 定义期望输出结构，LLM 的输出被强制拟合到 schema 中。这比自由文本提取更可靠，且支持 TypeScript 类型检查，开发者在编译时就能发现结构不匹配。
 
 ### 4. 维护成本优势
 
@@ -116,6 +116,6 @@ Stagehand 由 Vercel 旗下 Browserbase 团队开发，是一个 TypeScript-firs
 | **多步推理** | 三原语是单步操作，长链推理需要开发者自行实现 | 复杂多步任务的开发成本仍在开发者侧 |
 | **Prompt Injection** | 与所有浏览器 Agent 共享此固有风险 | 不可信页面内容可能影响 AI 决策 |
 
-**架构定位**：Stagehand 不是 Browser Use 的竞品——它们面向不同使用场景。Browser Use 面向完全自主的浏览器 Agent，Stagehand 面向需要精细控制的开发者工作流。两者代表了浏览器 AI 自动化频谱的两端：自主 vs 可控。
+**架构定位**：Stagehand 和 Browser Use 面向不同使用场景。Browser Use 面向完全自主的浏览器 Agent，Stagehand 面向需要精细控制的开发者工作流。两者代表了浏览器 AI 自动化频谱的两端：自主 vs 可控。
 
-**架构收敛趋势**：2026 年的赢家架构是混合模式——对稳定、高频工作流使用确定性 Playwright 脚本，对动态、陌生界面使用 AI Browser Agent。Stagehand 的"AI 原语叠加在 Playwright 之上"正是多数生产团队趋近的模板。
+**架构收敛趋势**：2026 年采用率最高的浏览器自动化架构是混合模式：对稳定、高频工作流使用确定性 Playwright 脚本，对动态、陌生界面使用 AI Browser Agent。Stagehand 的"AI 原语叠加在 Playwright 之上"正是多数生产团队趋近的方向。

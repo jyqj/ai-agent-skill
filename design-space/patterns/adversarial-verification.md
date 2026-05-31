@@ -2,7 +2,7 @@
 
 > **Evidence Status** — grounded. 来自 GenericAgent 的 verify_sop 实现，辅以独立验证和红队测试的通用实践。
 
-Self-Verification 的局限在于：实现者验证自己的工作天然存在确认偏误。Adversarial Verification 要求验证由**独立 subagent 执行**，且验证的目标不是"证明通过"而是"找到失败的方法"。
+Self-Verification 的局限在于：实现者验证自己的工作天然存在确认偏误。Adversarial Verification 要求验证由**独立 subagent 执行**，且验证的目标是"找到失败的方法"。
 
 核心规则：**无工具证据的 PASS = SKIP**。验证者如果没有运行任何工具就声称通过，等同于跳过验证。
 
@@ -60,7 +60,7 @@ verification_subagent:
 | FAIL | 至少一个关键标准未满足 | 进入修复循环 |
 | PARTIAL | 非关键项未满足或证据不充分 | 进入修复循环（优先级低于 FAIL） |
 
-修复循环最多 2 轮。超过后不再自动重试，上报人类决策——避免 Agent 在错误方向上持续消耗。
+修复循环最多 2 轮。超过后不再自动重试，上报人类决策，避免 Agent 在错误方向上持续消耗。
 
 ## 适用场景
 
@@ -69,7 +69,7 @@ verification_subagent:
 - 跨模块重构
 - 任何"错了代价很高"的操作
 
-不适用于简单的单文件修改或纯文本生成——这些场景用 `self-verification.md` 的轻量检查即可。
+不适用于简单的单文件修改或纯文本生成，这些场景用 `self-verification.md` 的轻量检查即可。
 
 ## 与现有模式的关系
 

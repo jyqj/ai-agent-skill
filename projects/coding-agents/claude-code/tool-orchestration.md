@@ -8,7 +8,7 @@
 src/services/tools/toolOrchestration.ts
 
 ## 关键点
-Claude Code 的工具执行不是简单的串行，而是智能分批：
+Claude Code 的工具执行采用智能分批策略：
 - 只读工具可以并发执行
 - 写入工具必须串行执行
 - 通过 `isConcurrencySafe` 属性判断

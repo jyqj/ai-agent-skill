@@ -24,7 +24,7 @@ External Reality
 [Cross-cutting] Governance & Evolution
 ```
 
-治理不是最后一步，而是横切层：Control、Security、Identity & Capability、Recovery、Cost、Observability、Operations、Learning、Evaluation 会覆盖所有关键边界。
+治理是横切层，覆盖所有关键边界：Control、Security、Identity & Capability、Recovery、Cost、Observability、Operations、Learning、Evaluation。
 
 ## 2. 各层职责
 

@@ -10,7 +10,7 @@
 
 工具返回 `success` 就能宣布任务完成吗？
 
-不能。**工具执行成功不等于外部效果成功。** API 返回 200 但数据库值没变、点击了提交按钮但页面没提交、邮件发送成功但对方没收到——这类 Ghost Success 是生产系统中最常见的静默失败模式。
+不能。**工具执行成功不等于外部效果成功。** 例如 API 返回 200 但数据库值没变、点击了提交按钮但页面没提交、邮件发送成功但对方没收到。这类 Ghost Success 是生产系统中最常见的静默失败模式。
 
 最小答案是 read-after-write。生产级答案是：**按动作类型选择验证方法，对验证不可达的场景有明确的退化策略。**
 
@@ -125,7 +125,7 @@ stateDiagram-v2
 
 ### GhostSuccess 检测后的决策分支
 
-状态机中 GhostSuccess 是最需要结构化处理的分支——工具报告成功，但 readback 发现外部状态未改变。以下伪代码展示验证完成后的决策逻辑：
+状态机中 GhostSuccess 是最需要结构化处理的分支：工具报告成功，但 readback 发现外部状态未改变。以下伪代码展示验证完成后的决策逻辑：
 
 ```python
 match verification.status:
@@ -150,6 +150,18 @@ match verification.status:
 ```
 
 `ghost_success` 分支的三条路径对应状态机中 GhostSuccess 的三个出边（Retrying / Compensating / HumanEscalation）。`failed` 分支进入恢复决策树（见 `../../architecture/planes/recovery/recovery-decision-tree.md`）。
+
+### Eval Fixtures（待创建）
+
+以下 eval fixture 用于自动化测试效果验证逻辑的三个关键失败路径：
+
+| Fixture | 场景 | 预期行为 | 状态 |
+|---------|------|---------|------|
+| `ghost_success` | API 返回 200 ok 但 read-after-write 发现状态未变更 | 进入 GhostSuccess 分支，按 retry → compensate → escalate 逐级降级 | 待创建 |
+| `partial_effect` | read-after-write 显示部分字段写入成功、部分未生效 | 进入 Partial 分支，根据风险等级决定 accept-with-warning 或 retry-remaining | 待创建 |
+| `external_ack_timeout` | 发送操作完成但外部确认（ack / webhook / bounce）超时未到达 | 进入 VerifyTimeout 分支，按 deferred → human-escalation 降级 | 待创建 |
+
+Fixture 文件预期位置：`evaluation/fixtures/`。创建后应在 `evaluation/execution-depth-evals.md` 中注册引用。
 
 ## 与 Kernel 的关系
 

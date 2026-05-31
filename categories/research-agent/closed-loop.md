@@ -49,7 +49,7 @@ Observe question and scope
 
 ## 与交互层的关系
 
-Research Agent 的理想交互不是频繁追问，而是：
+Research Agent 的理想交互方式是最小化打扰、最大化信息密度：
 
 - 在一开始只问阻塞性的关键歧义；
 - 中途通过 progress / partial findings 让用户校正方向；

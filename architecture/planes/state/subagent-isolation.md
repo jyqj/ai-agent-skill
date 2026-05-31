@@ -2,7 +2,7 @@
 
 > **Evidence Status** — production-validated. 来自 Claude Code Swarm worker、Codex AgentControl + AgentRegistry、OpenCode Session.create({ parentID }) 的生产实现。
 
-多 Agent 场景下，子 Agent 的状态不得污染主循环。这不是设计偏好，而是正确性要求——如果子 Agent 的中间消息混入主循环的上下文，会导致主循环的计划被子 Agent 的局部观察干扰。
+多 Agent 场景下，子 Agent 的状态不得污染主循环。这是正确性要求：如果子 Agent 的中间消息混入主循环的上下文，会导致主循环的计划被子 Agent 的局部观察干扰。
 
 ### 项目对照
 
@@ -22,4 +22,4 @@
 5. 子 Agent 的 spawn 有深度和数量限制（Codex: agent_max_threads + spawn_depth_limit）
 ```
 
-Codex 的 `AgentControl` 设计值得注意：它用 `Weak<ThreadManagerState>` 引用避免 Session → AgentControl → ThreadManagerState 的循环引用，同时在 `reserve_spawn_slot` 中检查当前活跃 Agent 数是否超限。这不是防御性编程——Codex 的 BQ 分析发现过 Agent 递归 spawn 导致 OOM 的生产事故。
+Codex 的 `AgentControl` 设计值得注意：它用 `Weak<ThreadManagerState>` 引用避免 Session → AgentControl → ThreadManagerState 的循环引用，同时在 `reserve_spawn_slot` 中检查当前活跃 Agent 数是否超限。Codex 的 BQ 分析发现过 Agent 递归 spawn 导致 OOM 的生产事故，这一机制是对该问题的直接应对。

@@ -32,7 +32,7 @@
 
 > 参考：`../../architecture/planes/effects/overview.md`
 
-在 Financial Agent 中，effect ledger 不是"最佳实践"而是**强制组件**：
+在 Financial Agent 中，effect ledger 是**强制组件**：
 
 ```text
 每笔交易必须记录：

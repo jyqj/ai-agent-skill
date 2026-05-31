@@ -69,7 +69,7 @@ worker_output:
 
 > **Evidence Status** — production-validated. 下述三种隔离模式已在 Claude Code、hermes-agent、Codex、Warp 四个项目中落地运行。
 
-子 agent 编排的核心取舍不是"要不要隔离"，而是隔离到哪一层。实践收敛出三种粒度：
+子 agent 编排的核心取舍在于隔离到哪一层。实践收敛出三种粒度：
 
 ```mermaid
 graph LR
@@ -96,9 +96,9 @@ graph LR
 
 **设计启示**
 
-1. **隔离是默认姿态**——子 agent 不应继承父的完整 context；继承越多，状态污染与权限逃逸风险越高。
-2. **工具集裁剪是最低成本的安全边界**——hermes-agent 的 DELEGATE_BLOCKED_TOOLS 五行配置即可阻断递归委派和副作用扩散。
-3. **Harness 模式将异构 agent 统一为可替换组件**——Warp 证明：只要接口对齐（SendMessageToAgent + 标准 artifact），底层 agent 可独立升级而不触碰编排层。
+1. **隔离是默认姿态**。子 agent 不应继承父的完整 context；继承越多，状态污染与权限逃逸风险越高。
+2. **工具集裁剪是最低成本的安全边界**。hermes-agent 的 DELEGATE_BLOCKED_TOOLS 五行配置即可阻断递归委派和副作用扩散。
+3. **Harness 模式将异构 agent 统一为可替换组件**。Warp 证明：只要接口对齐（SendMessageToAgent + 标准 artifact），底层 agent 可独立升级而不触碰编排层。
 
 ## 生产验证：多 Harness 协议抽象
 
@@ -145,7 +145,7 @@ graph TB
 | Context 继承 | 全对话历史 + 系统提示字节一致 | 无继承（通过 SendMessageToAgent 传入任务描述） | 无继承（通过 RPC 传入任务描述） |
 | 适用场景 | 需要 Prompt Cache 共享的快速子任务 | 本地开发、需要混用不同 Agent 的场景 | 云端大规模编排、需要强隔离的场景 |
 
-**关键设计洞察**：Harness 模式的核心是"独立 CLI 进程 + RPC 通信"的隔离架构。编排器不需要知道底层 Agent 的实现细节，只需要 Agent 支持标准化的三件套接口（`ReportArtifact` / `NotifyUser` / `FinishTask`）。这允许用户自带任意兼容 Agent，编排层无需改动。
+Harness 模式的核心是"独立 CLI 进程 + RPC 通信"的隔离架构。编排器不需要知道底层 Agent 的实现细节，只需要 Agent 支持标准化的三件套接口（`ReportArtifact` / `NotifyUser` / `FinishTask`）。这允许用户自带任意兼容 Agent，编排层无需改动。
 
 ## 生产验证：Fork 全上下文继承
 
@@ -194,7 +194,7 @@ Task 创建
   → Run #2 完成 → Task 标记为 complete
 ```
 
-**设计启示**：Task/Run 分离解决了长时 Agent 的两个核心问题——(1) 单次执行失败不等于任务失败，(2) 用户不需要全程在线，可以异步检查进度。这与传统的"一次请求一次响应"模式根本不同。
+**设计启示**：Task/Run 分离解决了长时 Agent 的两个核心问题：(1) 单次执行失败不等于任务失败，(2) 用户不需要全程在线，可以异步检查进度。
 
 ## 协议补强
 
@@ -233,7 +233,7 @@ A2A (Agent-to-Agent) Protocol 是跨框架 Agent 互操作的开放标准：
 
 | 组件 | 作用 |
 |---|---|
-| **Agent Card** | Agent 的数字身份——描述能力、技能、通信端点 |
+| **Agent Card** | Agent 的数字身份，描述能力、技能、通信端点 |
 | **tasks/send** | 同步请求-响应 |
 | **tasks/sendSubscribe** | 流式更新（SSE） |
 | **input-required** | 多轮对话中请求额外信息的状态 |
@@ -241,3 +241,15 @@ A2A (Agent-to-Agent) Protocol 是跨框架 Agent 互操作的开放标准：
 A2A 与 MCP 互补：A2A 管理 Agent 间的任务和工作流协调，MCP 管理 LLM 与外部资源的标准化接口。
 
 安全机制：mTLS、显式认证、Agent Card 的能力声明用于访问控制。
+
+## Trellis: Pull-Based Sub-Agent Context
+
+> **Evidence**: Trellis Class-2 平台
+
+Class-2 平台（无 Hook）的 sub-agent 通过 agent definition 前缀中的自发现步骤获取任务上下文，而非依赖 parent 推送。这种 pull-based 模式让无 hook 平台也能参与多 agent 协作。参见 `projects/tool-platforms/trellis/sub-agent-context-discovery.md`。
+
+## OpenClaw: Multi-Channel Session Routing
+
+> **Evidence**: OpenClaw 20+ channels
+
+OpenClaw 的 Gateway 按 channel + account 维度路由到隔离的 session。每个 session 有独立的 transcript、auth profiles、permissions。Subagent 可通过 fork/spawn 创建新 session context。参见 `projects/personal-assistants/openclaw/gateway-control-plane.md`。

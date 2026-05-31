@@ -66,7 +66,7 @@ Harness Engineering（最广）
 
 ## 与范式层的关系
 
-Harness 不是一种推理范式，而是承载各种范式的工程外壳：
+Harness 是承载各种推理范式的工程外壳：
 
 - ReAct 需要工具 observation 和 loop detection。
 - Plan-and-Execute 需要 TaskState、checkpoint 和 step verification。

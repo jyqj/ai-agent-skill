@@ -130,7 +130,7 @@ flowchart LR
 按 API round 将消息分组为完整问答对，整组剥离，不做 token 级切割。Claude Code 在 70% 预算时触发；opencode 用 `PRUNE_PROTECT`（40K）保护最近内容、`PRUNE_MINIMUM`（20K）作为最低保留线。关键点：保留语义边界，一个完整交互回合要么整体保留要么整体丢弃。
 
 **Reactive — 反应式压缩**
-当主动压缩不足以腾出空间、或 API 直接返回 prompt-too-long 时触发。Claude Code 计算 token gap 一次性跳过多组（不逐条试探）；hermes 采用迭代更新策略——多次压缩时摘要追加而非覆盖，保留历史可追溯性。关键点：反应式是兜底，不是常态路径；如果频繁触发说明主动压缩阈值设低了。
+当主动压缩不足以腾出空间、或 API 直接返回 prompt-too-long 时触发。Claude Code 计算 token gap 一次性跳过多组（不逐条试探）；hermes 采用迭代更新策略，多次压缩时摘要追加而非覆盖，保留历史可追溯性。反应式压缩是兜底手段；如果频繁触发，说明主动压缩阈值设低了。
 
 **Micro-compact — 微压缩**
 不触发完整消息重组，只在单轮内对已执行工具的输出做局部汇总。hermes 进一步拆成两阶段：先做廉价文本裁剪（截断、去重），裁不够再调 LLM 生成摘要。关键点：微压缩是热路径操作，必须低延迟，不能阻塞下一步工具调用。
@@ -149,7 +149,7 @@ flowchart LR
 4. **加速效果**：比线性压缩快 N 倍（N = 跳过的组数）。
 
 关键实现约束：
-- 跳组后仍需保持语义边界完整——跳到的位置向前对齐到最近的组边界。
+- 跳组后仍需保持语义边界完整，跳到的位置向前对齐到最近的组边界。
 - 跳组是 Reactive 路径的子策略；Proactive 路径仍按阈值逐步压缩。
 - 若跳组后仍不够，退化为全量压缩（最激进模式）。
 
@@ -216,7 +216,7 @@ graph LR
 
 设计约束：
 - `AUTOCOMPACT_BUFFER` 必须大于单次工具输出的最大预期大小，否则压缩后一次工具调用就再次超限。
-- 预留 `max_output_tokens` 是硬性要求——API 需要为模型回复预留空间。
+- 预留 `max_output_tokens` 是硬性要求：API 需要为模型回复预留空间。
 - 多模型部署时，每个模型的有效窗口不同，预算层需动态计算。
 
 ---
@@ -232,7 +232,7 @@ graph LR
 - 头部保护：system prompt + 第一轮用户意图保持完整。
 
 **中间总结**
-- 被压缩的中间轮次不是直接丢弃，而是由 LLM 生成结构化摘要。
+- 被压缩的中间轮次由 LLM 生成结构化摘要，而非直接丢弃。
 - 摘要保留：关键决策点、工具调用结果、失败原因、状态变更。
 - 摘要丢弃：重复的中间推理、冗余的工具原始输出、已过时的状态描述。
 
@@ -246,7 +246,7 @@ graph LR
   - 截断超长工具输出（保留头部 + 尾部 + 错误信息）
   - 去除重复的 API 响应体
   - 清理已过期的状态快照
-- 裁剪后仍超限，再调 LLM 生成摘要——控制压缩的推理成本。
+- 裁剪后仍超限，再调 LLM 生成摘要，以控制压缩的推理成本。
 
 ---
 
@@ -254,7 +254,7 @@ graph LR
 
 > 来源：Gulli (2025) *Agentic Design Patterns*, Appendix A.
 
-传统 Prompt Engineering 聚焦**优化单次查询的措辞**。Context Engineering 是更高层的实践——**在运行时动态构建完整的操作图景**，使模型拥有充分的上下文做出正确决策。
+传统 Prompt Engineering 聚焦**优化单次查询的措辞**。Context Engineering 是更高层的实践：**在运行时动态构建完整的操作图景**，使模型拥有充分的上下文做出正确决策。
 
 Context Engineering 管理的信息层：
 
@@ -267,4 +267,4 @@ Context Engineering 管理的信息层：
 
 核心原则：即使是最先进的模型，在有限或构建不良的操作环境视图下也会表现不佳。任务从"回答一个问题"变成"为 Agent 构建完整的操作图景"。
 
-**与本 Plane 的关系**：Context Engine 正是 Context Engineering 在运行时的具体实现——选什么、放哪里、压多少。Context Engineering 是设计方法论，Context Engine 是运行时模块。
+**与本 Plane 的关系**：Context Engine 正是 Context Engineering 在运行时的具体实现，负责选什么、放哪里、压多少。Context Engineering 是设计方法论，Context Engine 是运行时模块。

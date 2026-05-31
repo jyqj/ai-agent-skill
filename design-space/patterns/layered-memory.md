@@ -18,7 +18,7 @@ L4  Session Archive  历史会话的压缩存档，仅在回溯时搜索
 
 ## 写入规则：No Execution, No Memory
 
-只有经过行动验证的信息才能写入记忆。Agent 不能仅凭推理就往记忆里写"这个 API 的超时是 30 秒"——必须实际调用过、观察到结果后才能记录。这条规则是防止记忆污染（Memory Pollution）的核心屏障。
+只有经过行动验证的信息才能写入记忆。Agent 不能仅凭推理就往记忆里写"这个 API 的超时是 30 秒"，必须实际调用过、观察到结果后才能记录。这条规则是防止记忆污染（Memory Pollution）的核心屏障。
 
 ## L1 同步机制
 
@@ -32,7 +32,7 @@ L1 有膨胀风险。如果不定期审视和精简，它会从"索引"退化为
 
 ## 权衡
 
-分层记忆的收益随 Agent 的生命周期增长而显现。对于单次会话、任务类型单一的 Agent，五层架构是过度设计——一个简单的系统提示就够了。但对于需要跨会话积累经验、处理多种任务类型的长期运行 Agent，分层带来的精确召回和成本控制几乎不可替代。
+分层记忆的收益随 Agent 的生命周期增长而显现。对于单次会话、任务类型单一的 Agent，五层架构是过度设计，一个简单的系统提示就够了。但对于需要跨会话积累经验、处理多种任务类型的长期运行 Agent，分层带来的精确召回和成本控制几乎不可替代。
 
 主要的维护成本在层级同步：L2/L3 的变更必须正确反映到 L1，否则信息虽然存在却无法被发现。这需要 Agent 在写入时承担额外的"更新索引"步骤，增加了每次写入的复杂度。
 
@@ -40,3 +40,21 @@ L1 有膨胀风险。如果不定期审视和精简，它会从"索引"退化为
 
 - `projects/general-agents/generic-agent/memory-layers.md` -- 参考实现观察
 - GenericAgent L0-L4 架构：公理 -> 索引 -> 事实 -> 技能 -> 历史
+
+## Memory Plugin Slot (OpenClaw)
+
+> **Evidence**: OpenClaw — 单一激活 memory plugin
+
+OpenClaw 的 memory 系统是一个 plugin slot，支持运行时切换实现：
+
+**设计**：同一时间只有一个 memory plugin 处于激活状态。
+- 默认：active-memory (LanceDB vector backend)
+- 可切换：其他 memory plugin（实验性/替代后端）
+- Per-agent 可配置：`agents.defaults.memorySearch.remote.enabled`
+
+**Plugin Slot vs Layered Memory**：
+- Layered memory (L0-L4) 描述记忆的组织结构
+- Plugin slot 描述记忆的实现切换机制
+- 两者正交：一个 plugin 可以内部实现 L0-L4 分层
+
+**优势**：运行时可切换 memory backend，无需修改 agent 代码。适合需要 A/B 测试不同记忆策略的场景。

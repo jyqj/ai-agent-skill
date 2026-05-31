@@ -4,7 +4,7 @@
 
 ## Core Job
 
-Security Agent 的工作不是"替代安全分析师"，而是在真实安全运营中完成告警分诊、威胁调查、证据整理和响应建议，同时**确保自身不成为攻击通道**：
+Security Agent 在真实安全运营中完成告警分诊、威胁调查、证据整理和响应建议，同时**确保自身不成为攻击通道**：
 
 ```text
 检测/接收威胁信号 → 聚合关联 → 构建证据链 → 风险评估 → 响应决策 → 执行/升级 → 验证缓解 → 审计留痕
@@ -80,7 +80,7 @@ SIEM 告警流（Splunk/Sentinel/Elastic）
 自动化可执行的动作示例：
 - 低风险：更新防火墙规则阻断已确认恶意 IP、隔离已确认恶意文件
 - 中风险：临时禁用可疑用户账号（需确认）、隔离受感染主机（需确认）
-- 高风险及以上：网络段隔离、全量密码重置——仅建议，人工执行
+- 高风险及以上：网络段隔离、全量密码重置。仅建议，由人工执行
 
 ## Security Agent 自身安全
 
@@ -94,7 +94,7 @@ SIEM 告警流（Splunk/Sentinel/Elastic）
 | 供应链攻击 | 恶意 IoC feed 或插件 | feed 来源验证；插件沙箱化 |
 | 信息泄露 | Agent 在回应中泄露内部安全架构 | 输出过滤；敏感信息 redact |
 
-核心原则：**Security Agent 消费的每一条输入都是 untrusted data**。告警文本、日志、IoC feed、用户查询——全部经过净化后才可处理。
+核心原则：**Security Agent 消费的每一条输入都是 untrusted data**。告警文本、日志、IoC feed、用户查询，全部经过净化后才可处理。
 
 ## 合规维度
 
@@ -156,12 +156,30 @@ Stop gate：
 
 > **Evidence Status** — grounded. Google Cloud AI Agent Trends 2026 Report；Torq Socrates AI SOC Analyst；Google Secure AI Framework 2.0。
 
-2026 年安全运营从被动响应进化为**半自治循环**——多个专任 AI Agent 编排协作：
+2026 年安全运营从被动响应演进为**半自治循环**，由多个专任 AI Agent 编排协作：
 
 ```text
 Detection (AI) → Alert (Human managed) → Triage & Investigation (AI)
   → Threat Research (AI) → Malware Analysis (AI) → Detection Engineering (AI)
   → Response (AI) → Recommendation (AI) → Escalation (Human managed)
+```
+
+下图展示半自治 SOC 循环的流程，AI 节点（蓝色）与 Human 节点（红色）协同完成安全运营闭环:
+
+```mermaid
+flowchart LR
+    A["🔍 Detection<br/>威胁检测"]:::ai --> B["🚨 Alert<br/>告警评估"]:::human
+    B --> C["📋 Triage &<br/>Investigation<br/>分诊与调查"]:::ai
+    C --> D["🔬 Threat<br/>Research<br/>威胁研究"]:::ai
+    D --> E["🧬 Malware<br/>Analysis<br/>恶意软件分析"]:::ai
+    E --> F["⚙️ Detection<br/>Engineering<br/>检测工程"]:::ai
+    F --> G["🛡️ Response<br/>响应执行"]:::ai
+    G --> H["📝 Recommendation<br/>建议生成"]:::ai
+    H --> I["⬆️ Escalation<br/>升级决策"]:::human
+    I -->|"反馈与演化"| A
+
+    classDef ai fill:#d6eaf8,stroke:#2471a3,color:#000
+    classDef human fill:#f5b7b1,stroke:#c0392b,color:#000
 ```
 
 关键架构特征：

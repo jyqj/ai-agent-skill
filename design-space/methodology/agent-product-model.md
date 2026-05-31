@@ -9,7 +9,7 @@
 Agent Product = User Job + World Representation + Required Depth + Runtime Assembly + Verification + Operations + Evaluation
 ```
 
-一个 Agent 产品不是“能聊天的模型”，而是一个能在特定边界内完成用户 job、对外部世界产生可验证效果、并可被评估和运营的系统。
+一个 Agent 产品是在特定边界内完成用户 job、对外部世界产生可验证效果、并可被评估和运营的系统。
 
 ## 产品画布
 

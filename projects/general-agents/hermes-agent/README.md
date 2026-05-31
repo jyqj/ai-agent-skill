@@ -1,5 +1,34 @@
 # Hermes Agent
 
+## 证据卡
+
+**证明了什么**：大规模多平台 Agent 需要 Gateway 边界隔离、结构化错误分类、多维预算和自主学习循环。
+
+**核心运行时对象**：
+
+| 对象 | 实现 | 对应 Plane |
+|------|------|-----------|
+| Gateway | 35+ 平台适配器 + 会话隔离 + Cron 调度 | sensing-representation |
+| ToolRegistry | AST 动态发现 + check_fn TTL 30s | tools |
+| ErrorClassifier | 8 阶段管线 + 17 种 FailoverReason | recovery |
+| IterationBudget | 4 维（iteration/token/time/cost） + consume/refund | context, cost |
+| SQLite FTS5 | trigram tokenizer + WAL + Jitter 重试 | memory |
+| Skill Curator | 间隔 7 天 + idle 2h 才运行 | learning |
+
+**可复用规则**：
+1. 错误分类用管线而非 switch-case，每阶段可独立演进
+2. 工具可用性探测缓存 30s（check_fn TTL），避免高频重复检测
+3. 记忆用 FTS5 而非向量 DB（零运营成本），trigram tokenizer 支持模糊匹配
+4. Curator 间隔 7 天 + idle 2h 才运行，避免打断实时任务
+5. 冻快照模式同时解决前缀缓存热度和跨会话记忆生效
+
+**不该照搬的**：
+- 35+ 平台适配的复杂度对单平台 Agent 是过度设计
+- Kanban Worker 隔离模式仅在多 Worker 分布式场景有价值
+
+**关键数值**：IterationBudget 默认 90(父)/50(子), check_fn TTL=30s, curator 间隔=7 天, FTS5 trigram tokenizer
+
+---
 
 > **Evidence Status** — grounded. 本目录下的 gateway、memory、execution、tool registry 等分析。
 
@@ -25,7 +54,7 @@
 
 ## 独特贡献
 
-Hermes 把学习循环内置到 runtime 中——从经验中创建技能、技能在使用中迭代优化、主动触发记忆持久化。结合多平台 gateway 和 7 种执行后端，它展示了一个**能跨会话成长、跨平台部署**的长期运行系统的完整形态。最新版本新增了 Kanban 工作流分派系统、Checkpoints v2 单一共享存储、Lightpanda 高速浏览器引擎，以及深度 MCP/ACP 集成。
+Hermes 把学习循环内置到 runtime 中：从经验中创建技能、技能在使用中迭代优化、主动触发记忆持久化。结合多平台 gateway 和 7 种执行后端，它展示了一个**能跨会话成长、跨平台部署**的长期运行系统的完整形态。最新版本新增了 Kanban 工作流分派系统、Checkpoints v2 单一共享存储、Lightpanda 高速浏览器引擎，以及深度 MCP/ACP 集成。
 
 ## 关键发现
 

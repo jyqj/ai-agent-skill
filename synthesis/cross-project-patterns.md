@@ -87,7 +87,7 @@ graph LR
 3. **记忆写入需要验证门** — 写入长期记忆前需要准确性/相关性检查，不是所有交互都值得记（mempalace, nocturne）
 4. **世界状态有 TTL** — 缓存的外部状态必须标注有效期，超期必须刷新（HM: API 状态, CC: git 状态）
 5. **恢复路由分级** — 瞬时故障重试、前提失效重规划、语义错误升级人工，不能一刀切（CX, HM, Warp）
-6. **skill 作为可组合指令** — 不是 API 调用，而是可版本化的指令文档（Warp readiness label, GA 自进化 prompt）
+6. **skill 作为可组合指令** — 可版本化的指令文档（Warp readiness label, GA 自进化 prompt），而非 API 调用
 7. **审计链不可选** — 生产系统必须有完整的决策-执行-效果审计链，不是日志的超集（nocturne, HM, CX）
 
 ## E. 六项目核心机制对比

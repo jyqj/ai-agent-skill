@@ -57,6 +57,34 @@ Propose → Negotiate → Accept → Execute → Deliver → Verify
                 └── Feedback / Clarification ──┘
 ```
 
+下图展示契约执行管线的完整流程:
+
+```mermaid
+flowchart TD
+    DEF["定义契约<br/>deliverables + verification_method<br/>+ cost_envelope"] --> NEG{"协商"}
+
+    NEG -->|"Contractor 请求澄清"| CLAR["澄清 / 补充规格"]
+    CLAR --> NEG
+    NEG -->|"双方接受"| ACCEPT["契约生效"]
+
+    ACCEPT --> DECOMP["分解子任务<br/>生成 subcontracts"]
+    DECOMP --> EXEC["逐步执行<br/>优先质量和完整性"]
+
+    EXEC --> SELF{"自检通过?"}
+    SELF -->|"否"| CORRECT["自我纠正"]
+    CORRECT --> EXEC
+
+    SELF -->|"是"| GATE{"Gate 验收<br/>对照 verification_method"}
+    GATE -->|"未通过"| FB["反馈 / 修正"]
+    FB --> EXEC
+
+    GATE -->|"通过"| DELIVER["交付"]
+    DELIVER --> REVIEW{"需要人类 review?"}
+    REVIEW -->|"是"| SME["SME / Owner 审批"]
+    SME --> DONE["契约完成"]
+    REVIEW -->|"否"| DONE
+```
+
 ### 1. Propose
 发起方定义契约，尽可能精确描述交付物和验收标准。
 

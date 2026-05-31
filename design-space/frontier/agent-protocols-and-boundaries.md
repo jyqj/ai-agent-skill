@@ -53,7 +53,7 @@ Agent-to-agent 协议适合描述：
 
 ### 3. Repo instructions 是另一种控制面
 
-`AGENTS.md` 一类文件解决的不是网络互通，而是：
+`AGENTS.md` 一类文件解决的是仓库内部的工作约束：
 
 ```text
 进入一个仓库后，哪些检查必须跑？

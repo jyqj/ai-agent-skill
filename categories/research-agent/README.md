@@ -4,7 +4,7 @@
 
 ## Core Job
 
-Research Agent 的工作不是“搜几个链接”，而是：
+Research Agent 围绕可验证的问题树展开多源研究：
 
 ```text
 把问题变成可验证的问题树
@@ -37,7 +37,7 @@ Research Agent 的工作不是“搜几个链接”，而是：
 
 ## 表示模型
 
-详见 `representation.md`。Research Agent 的关键对象不是“文档片段”而是：
+详见 `representation.md`。Research Agent 的关键表示对象以 claim 和 citation 为中心：
 
 ```text
 SourceRecord、EvidenceSnippet、ClaimRecord、ConflictRecord、CitationRecord、SynthesisState

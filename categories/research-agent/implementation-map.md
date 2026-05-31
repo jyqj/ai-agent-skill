@@ -54,7 +54,7 @@
 
 | 结论 | 含义 |
 |---|---|
-| Research Agent 的核心不是“联网”，而是 citation integrity | search 只是开始，evidence binding 才决定可信度 |
+| Research Agent 的核心是 citation integrity | search 只是开始，evidence binding 才决定可信度 |
 | 报告是 first-class artifact | final deliverable 不该只是聊天回答 |
 | 冲突需要成为对象而不是文风修饰 | preserve-first 比 smooth-first 更稳 |
 | 长时研究更需要 checkpoint 和 partial deliver | 否则任务越长越容易漂移 |

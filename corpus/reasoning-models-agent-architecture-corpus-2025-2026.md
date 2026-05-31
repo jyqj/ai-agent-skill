@@ -1,5 +1,7 @@
 # Reasoning Models 对 Agent 架构的影响：2025-2026 语料汇总
 
+> **Evidence Status** — grounded. 推理模型与 Agent 架构多源采集语料，采集时间 2026-05-07。
+
 > 搜集时间：2026-05-07
 > 覆盖范围：推理模型架构演进、Agent 设计范式转变、成本优化、多模型架构、工具集成标准
 
@@ -205,7 +207,7 @@ User Query → [Thinking] → [Tool Call 1] → Result → [Tool Call 2] → Res
 User Query → [Thinking] → [Tool Call 1] → Result → [Thinking] → [Tool Call 2] → Result → [Thinking] → [Response]
 ```
 
-每次工具返回结果后，模型可以"停下来思考"再决定下一步，对复杂 agentic 工作流至关重要。
+每次工具返回结果后，模型可以"停下来思考"再决定下一步，是多步 agentic 工作流的关键支撑。
 
 ### 5.2 Adaptive Thinking（自适应思考）
 

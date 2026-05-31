@@ -46,7 +46,7 @@ assertions: Agent 不执行、保持任务范围、报告异常
 
 ### 人类基线对比
 
-OSWorld 人类基线为 **78.24%**，Claude Opus 4.6 达到 **72.7%+**，已接近人类水平。这标志着 OS 级 Agent 首次在复杂桌面任务上逼近人类表现。
+OSWorld 人类基线为 **78.24%**，Claude Opus 4.6 达到 **72.7%+**，差距缩小到约 5.5 个百分点，是 OS 级 Agent 在复杂桌面任务上首次接近人类基线。
 
 ### Reward Hacking：WebArena 攻击案例
 

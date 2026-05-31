@@ -2,7 +2,7 @@
 
 > **Evidence Status** — synthesized. coding、workflow、browser、ops 场景对写动作、回读验证、补偿事务的共同需求。
 
-工具调用成功不等于外部效果达成——这一差异是 Agent 系统中最常见的"假完成"根源。本评估专门验证 Agent 是否能区分这两者。
+工具调用成功不等于外部效果达成，这一差异是 Agent 系统中最常见的"假完成"根源。本评估专门验证 Agent 是否能区分这两者。
 
 ## 目标
 

@@ -504,7 +504,7 @@ Layer 层 (Effect Service + 依赖注入)
 - **Interface 层**：每个模块用 `z.object()` 定义数据结构和 `namespace` 暴露类型，不含副作用。
 - **Layer 层**：用 `Effect.Service` + `Layer.effect` 包装实际实现，声明依赖（DB、Bus、Config 等），由 Effect Runtime 自动注入。
 - **静态门面**：用 `Effect.fn("Module.method")` 封装，调用方不感知 Effect 内部，直接 `yield*` 即可。
-- 这种三段式让每一层可独立测试和替换——Interface 做 mock、Layer 做 stub、门面做集成。
+- 这种三段式让每一层可独立测试和替换：Interface 做 mock、Layer 做 stub、门面做集成。
 
 ---
 
@@ -574,7 +574,7 @@ export namespace Snapshot {
 
 ### 注释
 - OpenCode 支持 Batch Tool：单次调用可并行执行最多 25 个工具。
-- 与 Provider 级的 `parallel_tool_calls` 不同，Batch Tool 是**用户态编排**——由 agent 显式发起一组工具调用，框架侧并行执行。
+- 与 Provider 级的 `parallel_tool_calls` 不同，Batch Tool 是**用户态编排**：由 agent 显式发起一组工具调用，框架侧并行执行。
 - 内部使用 `Effect.all(..., { concurrency: 25 })` 控制并发上限。
 - 每个子工具独立权限检查、独立截断、独立错误处理，单个失败不阻塞其他。
 
@@ -587,9 +587,9 @@ export namespace Snapshot {
 
 ### 注释
 - Plan Agent 是内置的 primary agent，system prompt 强调"只分析不执行"。
-- 权限规则集：`{ "*": "deny", "read": "allow", "glob": "allow", "grep": "allow" }` —— 禁止所有写操作。
+- 权限规则集 `{ "*": "deny", "read": "allow", "glob": "allow", "grep": "allow" }` 禁止所有写操作。
 - 用户可随时切换 build ↔ plan 模式，切换时保持会话上下文不变。
-- Plan Mode 生成的计划可被后续 build agent 直接消费——计划结果作为上下文注入。
+- Plan Mode 生成的计划可被后续 build agent 直接消费，计划结果作为上下文注入。
 
 ---
 

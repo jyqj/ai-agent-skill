@@ -2,7 +2,7 @@
 
 > **Evidence Status** — grounded. 从 Claude Code、Codex、OpenCode、Augment、Hermes、MemPalace 等项目中反复观察到的共性原则。
 
-以下 12 条原则不是教条，而是多个项目反复印证的设计规律。每条都附有相关模式或文档的链接，方便深入了解。
+以下 12 条原则来自多个项目反复印证的设计规律。每条都附有相关模式或文档的链接，方便深入了解。
 
 ### 1. Context is a Scarce Resource
 

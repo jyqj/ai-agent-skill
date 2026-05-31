@@ -191,7 +191,7 @@ def coerce_tool_args(tool_name: str, args: Dict) -> Dict:
 # schema_sanitizer 处理 Pydantic/MCP 不规范输出（类型不匹配、缺失字段等）
 ```
 
-**洞察**：MCP 集成的核心挑战是 schema 标准化——上游 MCP 服务输出不一致，schema_sanitizer 是必要的适配层。
+**要点**：MCP 集成的核心挑战是 schema 标准化。上游 MCP 服务输出不一致，schema_sanitizer 是必要的适配层。
 
 ---
 
@@ -218,7 +218,7 @@ KANBAN_TOOLS = [
 # Diagnostics engine：检测 distress signals（任务卡住、worker 超时等）
 ```
 
-**洞察**：Kanban 实现了 Agent 团队的分布式协作——Dispatcher 负责全局调度，Worker 通过环境变量获得隔离的工具集和上下文。
+**要点**：Kanban 实现了 Agent 团队的分布式协作。Dispatcher 负责全局调度，Worker 通过环境变量获得隔离的工具集和上下文。
 
 ---
 

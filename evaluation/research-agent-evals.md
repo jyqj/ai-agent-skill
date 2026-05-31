@@ -4,7 +4,7 @@
 
 ## 评估目标
 
-Research Agent 的主要风险不是“文风不好”，而是：
+Research Agent 的主要风险集中在事实可靠性：
 
 - claim 没有真实支撑；
 - citation 存在但错配；

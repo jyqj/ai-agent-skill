@@ -160,3 +160,52 @@ fn unique_skills(skills: Vec<SkillDescriptor>) -> Vec<SkillDescriptor> {
 - `../../projects/coding-agents/warp/agent-architecture.md`
 - `../../projects/coding-agents/warp/skill-system.md`
 - `../../projects/coding-agents/warp/agent-controller.md`
+
+## Multi-Platform Harness (Trellis)
+
+> **Evidence**: Trellis — 14 AI Coding Platform 支持
+
+Warp 的 Harness Container 聚焦"一个平台托管多个 Agent"。Trellis 走了另一条路："一套规范适配多个平台"。
+
+**14 平台分类**：
+| 分类 | 平台 | 能力 |
+|------|------|------|
+| Hook + Agent | Claude Code, Cursor, Codex, Gemini, Kiro, Qoder, CodeBuddy, Copilot, Droid, Pi, OpenCode | 完整工作流 |
+| 仅 Workflow | Kilo, Antigravity, Windsurf | 无 sub-agent |
+
+**Registry-Driven Configurator**：
+- `AI_TOOLS` 单一真值源定义所有平台的 configDir / cliFlag / templateContext / hasPythonHooks
+- 每个 configurator 从 registry 查询参数，自动生成 skills / agents / hooks / settings
+- 新增平台只需在 AI_TOOLS 中添加一行，其余代码自动适配
+
+**Template Placeholder Neutralization**：
+- 多平台共享 skill（如 trellis-brainstorm）用中立占位符 `{{CMD_REF:start}}` → `"start (Trellis command)"`
+- 避免 Codex 和 Gemini 同时写入同一个 SKILL.md 时的 last-writer-wins 冲突
+
+**与 Warp Harness 的对比**：
+| 维度 | Warp Harness Container | Trellis Multi-Platform |
+|------|----------------------|----------------------|
+| 方向 | 一个平台托管多 Agent | 一套规范适配多平台 |
+| 平台数 | 1（Warp 自身） | 14 |
+| Agent 来源 | 10+ 第三方 Harness | 4 个内置 sub-agent |
+| 配置驱动 | SkillProvider 枚举 | AI_TOOLS Registry |
+| 隔离 | 容器 / PTY | 各平台原生隔离 |
+
+## Sandbox Backend Selection (OpenClaw)
+
+> **Evidence**: OpenClaw — 4 种沙箱后端
+
+OpenClaw 提供 per-session 可配置的沙箱后端选择：
+
+**后端**：
+- **Local** — 直接在用户设备执行（主 session 默认）
+- **Docker** — 容器隔离（非 main session 默认）
+- **SSH** — 远程执行（node-host 场景）
+- **OpenShell** — 终端隔离（macOS/Linux）
+
+**选择策略**：
+- `agents.defaults.sandbox.mode: "non-main"` — 非 main session 自动沙箱化
+- 默认允许：bash, process, read, write, edit, sessions_*
+- 默认拒绝：browser, canvas, nodes, cron, discord, gateway
+
+**与 Codex 沙箱的对比**：Codex 用跨平台内核沙箱（Seatbelt/Landlock/Restricted Token）做进程级隔离；OpenClaw 用 Docker/SSH 做环境级隔离，颗粒度更粗但部署更灵活。

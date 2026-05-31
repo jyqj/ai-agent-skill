@@ -51,7 +51,7 @@ OpenCode 将工具来源分为三层：
 
 ## 权衡
 
-Registry 模式的主要风险在**模块加载顺序**：工具通过 `register()` 自注册，如果模块未被导入，工具就不会出现在注册表中。Hermes 通过在入口点显式导入所有工具模块来解决；OpenCode 通过文件扫描自动发现。两种方案各有取舍——显式导入更可控但容易遗漏，自动扫描更方便但增加了约定（文件必须放在特定目录、导出特定接口）。
+Registry 模式的主要风险在**模块加载顺序**：工具通过 `register()` 自注册，如果模块未被导入，工具就不会出现在注册表中。Hermes 通过在入口点显式导入所有工具模块来解决；OpenCode 通过文件扫描自动发现。两种方案各有取舍：显式导入更可控但容易遗漏，自动扫描更方便但增加了约定（文件必须放在特定目录、导出特定接口）。
 
 `check_fn` 的副作用也需要留意：如果可用性检查涉及网络调用或文件系统操作，在工具列表生成时可能引入意外延迟。缓存可以缓解但不能完全消除这个问题。
 
@@ -61,3 +61,53 @@ Registry 模式的主要风险在**模块加载顺序**：工具通过 `register
 
 - Hermes Agent: `tools/registry.py`, `model_tools.py`, `toolsets.py`
 - `projects/coding-agents/opencode/tool-system.md` -- Effect.js 工具系统
+
+## Single Source of Truth Registry (Trellis)
+
+> **Evidence**: Trellis — AI_TOOLS registry 驱动 14 平台
+
+Trellis 的 `AI_TOOLS` 是一个比传统 tool registry 更上层的抽象 —— 它不注册工具本身，而是注册"平台能力"，然后从中派生出工具/skill/hook/agent 的完整配置。
+
+**设计**：
+```
+AI_TOOLS: Record<AITool, AIToolConfig> = {
+  "claude-code": { configDir: ".claude", cliFlag: "claude", agentCapable: true, hasHooks: true, ... },
+  "codex":       { configDir: ".codex",  cliFlag: "codex",  agentCapable: true, hasHooks: false, ... },
+  // ... 14 个平台
+}
+```
+
+**派生链**：AI_TOOLS → configurator → writeSkills() + writeAgents() + writeHooks() + writeSettings()
+
+**关键原则**：
+- 从不 hardcode 平台列表，所有代码从 `Object.keys(AI_TOOLS)` 派生
+- 新增平台 = 新增 AI_TOOLS 条目 + 新增 configurator 文件
+- collectPlatformTemplates / getManagedPaths 等函数全部是 registry 查询
+
+## Manifest-First Plugin Discovery (OpenClaw)
+
+> **Evidence**: OpenClaw — 125 extensions, manifest-driven
+
+传统 tool registry 靠代码注册（import-time side effects 或显式 register() 调用）。OpenClaw 走了 manifest-first 路线：
+
+**机制**：每个 extension 通过 `openclaw.plugin.json` 声明 capability，runtime 在启动时扫描 manifest 决定加载哪些 plugin。
+
+**Plugin SDK Boundaries**：
+- 插件只能通过 `openclaw/plugin-sdk/*` subpath 和本地 `api.ts` / `runtime-api.ts` facade 访问 core
+- 禁止访问 `src/**`、`src/plugin-sdk-internal/**`、其他 extension `src/**`
+- 这种边界确保 plugin 与 core 的契约稳定
+
+**Capability Provider 模式**：
+- Provider plugin 声明 auth methods (oauth/api-key/credential)
+- Channel plugin 声明 transport + allowlist policy
+- Memory plugin 声明 search/store interface
+- Runtime 按需解析 capability，不做全量加载
+
+**与 Code-Registration 的对比**：
+| 维度 | Code Registration | Manifest-First |
+|------|-------------------|---------------|
+| 发现时机 | import-time | 启动时扫描 manifest |
+| 副作用 | 可能有 | 无（声明式） |
+| 边界强制 | 靠约定 | SDK subpath + facade |
+| 条件加载 | 运行时判断 | manifest 声明 requires |
+| 规模 | 适合 <50 工具 | 适合 100+ extensions |

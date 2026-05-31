@@ -163,7 +163,7 @@ Agent ←→ Auction / Debate / Signal ←→ Agent
 
 关键模块：去中心化协议（拍卖 / 辩论 / 信号衰减）、共享环境设计、收敛性监控、信号冲突处理、成本预算（竞标价格需要 Cost Plane 约束）。
 
-Stop Gate 与 T6a 不同——涌现系统没有单一的"合并完成"时刻。替代方案：
+Stop Gate 与 T6a 不同：涌现系统没有单一的"合并完成"时刻。替代方案：
 - Market-Based：所有拍卖已结算 + 质量审计通过
 - Debate-Based：辩论收敛或达到轮次上限 + 裁决产出
 - Stigmergy：环境状态稳定（信号变化率低于阈值）

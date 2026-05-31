@@ -1,5 +1,7 @@
 # Browser Agent / Research Agent / Companion Agent 架构语料汇总 (2025-2026)
 
+> **Evidence Status** — grounded. 品类架构多源采集语料，采集时间 2026-05-07。
+
 > 采集时间：2026-05-07 | 覆盖范围：2025 Q1 – 2026 Q2
 
 ---
@@ -23,7 +25,7 @@ Browser Agent 的感知系统已收敛为**双通道**模式：
 
 **agent-browser** 的紧凑快照方案返回带稳定引用的极简表示（如 `button "Sign In" [ref=e1]`），比 Playwright MCP 的完整无障碍树减少 **82.5%** 上下文消耗。
 
-> **架构收敛趋势**：2026 年的赢家架构是**混合模式**——对稳定、高频工作流使用确定性 Playwright 脚本，对动态、陌生界面使用 AI Browser Agent。Stagehand 的"AI 原语叠加在 Playwright 之上"是多数生产团队趋近的模板。
+> **架构收敛趋势**：2026 年生产环境主流采用**混合模式**。对稳定、高频工作流使用确定性 Playwright 脚本，对动态、陌生界面使用 AI Browser Agent。Stagehand 的"AI 原语叠加在 Playwright 之上"是多数生产团队趋近的模板。
 
 #### 动作模型
 

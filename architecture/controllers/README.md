@@ -10,9 +10,9 @@ Controllers 是运行时的**控制器层**，负责回答：
 
 > Agent 应该继续深入、验证、恢复、请求审批，还是停止？
 
-Controllers 不做"思考答案"的工作（那是 Kernel 的职责），而是做**元决策**——关于执行过程本身的决策。
+Controllers 做的是**元决策**，即关于执行过程本身的决策，而非生成答案（那是 Kernel 的职责）。
 
-Controllers 不是独立 Plane，而是**跨 Plane 的控制逻辑集合**。它们从 Control Plane 获取策略，从 State Engine 获取任务状态，输出 ControlDecision 影响主循环的走向。
+Controllers 是**跨 Plane 的控制逻辑集合**，从 Control Plane 获取策略，从 State Engine 获取任务状态，输出 ControlDecision 影响主循环的走向。
 
 ## 与 Control Plane 的关系
 

@@ -90,6 +90,58 @@ flowchart LR
 | UI as runtime projection | `../architecture/planes/interface/overview.md`、`../architecture/planes/observability/overview.md` |
 | skill crystallization governance | `../architecture/learning/overview.md`、`../architecture/learning/skill-governance.md` |
 
+## 运行时契约检查表
+
+以下规则从 6 个参考项目中提炼，可直接用于 Agent 架构评审。
+
+> 缩写：CC=Claude Code, CX=Codex, OC=OpenCode, GA=GenericAgent, HM=Hermes, WP=Warp
+
+### Agent Loop 契约
+
+| 检查项 | 规则 | 违反后果 | 验证方式 | 证据来源 |
+|--------|------|---------|---------|---------|
+| 恢复路径有限 | 每种恢复策略必须有 circuit breaker（最大重试次数） | 无限重试耗尽预算 | 检查代码中是否有重试计数器 | CC: maxOutputTokensRecoveryCount=3 |
+| 状态不可变 | TurnContext 创建后不再修改，修改需创建新版本 | 并发状态竞争 | 检查是否有 .with_*() 模式 | CX: TurnContext.with_model() |
+| Doom Loop 检测 | 连续 N 次相同工具+相同参数应触发干预 | 退化循环 | 检查是否有语义重复检测 | OC: DOOM_LOOP_THRESHOLD=3 |
+| 梯级降级 | 长任务必须有多级降级点（提示→限制→终止） | 无预警硬中断 | 检查是否有轮次阈值 | GA: 第 7/35/40 轮梯级降级 |
+
+### 权限契约
+
+| 检查项 | 规则 | 违反后果 | 验证方式 | 证据来源 |
+|--------|------|---------|---------|---------|
+| 权限不在线修改 | ExecRequest 创建后策略不变，防 TOCTOU | 权限泄漏 | 检查权限对象是否 immutable | CX: ExecRequest 不可变 |
+| 默认动作是 ask | 未匹配的权限请求应询问用户，不是静默拒绝 | 用户体验差或安全过度 | 检查默认分支 | OC: evaluate.ts 默认 ask |
+| 审批者最小权限 | Guardian/审批 Agent 自身禁用所有副作用工具 | 审批被 prompt injection | 检查审批 Agent 的工具列表 | CX: guardian_restricted_profile() |
+| 子代理只减不增 | 子代理工具集 ⊆ 父代理工具集，无例外 | 权限提升 | 检查 fork/spawn 时的工具过滤 | CC: fork 受限; CX: 工具交集+深度限制 |
+
+### 工具契约
+
+| 检查项 | 规则 | 违反后果 | 验证方式 | 证据来源 |
+|--------|------|---------|---------|---------|
+| 并发安全按 input 判定 | read-only 可并发，write 独占 | 竞态条件 | 检查是否有 isConcurrencySafe | CC: toolOrchestration.ts |
+| 结果有预算 | 工具返回值有大小限制 | 上下文爆炸 | 检查 maxResultSizeChars | CC: applyToolResultBudget |
+| 注册中心有版本号 | 工具注册/注销递增 generation，上游据此缓存失效 | 旧工具被调用 | 检查 generation counter | HM: ToolRegistry._generation |
+| Schema 单一真实源 | 工具描述只在一处定义，其余引用 | 多处不一致 | 检查是否有重复定义 | HM: registry 统一查询; OC: Zod schema |
+
+### 记忆契约
+
+| 检查项 | 规则 | 违反后果 | 验证方式 | 证据来源 |
+|--------|------|---------|---------|---------|
+| 行动验证原则 | 只有成功执行的操作结果才写入记忆 | 虚假记忆 | 检查记忆写入是否绑定工具成功 | GA: Action-Verified-Only |
+| 记忆不等于学习 | 记忆是执行副产品，不是推理结论 | 幻觉扩散 | 检查记忆来源标签 | GA: memory_management_sop |
+| 写入前脱敏 | 长期记忆写入前必须过滤秘密和可注入内容 | 凭据泄露 / prompt injection | 检查写入管道是否有 redact/scan | CX: Phase 1 redact_secrets; HM: 威胁扫描 |
+
+### Context 契约
+
+| 检查项 | 规则 | 违反后果 | 验证方式 | 证据来源 |
+|--------|------|---------|---------|---------|
+| 压缩有安全缓冲 | 触发阈值 = 有效容量 - buffer（≥13K） | prompt_too_long | 检查缓冲值 | CC: AUTOCOMPACT_BUFFER=13K |
+| micro 优先于 full | 先尝试低成本压缩，不够再触发完整摘要 | 不必要的 API 调用 | 检查压缩顺序 | CC: microCompact.ts |
+| 压缩保留不变量 | 压缩后消息必须保持 tool_use/result 配对、消息交替 | API 协议违反 | 检查是否有 sanitize 步骤 | CC: adjustIndexToPreserveAPIInvariants; HM: _sanitize_tool_pairs |
+| 预算压力前馈 | 预算耗尽前必须向模型发出渐进信号 | 无预警截断 | 检查是否有阈值警告注入 | HM: 70%/90% 压力注入; CC: 93%/99.7% 分级 |
+
+---
+
 ## 不要吸收什么
 
 - 不要复制项目代码。

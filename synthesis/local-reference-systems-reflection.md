@@ -4,9 +4,9 @@
 
 ## 目的
 
-这份反思不是再增加一个项目摘要，而是回答：**这些真实项目共同暴露出本 skill 在 Agent 开发指导上的哪些缺口？应该把哪些经验提升为稳定设计规则？**
+这份反思回答两个问题：**这些真实项目共同暴露出本 skill 在 Agent 开发指导上的哪些缺口？应该把哪些经验提升为稳定设计规则？**
 
-结论：本 skill 不能只停留在“模块大全”。真实项目反复证明，Agent 架构的关键不是 plane 数量，而是：
+结论：真实项目反复证明，Agent 架构的关键在于以下五点：
 
 1. **任务入口是否变成可验证契约**；
 2. **上下文、记忆、状态和世界效果是否分离**；
@@ -33,7 +33,7 @@
 
 ### 1. 任务入口：Prompt 不够，必须变成 Contract
 
-Warp 的 issue → readiness label → spec → implement → review 流程说明，高质量 Agent 开发不是“给模型更长 prompt”，而是把任务入口结构化为：
+Warp 的 issue → readiness label → spec → implement → review 流程说明，高质量 Agent 开发需要把任务入口结构化为：
 
 ```text
 Intent → Readiness Gate → Spec / Contract → Execution Plan → Review Gate → Effect Verification

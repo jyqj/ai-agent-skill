@@ -2,11 +2,9 @@
 
 > **Evidence Status** — synthesized. 跨项目观察归纳，品类架构、运行时 plane、参考代码骨架与 eval-runner 的综合抽象。
 
-> **代码定位**：本 skill 中的 starter-kit、eval-runner 和源码观察摘录是参考性代码资产，用于解释架构对象如何衔接；它们不是生产框架，也不是使用本 skill 的必要依赖。
+> **代码定位**：本 skill 中的 starter-kit、eval-runner 和源码观察摘录是参考性代码资产，用于解释架构对象如何衔接。它们独立于生产框架，使用本 skill 也不依赖这些代码。
 
-本文是架构总纲：核心命题、产品公式、ORDA-VU 闭环、域分组、数据资产。使用入口和导航见 [SKILL.md](SKILL.md)。
-
-> **本文定位**：这是架构的深度参考，不是入口。任务分流请回 [START-HERE.md](START-HERE.md)，速查请用 [SKILL.md](SKILL.md)。
+本文是架构深度参考，覆盖核心命题、产品公式、ORDA-VU 闭环、域分组、数据资产。任务分流见 [START-HERE.md](START-HERE.md)，速查见 [SKILL.md](SKILL.md)。
 
 ### 9 域 25 Plane 全景图
 
@@ -118,7 +116,7 @@ Agent 的核心定义见 [SKILL.md](./SKILL.md)。本文档聚焦架构展开。
 
 ## Agent 产品的约束关系
 
-Agent 产品不是模块的简单加法或乘法。用户任务、世界表示、范式选择、运行时能力和评估标准之间是**相互约束**关系——任何一个要素的质量都会限制或扩展其他要素的可达空间。
+Agent 产品中，用户任务、世界表示、范式选择、运行时能力和评估标准之间是**相互约束**关系：任何一个要素的质量都会限制或扩展其他要素的可达空间。
 
 | 要素 A | 约束 → 要素 B | 约束方式 |
 |---|---|---|
@@ -161,7 +159,7 @@ graph LR
 - 本 skill 是无状态知识库，不依赖发布标签或日期包名。
 - 代码片段仅用于说明架构概念；采用前须按目标系统重新设计接口、安全、测试和运维。
 
-知识树层级和入口导航见 [SKILL.md 主干层级](SKILL.md#主干层级)。
+知识树层级和主干导航见 [SKILL.md 主干层级](SKILL.md#主干层级)。
 
 ## ORDA-VU 闭环
 
@@ -288,7 +286,7 @@ flowchart TB
 
 ### Update 更新什么
 
-Update 不是一句“记住结果”。不同对象有不同更新路径：
+Update 阶段按对象类型分别走不同更新路径：
 
 | 更新对象 | 何时更新 | 不应做什么 |
 |---|---|---|
@@ -312,7 +310,7 @@ External Reality
   → Deliver or Continue
 ```
 
-治理不是“最顶层的事后检查”，而是贯穿每条边界的横切关注点：Control、Security、Cost、Observability、Operations、Identity、Recovery 和 Learning 在不同阶段都可能介入。
+治理贯穿每条边界，是横切关注点：Control、Security、Cost、Observability、Operations、Identity、Recovery 和 Learning 在不同阶段都可能介入。
 
 ## 域分组（Domain Grouping）
 
@@ -328,7 +326,18 @@ External Reality
 | **6. Coordination** | Interaction, Orchestration, Concurrency, Dataflow | 人、Agent、并发和数据流如何协同？ |
 | **7. Lifecycle & Economics** | Cost, Economics, Operations, Recovery | 成本、SLO、上线、故障恢复如何管理？ |
 | **8. Reflection & Learning** | Observability, Explainability, Learning & Adaptation | 如何审计、解释、从经验中学习？ |
-| **9. Governance** (cross-cutting) | Control, Evaluation (via ADR) | 如何授权、审批、验证、回归？ |
+| **9. Governance** (cross-cutting) | Control | 如何授权、审批？ |
+
+> **Evaluation 定位说明**：Evaluation 是横跨所有 Plane 的反馈层（feedback layer / gate），而非独立的第 26 个 Plane。
+> 三级评估：L1 Harness Smoke（fixture 验证）→ L2 Real Trace Replay（轨迹回放）→ L3 World Effect Eval（外部效果验证）。
+> Evaluation 作为反馈层为每个 Plane 提供质量度量和回归门禁，而非归属于某个特定域。
+
+```mermaid
+flowchart LR
+    L1["L1 Harness Smoke<br/>fixture / synthetic trace"] --> L2["L2 Real Trace Replay<br/>真实轨迹回放"]
+    L2 --> L3["L3 World Effect Eval<br/>外部效果验证"]
+    L3 --> R["Release Gate"]
+```
 
 ```mermaid
 graph TB
@@ -374,8 +383,8 @@ graph TB
   end
   subgraph G9["9. Governance &#40;cross-cutting&#41;"]
     P_Ctrl["Control"]
-    P_Eval["Evaluation"]
   end
+  P_Eval["Evaluation<br/>&#40;feedback layer&#41;"]
 
   G1 -->|"表示不可用 → 拒绝执行"| G2
   G1 -->|"表示不可用 → 拒绝执行"| G3
@@ -434,8 +443,10 @@ graph TB
     end
     subgraph "9. Governance"
         P_CTRL[Control] -.->|审批门| P_EXE
-        P_EVAL[Evaluation] -.->|回归基线| P_OBS
     end
+    P_EVAL["Evaluation<br/>(feedback layer)"] -.->|回归基线| P_OBS
+    P_EVAL -.->|效果验证门| P_EFF
+    P_EVAL -.->|质量反馈| P_DEC
 
     P_REP --> P_CTX
     P_DEC --> P_TL

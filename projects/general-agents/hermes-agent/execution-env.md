@@ -257,7 +257,7 @@ Invariant: 大输出写入可回读 artifact，并在上下文中只保留摘要
 Failure mode: 直接截断导致关键证据丢失；完整塞入上下文导致压缩污染；最终回答无法回查原始输出。
 Reference paths: `tools/tool_result_storage.py`, `agent/context_compressor.py`。
 
-这不是普通截断策略，而是“上下文预算压力下保持证据可回读”的执行层义务。
+其核心目标是在上下文预算压力下保持证据可回读，属于执行层的固有职责。
 
 ---
 

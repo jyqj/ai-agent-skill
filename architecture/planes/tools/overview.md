@@ -10,7 +10,7 @@
 
 Tool Runtime 管理 Agent 与外部世界交互。工具面决定 Agent 能做什么，工具设计质量决定做得有多可靠。
 
-工具设计的目标是给 Agent 一个稳定、可控、可审计的行动界面——暴露 API 只是起点，把工具调用管到不失控才是终点。
+工具设计的目标是给 Agent 一个稳定、可控、可审计的行动界面。暴露 API 只是起点，把工具调用管到不失控才是终点。
 
 ## 模块接口
 
@@ -167,7 +167,7 @@ risk_level: safe | check | approval | irreversible
 
 > hermes-agent 的 registry-discovered tool surface 和 GenericAgent 的极简工具集均验证了此模式：工具规模不同，但都必须区分幂等读、变异写和验证动作。
 
-**核心洞察**：工具必须按幂等性做二分——幂等工具（read_file、search_files、web_search 等）多次调用结果不变；变异工具（write_file、terminal、browser_click 等）每次调用可改变系统状态。这一区分直接决定循环检测策略：对幂等工具，"连续调用结果不变"即可判定无进展；对变异工具，副作用本身算作进展，不能用结果相同来判断卡死。
+工具必须按幂等性做二分：幂等工具（read_file、search_files、web_search 等）多次调用结果不变；变异工具（write_file、terminal、browser_click 等）每次调用可改变系统状态。这一区分直接决定循环检测策略。对幂等工具，"连续调用结果不变"即可判定无进展；对变异工具，副作用本身算作进展，不能用结果相同来判断卡死。
 
 **签名与检测流程**：
 
@@ -185,17 +185,17 @@ flowchart LR
 
 | 循环类型 | 适用范围 | 警告 / 硬止 |
 |---------|---------|------------|
-| 完全失败循环 — 同签名连续失败 | 所有工具 | >2 / >5 |
-| 同工具循环 — 任意参数反复失败 | 所有工具 | >3 / >8 |
-| 无进展循环 — 连续结果不变 | **仅幂等工具** | >2 / >5 |
+| 完全失败循环（同签名连续失败） | 所有工具 | >2 / >5 |
+| 同工具循环（任意参数反复失败） | 所有工具 | >3 / >8 |
+| 无进展循环（连续结果不变） | **仅幂等工具** | >2 / >5 |
 
 **StepOutcome 模式**（GenericAgent）：工具返回显式三元组 `(data, next_prompt, should_exit)`，不依赖隐式返回值判断是否继续。工具执行本身遵循三段式生命周期 `before_callback → execute → after_callback`，在回调中插入限流、审计和循环计数，把守卫逻辑与业务逻辑解耦。
 
 ## 生产验证：编辑工具的多策略级联
 
-> OpenCode 的 5 层替换器级联验证了此模式：编辑工具不是"匹配到就替换"的简单操作，而是一条从精确到模糊的优雅降级链。
+> OpenCode 的 5 层替换器级联验证了此模式：编辑工具实现了一条从精确到模糊的降级匹配链。
 
-**核心洞察**：LLM 生成的编辑指令（old_string → new_string）经常因空白符、缩进、上下文偏移等原因与文件实际内容不完全匹配。硬匹配失败 ≠ 编辑意图错误——需要一条逐步放宽约束的级联策略，在精确性与容错性之间取最优平衡。
+LLM 生成的编辑指令（old_string → new_string）经常因空白符、缩进、上下文偏移等原因与文件实际内容不完全匹配。硬匹配失败 ≠ 编辑意图错误，因此需要一条逐步放宽约束的级联策略，在精确性与容错性之间取最优平衡。
 
 **级联链**：
 
@@ -220,13 +220,13 @@ IndentationFlexibleReplacer → 忽略缩进差异，仅匹配内容骨架
 | 阈值可调 | BlockAnchorReplacer 的 Levenshtein 阈值（0.3）是经验值，过低会拒绝合理编辑，过高会接受危险替换 |
 | 失败即数据 | 全部 5 层均失败时，汇总每层的失败原因返回给 LLM，辅助其修正指令 |
 
-此模式的本质是"工具层为 LLM 的不精确输出兜底"——与其要求 LLM 每次生成完美匹配的编辑指令，不如在工具侧建立多级容错。
+此模式的思路是工具层为 LLM 的不精确输出兜底：在工具侧建立多级容错，而非要求 LLM 每次生成完美匹配的编辑指令。
 
 ## 生产验证：工具条件加载与 DCE
 
-> Claude Code 的 60+ 内置工具验证了此模式：工具注册不是"全量加载"，而是按条件裁剪，只暴露当前上下文真正需要的工具。
+> Claude Code 的 60+ 内置工具验证了此模式：工具注册按条件裁剪，只暴露当前上下文真正需要的工具。
 
-**核心洞察**：Agent 可用工具越多，模型选择正确工具的难度越大（tool selection noise）。条件加载通过"编译期裁剪"减少运行时选择空间，同时避免不适用的工具被误调用。
+Agent 可用工具越多，模型选择正确工具的难度越大（tool selection noise）。条件加载通过"编译期裁剪"减少运行时选择空间，同时避免不适用的工具被误调用。
 
 **三种条件加载维度**：
 
@@ -269,17 +269,17 @@ flowchart LR
 
 | 层级 | 机制 | 时机 |
 |---|---|---|
-| 编译期 DCE | Feature Gate 常量 + Tree Shaking | 构建时——未启用的工具代码不进入产物 |
-| 运行时条件加载 | 环境检测 + 角色过滤 | 启动时——按上下文裁剪可用工具集 |
-| 延迟加载 | `tool_search` 特性 | 调用时——工具定义按需从延迟列表获取，首次调用前不占内存 |
+| 编译期 DCE | Feature Gate 常量 + Tree Shaking | 构建时，未启用的工具代码不进入产物 |
+| 运行时条件加载 | 环境检测 + 角色过滤 | 启动时，按上下文裁剪可用工具集 |
+| 延迟加载 | `tool_search` 特性 | 调用时，工具定义按需从延迟列表获取，首次调用前不占内存 |
 
-这三层形成递进的裁剪链：编译期去掉不可能用到的 → 启动时去掉当前不需要的 → 调用时才加载真正被选中的。
+这三层形成递进裁剪链：编译期去掉不可能用到的，启动时去掉当前不需要的，调用时才加载真正被选中的。
 
 ## 生产验证：工具并发控制
 
-> Claude Code 的 StreamingToolExecutor 验证了此模式：工具并发不是"能并行就并行"，而是按安全属性分流。
+> Claude Code 的 StreamingToolExecutor 验证了此模式：工具并发按安全属性分流，而非一律并行。
 
-**核心洞察**：读工具天然幂等，可安全并行；写工具可能产生状态竞争，必须串行。并发控制粒度在工具注册时通过 `isConcurrencySafe` 标记确定，运行时由执行器统一调度。
+读工具天然幂等，可安全并行；写工具可能产生状态竞争，必须串行。并发控制粒度在工具注册时通过 `isConcurrencySafe` 标记确定，运行时由执行器统一调度。
 
 **调度规则**：
 
@@ -308,7 +308,7 @@ flowchart TD
 
 > Claude Code、Codex、Warp、OpenCode 分别验证了 MCP 集成的不同侧面：传输层多样性、信任模型、生命周期管理。
 
-**核心洞察**：MCP（Model Context Protocol）正在成为 Agent 工具扩展的事实标准，但各项目在传输协议、信任处理、失败策略上的选择差异显著——没有"唯一正确的 MCP 集成方式"，只有适合具体约束的权衡。
+MCP（Model Context Protocol）正在成为 Agent 工具扩展的事实标准，但各项目在传输协议、信任处理、失败策略上的选择差异显著。没有"唯一正确的 MCP 集成方式"，只有适合具体约束的权衡。
 
 **对比矩阵**：
 
@@ -316,20 +316,20 @@ flowchart TD
 |---|---|---|---|
 | Claude Code | stdio / SSE / HTTP / WebSocket / SDK；5 级配置作用域 | OAuth + XAA 认证 | 重试 + 降级到内置工具 |
 | Codex | MCP annotations（destructive / open_world / read_only） | Guardian 评估注解 | 按注解阻断或放行 |
-| Warp | Existing MCP（持久）+ Ephemeral MCP（临时）；profile 级 allowlist | 60 秒启动超时 | 非阻塞失败——MCP 不可用不阻塞主流程 |
+| Warp | Existing MCP（持久）+ Ephemeral MCP（临时）；profile 级 allowlist | 60 秒启动超时 | 非阻塞失败，MCP 不可用不阻塞主流程 |
 | OpenCode | StdioClient / SSEClient / HTTPClient；BusEvent 通知工具变更 | 权限规则覆盖 | 事件总线广播变更，动态刷新工具列表 |
 
 **关键设计决策**：
 
 - **持久 vs 临时**：Warp 区分 Existing MCP（随 profile 持久化）和 Ephemeral MCP（单次会话），解决了"用户自定义工具"和"临时集成"的不同生命周期需求。
-- **注解驱动信任**：Codex 不做传输层信任，而是在工具元数据中标注 `destructive`/`open_world`/`read_only`，由 Guardian 在调用前评估。
+- **注解驱动信任**：Codex 在工具元数据中标注 `destructive`/`open_world`/`read_only`，由 Guardian 在调用前评估，而非在传输层做信任判定。
 - **非阻塞失败**：Warp 的 60 秒启动超时 + 非阻塞失败确保 MCP 服务不可用时不拖垮整个 Agent 启动流程。
 
 ## 生产验证：工具自发现与自注册
 
 > Hermes 的 170+ 工具通过 registry-discovered 模式管理，验证了大规模工具集的自动化注册与分组加载。
 
-**核心洞察**：当工具数量超过几十个，手动维护注册列表不可持续。自发现模式让工具"声明自己的存在"，注册中心只负责收集和分组。
+当工具数量超过几十个，手动维护注册列表不可持续。自发现模式让工具"声明自己的存在"，注册中心只负责收集和分组。
 
 **三阶段自发现流程**：
 
@@ -341,7 +341,7 @@ flowchart TD
 
 **AST 工具自发现机制**（evidence-status: production-validated）：
 
-Hermes 不依赖手动维护的注册列表，而是通过 AST 解析扫描工具目录，自动发现调用 `register()` 的模块。这一机制的关键组件：
+Hermes 通过 AST 解析扫描工具目录，自动发现调用 `register()` 的模块，无需手动维护注册列表。关键组件：
 
 ```mermaid
 flowchart TD
@@ -372,7 +372,7 @@ flowchart TD
 | 快照隔离 | 读者获得稳定视图（当前代际的完整工具列表），只有写入才持有锁；读操作无锁 |
 | 延迟依赖检查 | `check_fn()` 仅在工具首次被调用时导入平台库，缺少可选依赖不阻塞其他工具 |
 
-**Toolset 分组管理**：170+ 工具按功能域分组（filesystem、web、code_analysis、browser 等），Agent 按任务类型加载对应 toolset，而非全量加载。这与"工具条件加载"模式互补——条件加载解决"加载哪些"，toolset 分组解决"怎么组织"。
+**Toolset 分组管理**：170+ 工具按功能域分组（filesystem、web、code_analysis、browser 等），Agent 按任务类型加载对应 toolset，而非全量加载。这与"工具条件加载"模式互补：条件加载解决"加载哪些"，toolset 分组解决"怎么组织"。
 
 ## 生产验证：工具定义字符串复用
 
@@ -380,7 +380,7 @@ flowchart TD
 >
 > evidence-status: production-validated
 
-**核心洞察**：每轮对话向 LLM 发送的 system prompt 中包含完整的工具定义 JSON。当工具集不变时，这些定义是纯冗余——但直接省略又可能导致模型"遗忘"可用工具。折中方案是缓存 + 条件重发 + 周期性强制重置。
+每轮对话向 LLM 发送的 system prompt 中包含完整的工具定义 JSON。当工具集不变时，这些定义是纯冗余，但直接省略又可能导致模型"遗忘"可用工具。折中方案是缓存 + 条件重发 + 周期性强制重置。
 
 **策略**：
 
@@ -472,3 +472,15 @@ flowchart TD
 - **OpenCode**：schema 验证、权限上下文、7 个内置 agent，见 `projects/coding-agents/opencode/tool-system.md`
 - **Augment**：Remote / Local / Sidecar / MCP 四层 host，见 `projects/coding-agents/augment/README.md`
 - **VCPToolBox**：插件系统和分布式工具，见 `projects/tool-platforms/vcptoolbox/plugin-system.md`
+
+## Trellis: Registry-Driven Platform Tools
+
+> **Evidence**: Trellis AI_TOOLS registry
+
+Trellis 的 AI_TOOLS 不注册工具本身，而是注册"平台能力描述"，从中派生每个平台的 skill/agent/hook 文件。14 个 configurator 从单一 registry 自动生成所有平台配置。参见 `projects/tool-platforms/trellis/platform-registry-configurator.md`。
+
+## OpenClaw: Manifest-First Plugin Discovery
+
+> **Evidence**: OpenClaw 125 extensions
+
+OpenClaw 的 125 个 extension 通过 `openclaw.plugin.json` 声明 capability，runtime 启动时扫描 manifest 决定加载。Plugin SDK boundaries（api.ts facade）强制插件只能通过受控接口访问 core。参见 `projects/personal-assistants/openclaw/plugin-system.md` 和 `patterns/manifest-first-plugin.md`。

@@ -24,7 +24,7 @@
 |---|---|
 | `choose-agent-type.md` | 选择 Agent 品类（30 秒决策） |
 | `mva-planner.md` | 定最小版本 + 判断风险与深度 |
-| `module-picker.md` | 从 5 域 / 25 plane 中选最小模块集 |
+| `module-picker.md` | 从 5 域 / 25 plane 中选最小模块集（此处 5 域是选型压缩视图，与架构总纲 9 域不同粒度） |
 | `failure-router.md` | 从症状定位架构边界与修复入口 |
 | `eval-planner.md` | 把设计转成验收和回归 |
 | `review-checklist.md` | 做轻量架构 review |

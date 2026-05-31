@@ -2,7 +2,7 @@
 
 > **Evidence Status** — synthesized. 源自 research/reporting 系统、citation-backed synthesis 和可追溯交付的共同需求，多个项目中反复出现。
 
-很多 Research Agent 把"来源很多"误当成"引用充分"。真正的问题不是来源数量，而是：最终结论中的每个断言（Claim），是否都能回溯到具体的证据片段（Evidence Snippet）和原始引用（Raw Reference）？
+很多 Research Agent 把"来源很多"误当成"引用充分"。真正的问题是：最终结论中的每个断言（Claim），是否都能回溯到具体的证据片段（Evidence Snippet）和原始引用（Raw Reference）？
 
 没有引用链（Citation Chain）时，常见的失败模式包括：报告末尾只有参考列表但没有断言级绑定；摘要段落看似可信但无法定位依据；引用指向整个页面却不知道支撑的是哪句话；交叉验证后原始冲突被洗平，无法回查。
 
@@ -31,7 +31,7 @@ citations:
     render_text: string
 ```
 
-`claim_status` 是关键字段——它不只是"有没有引用"，而是表达引用的支撑强度。`conflicted` 和 `weakly_supported` 状态迫使 Agent 诚实面对证据不足的情况，而不是用流畅的文字掩盖。
+`claim_status` 是关键字段，用于表达引用的支撑强度。`conflicted` 和 `weakly_supported` 状态迫使 Agent 诚实面对证据不足的情况，而不是用流畅的文字掩盖。
 
 ## 适用场景
 
@@ -42,7 +42,7 @@ citations:
 
 ## 反模式
 
-只有结尾 bibliography，没有断言级 evidence 绑定。这是最常见的伪引用——看起来有来源，实际上无法验证任何具体结论。
+只有结尾 bibliography，没有断言级 evidence 绑定。这是最常见的伪引用：看起来有来源，实际上无法验证任何具体结论。
 
 ## 配套模式
 

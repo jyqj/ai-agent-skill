@@ -33,7 +33,7 @@
 
 ### JTBD（Jobs to be Done）
 
-Memory Agent 的核心 job 不是"存储对话"，而是：
+Memory Agent 的核心 job 是从对话中提取、结构化并安全召回可检索的知识：
 
 ```text
 从对话流中识别值得记住的信息

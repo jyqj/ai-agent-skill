@@ -1,5 +1,32 @@
 # Warp
 
+## 证据卡
+
+**证明了什么**：Agent 产品不必自己实现 Agent。通过 Harness Container 模式可以托管 11+ 种第三方 Agent 并提供统一基础设施。
+
+**核心运行时对象**：
+
+| 对象 | 实现 | 对应 Plane |
+|------|------|-----------|
+| ThirdPartyHarness trait | 6 方法接入 | orchestration |
+| HarnessRunner | start / save / exit / cleanup | kernel/agent-loop |
+| ResumePayload | per-harness 变体 | state |
+| TerminalDriver | Block lifecycle + session sharing | execution |
+| SkillManager | 三层结构 + cloud flag + provider 优先级 | tools |
+
+**可复用规则**：
+1. Harness 接口最小化（6 方法）降低接入成本
+2. Resume / Plugin / EnvConfig 都是可选的（opt-in）
+3. 松耦合通过环境变量（OZ_RUN_ID 等）而非 API 调用
+4. Skill scope 按执行环境动态可见（cloud vs local）
+
+**不该照搬的**：
+- Two-tier Agent 体系（Harness + CLIAgent）对单一 Agent 产品是过度抽象
+
+**关键数值**：11+ Agent 适配, 6 方法 trait, 13+ CLIAgent 识别
+
+---
+
 > **Evidence Status** — grounded. 本目录下的源码分析、`.agents/skills/` 逆向、spec 流程分析与架构拆解。
 
 ## 基本信息

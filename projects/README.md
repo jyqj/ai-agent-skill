@@ -16,7 +16,8 @@
 | Memory Systems | [MemPalace](memory-systems/mempalace/) · [Nocturne Memory](memory-systems/nocturne-memory/) · [Letta](memory-systems/letta/) · [Mem0](memory-systems/mem0/) |
 | Companion Agents | [NagaAgent](companion-agents/naga-agent/) |
 | General Agents | [Generic Agent](general-agents/generic-agent/) · [Hermes Agent](general-agents/hermes-agent/) · [OpenAI Agents SDK](general-agents/openai-agents-sdk/) · [Google ADK](general-agents/google-adk/) · [LangGraph](general-agents/langgraph/) · [CrewAI](general-agents/crewai/) |
-| Tool Platforms | [VCPToolBox](tool-platforms/vcptoolbox/) |
+| Tool Platforms | [VCPToolBox](tool-platforms/vcptoolbox/) · [Trellis](tool-platforms/trellis/) |
+| Personal Assistants | [OpenClaw](personal-assistants/openclaw/) |
 
 ## 阅读建议
 
@@ -28,3 +29,5 @@
 - 核心模式
 - 独特贡献
 - 关键发现
+
+每个项目 README 头部包含结构化证据卡摘要，可快速了解该项目对知识库的贡献。

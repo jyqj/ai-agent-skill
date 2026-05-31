@@ -90,7 +90,7 @@ Optional (仅在有价值时包含):
   - Open questions    ← 优先内联到 Behavior 旁
 ```
 
-**不包含 Validation/Testing 段** — 验证计划在 TECH.md 中。
+不包含 Validation/Testing 段，验证计划统一放在 TECH.md 中。
 
 Behavior 段要求：
 - 默认行为和 happy path
@@ -120,7 +120,7 @@ Optional:
 ```
 
 **关键规则**：
-- 先研究代码再写 spec — 不对当前架构瞎猜
+- 先研究代码再写 spec，不对当前架构瞎猜
 - 引用 PRODUCT.md 的行为不变量，不重述
 - 每个重要不变量映射到具体测试或验证步骤
 - Context 段包含文件路径和行号引用
@@ -160,8 +160,8 @@ specs/
 ```
 
 **关键规则**：
-- Readiness label 不是 assignment — 任何人可以认领
-- Bug 无需等标签 — triage 后隐含 `ready-to-implement`
+- Readiness label 只是状态标记，任何人可以认领
+- Bug 无需等标签，triage 后隐含 `ready-to-implement`
 - Feature 必须走 spec 流程
 - `needs-mocks` 阻塞实现直到设计完成
 - 可 mention `@oss-maintainers` 请求标签评估
@@ -172,23 +172,23 @@ specs/
 
 `triage-issue-local` 定义了 Oz 的 triage 规则：
 
-1. **最多 2 个 follow-up 问题** — 每个必须高价值，能改变标签或路由
-2. **先检查再问** — 看日志/截图/已有功能，不问已知信息
-3. **区分用户观察和用户猜测** — Warp 行为 vs 用户推测的内部原因
-4. **环境信息检查清单** — channel/version、OS、shell、visual evidence、logs
-5. **计费/申诉不处理** — 直接导向 support channel
-6. **特化继承** — 基于核心 triage skill 做 repo-specific 适配
+1. 最多 2 个 follow-up 问题，每个必须高价值，能改变标签或路由
+2. 先检查日志/截图/已有功能，不问已知信息
+3. 区分用户观察和用户猜测：Warp 行为 vs 用户推测的内部原因
+4. 环境信息检查清单：channel/version、OS、shell、visual evidence、logs
+5. 计费/申诉不处理，直接导向 support channel
+6. 基于核心 triage skill 做 repo-specific 适配（特化继承）
 
 ### Review 行为
 
 `review-pr` 定义了 Oz 的 review 规则：
 
-1. **结构化输出** — review.json，不直接 post GitHub
-2. **优先级排序** — correctness > security > error handling > performance > style
-3. **V0 宽容** — 初始实现的健壮性建议标记为"可选后续"，不阻塞
-4. **NIT 门槛** — 只有附带 suggestion block 的 NIT 才输出
-5. **不触碰 GitHub** — 不运行 `gh pr review`、`gh pr comment`、`gh api`
-6. **可重触发** — `/oz-review` 评论触发重审，最多 3 次
+1. 输出结构化 review.json，不直接 post GitHub
+2. 优先级排序：correctness > security > error handling > performance > style
+3. V0 宽容：初始实现的健壮性建议标记为"可选后续"，不阻塞
+4. 只有附带 suggestion block 的 NIT 才输出
+5. 不运行 `gh pr review`、`gh pr comment`、`gh api` 等 GitHub API 操作
+6. `/oz-review` 评论可触发重审，最多 3 次
 
 ### Deduplication 行为
 
@@ -251,14 +251,14 @@ Warp 的架构支持多个 agent 在同一仓库协作：
 
 ### 补充
 
-- **Agent-as-Contributor**：agent 是有 role/permission 的项目贡献者
-- **Spec-as-Contract**：spec 的编号不变量同时服务人类 reviewer 和 AI agent
-- **Review-Triggered Escalation**：Oz review → SME review 的自动升级链
+- Agent-as-Contributor：agent 是有 role/permission 的项目贡献者
+- Spec-as-Contract：spec 的编号不变量同时服务人类 reviewer 和 AI agent
+- Review-Triggered Escalation：Oz review 可自动升级到 SME review
 
 ### 独特贡献
 
 1. **完整的 agent-driven 开发管线**：从 issue 到 merge 的全自动化
-2. **Readiness label 门控**：不是所有任务都适合 agent，label 控制进入门槛
+2. **Readiness label 门控**：label 控制哪些任务适合 agent 进入
 3. **Review 行为约束**：优先级排序、V0 宽容、NIT 门槛、重审次数限制
 4. **Multi-agent 协作**：内置 Oz + 外部 agent 共享同一套上下文资产
 5. **Spec 和代码同 PR**：减少 spec 与实现的漂移

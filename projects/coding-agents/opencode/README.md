@@ -1,5 +1,32 @@
 # OpenCode
 
+## 证据卡
+
+**证明了什么**：Effect.js 函数式 DI + Zod Schema 驱动 + 声明式 Agent 配置可以在 TypeScript 生态中实现强类型安全。
+
+**核心运行时对象**：
+
+| 对象 | 实现 | 对应 Plane |
+|------|------|-----------|
+| Effect Runtime | 延迟执行 + 显式依赖流 | kernel/agent-loop |
+| Permission Ruleset | Zod 递归 schema, deny > ask > allow | control |
+| Agent Config | 声明式角色定义, primary/subagent | orchestration |
+| Doom Loop Detector | 语义检测, threshold=3 | kernel/agent-loop |
+| ACP 协议 | Agent ↔ Session Manager 双向通信 | orchestration |
+
+**可复用规则**：
+1. 默认动作是 ask 而非 deny
+2. 权限栈三层（defaults + user + agent-specific）后来者覆盖
+3. Agent = 权限配置 + 提示词 + 模型选择的组合
+4. Schema 即 spec（Zod 同时服务类型安全和运行时验证）
+
+**不该照搬的**：
+- Effect.js 学习曲线陡峭（需理解单子）
+- ACP 协议生态尚未成熟
+
+**关键数值**：DOOM_LOOP_THRESHOLD=3, 权限三层栈
+
+---
 
 > **Evidence Status** — grounded. 本目录下的专题文件与架构总结。
 
@@ -22,7 +49,7 @@
 
 ## 独特贡献
 
-OpenCode 是一个**可组合的 agent runtime 框架**。它用 Effect.js 的 Service + Layer 把依赖注入、错误处理和资源生命周期统一到类型系统中，harness 的每一层都可以独立测试和替换——从"做一个 agent"到"做一个 agent 框架"的关键跨越。
+OpenCode 是一个**可组合的 agent runtime 框架**。它用 Effect.js 的 Service + Layer 把依赖注入、错误处理和资源生命周期统一到类型系统中，harness 的每一层都可以独立测试和替换，这是从"做一个 agent"到"做一个 agent 框架"的关键跨越。
 
 ## 关键发现
 

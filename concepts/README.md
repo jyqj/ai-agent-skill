@@ -31,7 +31,11 @@
 | 从"不该做什么"到"该做什么" | `foundations/value-and-alignment.md` |
 | Agent 的"身体"是什么？ | `foundations/embodiment-and-situation.md` |
 
-这些不是学术阅读材料，而是架构决策的哲学根基。一线开发者可以跳过，但做长程系统决策时建议回来看。
+这些是架构决策的哲学根基。一线开发者可以跳过，但做长程系统决策时建议回来看。
+
+## 术语表
+
+完整术语定义见 [`glossary.md`](glossary.md)，涵盖 Agent 架构中的核心概念、缩写和易混淆术语。建议在团队对齐阶段优先参考。
 
 ## 方法论已迁移
 

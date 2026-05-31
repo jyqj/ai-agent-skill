@@ -84,7 +84,7 @@ Update       TaskState / Memory / EffectLedger / next ContextPack
 [ ] 把计划、检查点和失败原因写入 TaskState，而不是只放在上下文里
 ```
 
-相关文件：`../architecture/lifecycle.md`、`../architecture/kernel/agent-loop.md`、`../architecture/planes/prompting/overview.md`、`../architecture/controllers/execution-depth/overview.md`。
+相关文件：`../architecture/lifecycle.md`、`../architecture/kernel/agent-loop.md`、`../architecture/planes/prompting/overview.md`、`../architecture/kernel/execution-depth-controller/overview.md`。
 
 
 ## 决策树速用

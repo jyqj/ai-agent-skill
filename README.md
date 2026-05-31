@@ -1,6 +1,8 @@
 # AI Agent Architecture Skill
 
-Agent 架构知识库与评审工具。它用于设计、诊断和评审 Agent 产品；不是生产框架，仓库内代码均为 reference-only。
+> **Evidence Status** — synthesized. 项目入口页。
+
+Agent 架构知识库与评审工具，用于设计、诊断和评审 Agent 产品。仓库内代码均为 reference-only。
 
 **从 [START-HERE.md](START-HERE.md) 开始。**
 

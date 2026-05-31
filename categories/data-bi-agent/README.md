@@ -10,7 +10,7 @@
 理解问题 → 识别数据源和指标 → 构建查询 → 执行校验 → 解释结果 → 追溯来源
 ```
 
-核心挑战："AI 生成的 SQL 看起来对但语义错"——用错 join、混淆口径、忽略时效。
+核心挑战：AI 生成的 SQL 看起来对但语义错，例如用错 join、混淆口径、忽略时效。
 
 ## 用户模型
 
@@ -36,7 +36,7 @@ SchemaSnapshot、ColumnDescription、MetricDefinition、
 BusinessGlossary、QueryResult、DataLineage、FreshnessTimestamp
 ```
 
-核心原则：**Semantic Layer 是核心**——没有 metric definition，LLM 就是在猜 SQL。
+核心原则：**Semantic Layer 是核心**。没有 metric definition，LLM 就是在猜 SQL。
 
 ## 品类特有设计决策
 

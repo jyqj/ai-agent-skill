@@ -25,13 +25,15 @@ architecture/            -> 运行时 plane 的工程实现
 | 工作记忆应如何管理？ | `working-memory-dynamics.md` | **结构性** — 容量约束和衰减机制直接映射到 Context Window |
 | 目标冲突时谁优先？ | `goal-hierarchy.md` | **结构性** — BDI 的 Desire->Intention 层级有工程对应 |
 | Agent 在做什么类型的推理？ | `reasoning-modes.md` | **结构性** — 演绎/溯因/类比在 Prompt 策略中可操作化 |
-| 与人和 Agent 协作时如何建模对方？ | `theory-of-mind.md` | **启发性** — Agent 没有真正的 ToM，是意向立场的工程近似 |
+| 与人和 Agent 协作时如何建模对方？ | `theory-of-mind.md` | **启发性** — Agent 没有真正的 ToM，是用户意图推断的工程近似 |
 | Skill Memory 和 Knowledge Memory 为什么要区分？ | `procedural-vs-declarative.md` | **结构性** — ACT-R 的知识类型区分直接指导存储策略 |
 | 注意力如何在信息中分配权重？ | `attention-and-salience.md` | **结构性**（Broadbent/Kahneman）/ **启发性**（Treisman） |
-| Agent 如何从新手到专家？ | `skill-acquisition.md` | **结构性**（ACT-R 知识编译）/ **启发性**（Dreyfus 五阶段） |
-| Agent 何时该反思、何时该行动？ | `metacognitive-control.md` | **结构性** — 监控-调节循环有直接工程实现 |
-| 情绪和内驱力如何设计？ | `emotion-and-motivation.md` | **启发性** — 仅对 Companion/Creative Agent 有价值 |
+| Agent 如何从规则驱动演进到模式驱动？ | `skill-acquisition.md` | **结构性**（ACT-R 知识编译）/ **启发性**（Dreyfus 五阶段） |
+| Agent 何时该做策略评估、何时该行动？ | `metacognitive-control.md` | **结构性** — 运行时指标检查-调节循环有直接工程实现 |
+| 奖励信号和优先级调节如何设计？ | `emotion-and-motivation.md` | **启发性** — 仅对 Companion/Creative Agent 有价值 |
 | Agent 如何产生新方案？ | `creative-cognition.md` | **启发性** — 创意认知理论提供设计启发但无严格对应 |
+| 上下文窗口的容量限制与注意力分配 | `context-attention-dynamics.md` | **结构性** — Baddeley/Cowan/Miller 模型到 Context Window 的工程映射 |
+| 如何建模用户意图和 Worker 能力？ | `user-worker-modeling.md` | **启发性** — 多 Agent/Companion 场景的协作前提 |
 
 ### LLM Agent 特有问题（无传统认知科学对应）
 
@@ -53,7 +55,8 @@ architecture/            -> 运行时 plane 的工程实现
 |---|---|
 | `category-cognitive-profiles.md` | `../categories/category-cognitive-profiles.md` |
 | `category-cognitive-assembly.md` | `../categories/category-cognitive-assembly.md` |
-| `cognitive-load-budget.md` | `../architecture/planes/context/cognitive-load-budget.md`（如存在） |
+| `reasoning-technique-selection.md` | `../paradigms/reasoning-technique-selection.md` |
+| `cognitive-load-budget.md` | `../architecture/planes/context/overview.md`（内容已并入 Context Plane 总览） |
 
 ## 类比边界说明
 

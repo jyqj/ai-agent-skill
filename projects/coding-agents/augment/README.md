@@ -93,7 +93,7 @@ Augment 将工具按执行位置分为四层：
 | Sidecar | 3 | 独立边车进程 | SHELL, VIEW, GREP_SEARCH, SUB_AGENT, APPLY_PATCH |
 | MCP | 4 | MCP 协议 | 用户配置的 MCP 服务器工具 |
 
-**设计洞察**：
+**设计要点**：
 - Remote 工具需要 OAuth，状态有 AVAILABLE / USER_CONFIG_REQUIRED
 - Sidecar 独立进程隔离了风险操作（Shell 执行）
 - MCP 层支持 stdio/http/sse 三种传输
@@ -171,7 +171,7 @@ AgentShardStorage
   └── shard-manager.ts         // 管理器
 ```
 
-**设计洞察**：
+**设计要点**：
 - 支持跨会话恢复 Agent 状态
 - 编辑事件可转换为检查点
 - Shard 机制分散大状态存储

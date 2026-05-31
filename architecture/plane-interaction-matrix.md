@@ -49,7 +49,7 @@
 | State ↔ World State | 长任务进度依赖外部对象新鲜度 | TaskState 只记录任务进展，WorldStateSnapshot 记录外部事实 |
 | Control ↔ Security ↔ Identity-Capability | 权限、攻击面、身份归因必须同时判定 | CapabilityGrant + PolicyVerdict + SecurityVerdict |
 | Recovery ↔ Effects | 部分效果和失败补偿需要闭环 | FailureRecord + CompensationAction |
-| Observability ↔ Evaluation | 没有 trace 就无法回归 | 统一 TraceEvent schema 和 fixture extraction |
+| Observability ↔ Evaluation (feedback layer) | 没有 trace 就无法回归；Evaluation 作为横跨所有 Plane 的反馈层依赖 Observability 提供 trace | 统一 TraceEvent schema 和 fixture extraction |
 | Orchestration ↔ Concurrency | 谁做什么和同时做多少不能分开决定 | ConcurrencyPolicy 约束 Orchestration 的 fanout |
 | Economics → Cost | 租户配额注入单次任务预算 | Economics 设配额上限，Cost 管运行时预算 |
 | Time → World State / Memory / Effects | 过期和因果关系横切多个 plane | ValidityWindow + StalenessPolicy 统一接口 |

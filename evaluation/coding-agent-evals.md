@@ -2,7 +2,7 @@
 
 > **Evidence Status** — synthesized. 评估框架与场景来自多个产品形态的共性需求。
 
-Coding Agent 是当前最成熟的 Agent 产品形态，但"改了代码"不等于"修好了 bug"——本评估覆盖从工具选择到效果验证的全链路。
+Coding Agent 是当前最成熟的 Agent 产品形态，但"改了代码"不等于"修好了 bug"。本评估覆盖从工具选择到效果验证的全链路。
 
 ## 任务类型
 

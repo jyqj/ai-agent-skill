@@ -1,6 +1,6 @@
 # 创意认知——Agent 如何产生新方案
 
-> **Evidence Status** — theoretical. 来自创造力研究（Boden 三类创造力、TTCT）、LLM 创造力评估（arXiv 2604.13242）和多 Agent 创意协作实践。
+> **Evidence Status** — theoretical. 来自创造力研究（Boden 三类创造力〔认知科学类比，非工程定义〕、TTCT〔理论参考，无 LLM 验证〕）、LLM 创造力评估（arXiv 2604.13242）和多 Agent 创意协作实践。
 
 ## 1. 为什么需要这篇
 
@@ -10,13 +10,13 @@
 - 改进**所有品类 Agent** 的方案生成能力（Coding Agent 生成多种实现方案、Research Agent 提出新假设）
 - 明确当前 LLM 的创造力边界在哪里、可以如何工程性地扩展
 
-## 2. 创造力的认知分类（Boden）
+## 2. 创造力的认知分类（Boden）〔认知科学类比，非工程定义〕
 
 | 类型 | 机制 | LLM 能力 | 工程关注点 |
 |---|---|---|---|
-| **组合**（Combinatorial） | 将已有概念以新方式组合 | 强——训练语料覆盖大量概念 | 新颖性受限于训练数据中概念的共现频率；通过 prompt 引入罕见组合可提升 |
+| **组合**（Combinatorial） | 模式组合（pattern combination）：将已有概念以新方式组合 | 强——训练语料覆盖大量概念 | 新颖性受限于训练数据中概念的共现频率；通过 prompt 引入罕见组合可提升 |
 | **探索**（Exploratory） | 在概念空间内系统搜索 | 中——通过多步推理和方案对比实现 | 搜索深度受限于上下文窗口；Plan-and-Execute 模式有效 |
-| **变革**（Transformational） | 改变概念空间本身的规则 | 极弱——LLM 推理不出训练分布之外 | 当前不可工程化；不应作为设计目标 |
+| **变革**（Transformational） | 搜索空间跳跃：改变概念空间本身的规则 | 极弱——LLM 推理不出训练分布之外 | 当前不可工程化；不应作为设计目标 |
 
 工程设计应围绕组合和探索两类做优化，不应期望变革性创造力（arXiv: On the Creativity of AI Agents）。
 
@@ -205,7 +205,7 @@ StyleAligned 方法：通过注意力共享保持跨输出一致性
 2. **多样性来自输入侧，不来自温度**。不同 prompt 框架、不同模型族、不同角色设定比单纯调高 temperature 更有效。
 3. **风格一致性是生产级问题**。System Prompt 定基线，Memory 存风格规则和历史样本，Post-Processing 做兜底——缺任何一层都会导致跨会话输出漂移。
 4. **评估标准必须前置**。在发散阶段开始前就定义好评估 rubric，否则收敛阶段没有锚点。
-5. **内在动机是长期瓶颈**。当前 Creative Agent 是响应式的，缺乏自发探索驱动力。参见 `emotion-and-motivation.md` 中的内在动机部分。
+5. **内在奖励信号是长期瓶颈**。当前 Creative Agent 是响应式的，缺乏自发探索的驱动机制。参见 `emotion-and-motivation.md` 中的奖励信号部分。
 
 ## 10. 延伸阅读
 
@@ -213,5 +213,5 @@ StyleAligned 方法：通过注意力共享保持跨输出一致性
 - `reasoning-modes.md` — 推理模式（含类比推理）
 - `metacognitive-control.md` — 何时打破常规
 - `../evaluation/subjective-eval.md` — 主观性评估
-- `emotion-and-motivation.md` — 内在动机与创意的关系
+- `emotion-and-motivation.md` — 奖励信号与输出多样性调节
 - `category-cognitive-profiles.md` — 品类认知特化差异

@@ -1,6 +1,8 @@
 # Module Picker
 
 > **Evidence Status** — synthesized. 把 25 plane 压缩成开发者可用的 5 域选择器；25 plane 只作为审计底盘按需展开。
+>
+> **注意**：此处 5 域是选型压缩视图，与架构总纲（`ARCHITECTURE.md`）的 9 域不同粒度。9 域是完整的架构分析维度，5 域是面向开发者的快速选择入口。
 
 ## 30 秒判断
 
@@ -22,7 +24,7 @@
 | MVA-2 | Representation, Tools, Execution | Control, Cost | Memory, Orchestration |
 | MVA-3 | Representation, Tools, Execution, Effects, Control | State, Security | Learning, Economics |
 | MVA-4 | Context, State, World State, Recovery | Memory, Time | Dataflow, Economics |
-| MVA-5 | Observability, Evaluation, Operations, Cost | Security, Identity | Learning 自动激活 |
+| MVA-5 | Observability, Operations, Cost + **Evaluation gate** | Security, Identity | Learning 自动激活 |
 | MVA-6 | Dataflow, Concurrency, Recovery, Operations | Learning, Economics | 无 |
 
 ## 最小产出

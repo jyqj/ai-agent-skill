@@ -2,7 +2,7 @@
 
 > **Evidence Status** — synthesized. Gulli (2025) *Agentic Design Patterns* Ch17 + reasoning-modes.md 互补。
 
-> **与 reasoning-modes.md 的关系**：reasoning-modes.md 描述推理的认知基础（演绎/归纳/溯因/类比/因果/反事实）。本文聚焦 **LLM 推理技术的工程选择**——给定任务特征，选择哪种推理技术实现。
+> **与 reasoning-modes.md 的关系**：reasoning-modes.md 描述推理的认知基础（演绎/归纳/溯因/类比/因果/反事实）。本文聚焦 **LLM 推理技术的工程选择**：给定任务特征，选择哪种推理技术实现。
 
 ## 推理技术全景
 
@@ -66,13 +66,13 @@
 - **适用**：科学争议、复杂策略评估、多源信息综合
 
 ### 8. MASS (Multi-Agent System Search)
-- **机制**：自动化 MAS 设计优化，三阶段——块级提示 → 拓扑 → 系统编排
+- **机制**：自动化 MAS 设计优化，三阶段：块级提示 → 拓扑 → 系统编排
 - **优势**：自动发现最优多 Agent 配置
 - **适用**：大规模 MAS 系统设计、Agent 组合优化
 
 ### 9. RLVR (RL with Verifiable Rewards)
 - **机制**：训练时通过可验证答案（数学、代码测试）的奖励信号，训练"推理模型"
-- **特征**：可变"思考时间"——困难问题自动分配更长推理链
+- **特征**：可变"思考时间"，困难问题自动分配更长推理链
 - **产物**：推理模型（如 o1、DeepSeek-R1）
 - **注意**：训练时技术，不是推理时可选的技术
 

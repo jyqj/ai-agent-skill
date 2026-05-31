@@ -82,7 +82,7 @@ notes: string | null
 
 文件系统是 coding agent 最高频的效果目标。Ghost Success 在这里的典型形态：工具报告写入成功，但文件内容并未如预期改变（外部进程竞争写、磁盘满、权限降级）。Claude Code 用 **FileStateCache + Read-Before-Write 协议** 在工具层面消除了这一类失败。
 
-**FileStateCache** 是一个 LRU 缓存（25 MB 上限），为每个已读文件维护 `{ content, timestamp, offset, limit, isPartialView }` 记录——它既是 World Model 的文件系统切面，也是写操作的前置断言来源。
+**FileStateCache** 是一个 LRU 缓存（25 MB 上限），为每个已读文件维护 `{ content, timestamp, offset, limit, isPartialView }` 记录。它既是 World Model 的文件系统切面，也是写操作的前置断言来源。
 
 **Read-Before-Write 决策流**：
 
@@ -99,13 +99,13 @@ flowchart LR
 
 三层守卫的设计意图：
 
-1. **Cache 存在性检查** — 强制"先观察再行动"，杜绝盲写。对应 Effect Record 的 `preconditions_checked`。
-2. **Timestamp 乐观锁** — 用 mtime 做乐观并发控制，检测外部竞争（linter、formatter、人工编辑）。避免文件锁阻塞后续工具调用。失败时错误消息足够清晰，模型自动重读后重试。
-3. **Partial View 拦截** — 模型只看到截断内容时标记 `isPartialView=true`，写工具拒绝执行，防止基于不完整信念覆写完整文件。
+1. **Cache 存在性检查**：强制"先观察再行动"，杜绝盲写。对应 Effect Record 的 `preconditions_checked`。
+2. **Timestamp 乐观锁**：用 mtime 做乐观并发控制，检测外部竞争（linter、formatter、人工编辑）。避免文件锁阻塞后续工具调用。失败时错误消息足够清晰，模型自动重读后重试。
+3. **Partial View 拦截**：模型只看到截断内容时标记 `isPartialView=true`，写工具拒绝执行，防止基于不完整信念覆写完整文件。
 
-这个模式本质上把 Effects 层的 **read-after-write 验证** 前移为 **read-before-write 预防**：与其事后发现 Ghost Success，不如在写入前就确保前置条件成立。两者结合形成完整闭环——预防处理大部分情况，验证兜底剩余风险。
+这个模式把 Effects 层的 **read-after-write 验证** 前移为 **read-before-write 预防**：在写入前就确保前置条件成立。两者结合形成完整闭环。预防处理大部分情况，验证兜底剩余风险。
 
-**泛化**：同样的 cache-as-state 策略可移植到数据库行版本号、API ETag、DOM snapshot hash 等场景——核心不变：**写之前必须持有足够新的读快照，否则拒绝执行**。
+**泛化**：同样的 cache-as-state 策略可移植到数据库行版本号、API ETag、DOM snapshot hash 等场景。核心不变：**写之前必须持有足够新的读快照，否则拒绝执行**。
 
 ## 关联模式
 

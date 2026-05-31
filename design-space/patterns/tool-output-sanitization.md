@@ -4,7 +4,7 @@
 
 ## 问题
 
-工具输出经常包含不可信文本。如果系统直接把这些内容拼回主提示（Main Prompt），外部世界就能间接操控 Agent——这就是间接提示注入（Indirect Prompt Injection）的基本原理。
+工具输出经常包含不可信文本。如果系统直接把这些内容拼回主提示（Main Prompt），外部世界就能间接操控 Agent，这就是间接提示注入（Indirect Prompt Injection）的基本原理。
 
 ## 解法
 

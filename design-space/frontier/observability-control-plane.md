@@ -12,7 +12,7 @@ runtime decision support + eval dataset source + rollback evidence + policy tuni
 
 ## 为什么它值得单独讨论
 
-Agent 的难点不是单次请求，而是：
+Agent 可观测性的复杂度来自多个维度：
 
 - 多步 trace；
 - tool 调用；

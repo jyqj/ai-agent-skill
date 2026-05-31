@@ -10,7 +10,7 @@ src/services/compact/compact.ts
 src/query.ts (压缩调用链)
 
 ## 关键点
-Claude Code 不是单一压缩，而是多层策略：
+Claude Code 采用多层压缩策略：
 1. Tool Result Budget - 限制单个工具输出大小
 2. Snip Compact - 历史裁剪
 3. Microcompact - 工具输出智能压缩
@@ -137,9 +137,9 @@ async function autocompact(
 
 ### Context Collapse 的 Commit-Log 投影
 
-Context Collapse（`CONTEXT_COLLAPSE` feature gate）与其他压缩层有本质区别——它 **不修改 `state.messages` 数组**：
+Context Collapse（`CONTEXT_COLLAPSE` feature gate）与其他压缩层的区别在于它 **不修改 `state.messages` 数组**：
 - **投影模型**：`applyCollapsesIfNeeded()` 接收 messages 的只读快照，返回一组 `CollapseSpec`（折叠区间 + 摘要文本），queryLoop 据此构造 `messagesForQuery`，但原始 messages 保持不变。
 - **Commit Log**：每次折叠生成一条 `CollapseCommit`（包含折叠区间 hash、摘要文本、被折叠的消息 ID 列表），追加到独立的 `collapseLog` 数组。这个 log 在压缩流水线之外维护，不受 autocompact/snip 的清洗影响。
 - **可恢复性**：因为原始消息未被销毁，当用户执行 `/undo` 或会话恢复时，可以重新展开被折叠的区间，无需重新查询 API。
-- **与 Autocompact 的交互**：若 Context Collapse 未能充分释放 token，autocompact 仍可在 collapse 投影后的 `messagesForQuery` 上执行完整摘要——两层串联而非互斥。
+- **与 Autocompact 的交互**：若 Context Collapse 未能充分释放 token，autocompact 仍可在 collapse 投影后的 `messagesForQuery` 上执行完整摘要，两层串联而非互斥。
 - **413 错误恢复**：遇到 `prompt_too_long` 错误时，queryLoop 优先触发 collapse "排放"（强制折叠更多区间），再尝试 reactive compact，形成两级恢复阶梯。

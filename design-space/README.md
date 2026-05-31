@@ -11,6 +11,7 @@
 | `patterns/` | 被 2+ 项目验证或被多个品类需要的可复用做法 | 中 |
 | `frontier/` | 尚未成熟的新观察、猜想、生态演进与协议边界 | 低 |
 | `anti-patterns/` | 常见 Agent 架构反模式，与 `patterns/` 配套使用 | 中 |
+| `methodology/` | 方法论文档（从 `concepts/` 迁入），涵盖 Harness 工程、决策框架、经济学等 | 中 |
 | `lessons-learned/` | 真实失败案例与经验教训档案 | 中 |
 
 ## 当前重点

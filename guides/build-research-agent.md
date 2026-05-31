@@ -4,7 +4,7 @@
 
 ## 定位
 
-Research Agent 的交付物不是“看起来完整的报告”，而是：
+Research Agent 每次交付必须满足五项可验证标准：
 
 ```text
 可回查 claim + evidence + citation + conflict + freshness 边界

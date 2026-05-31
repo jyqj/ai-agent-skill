@@ -5,12 +5,12 @@
 
 ## 为什么需要这篇文档
 
-Context Engineering、Memory 和 Prompting 在知识库中分别归属不同的 Plane，但在实际 Agent 系统中，三者的边界正在模糊和重叠。Anthropic 在 2026 年提出的 Context Engineering 框架明确指出："Context Engineering 是架构选择，不是 Prompt 技巧。"这意味着传统的 Prompt Engineering 已不足以描述生产级 Agent 的信息管理问题。
+Context Engineering、Memory 和 Prompting 在知识库中分别归属不同的 Plane，但在实际 Agent 系统中，三者的边界正在模糊和重叠。Anthropic 在 2026 年提出的 Context Engineering 框架明确指出："Context Engineering 是架构选择，不是 Prompt 技巧。"传统的 Prompt Engineering 已不足以描述生产级 Agent 的信息管理问题。
 
 关键证据：
-- **Anthropic 三策略**: System Prompt Goldilocks Zone + Just-In-Time 检索 + 结构化笔记——三者跨越了 Prompting/Context/Memory 的传统边界
+- **Anthropic 三策略**: System Prompt Goldilocks Zone + Just-In-Time 检索 + 结构化笔记，三者跨越了 Prompting/Context/Memory 的传统边界
 - **Context Rot**: 上下文窗口利用率超过 70% 后，准确率下降曲线陡峭化（transformer n^2 关系）
-- **Compaction API**: 在上下文极限处摘要消息历史，保留架构决策、丢弃冗余输出——这是 Context 和 Memory 的融合操作
+- **Compaction API**: 在上下文极限处摘要消息历史，保留架构决策、丢弃冗余输出。这是 Context 和 Memory 的融合操作
 - Agent 工作负载的上下文缩放可达 **64x** 成本放大（128K vs 8K 窗口）
 
 本文档重新定义三个 Plane 在 Agent 系统中的边界，并建立信息在三层间的流转协议。
@@ -81,7 +81,7 @@ Memory:    跨会话持久化的信息（用户偏好、历史摘要）
 
 ## 实战裁决规则：内容进入上下文的工作流
 
-生产级 Agent 系统中，信息不是"直接塞进上下文"的——它经过一条四步流水线，每一步都有明确的裁决逻辑。
+生产级 Agent 系统中，信息经过一条四步流水线进入上下文，每一步都有明确的裁决逻辑。
 
 ### Memory → Context → Prompting 四步流转协议
 
@@ -146,12 +146,12 @@ flowchart LR
 | **Step 3: 优先级装配** | 静态系统上下文 → 动态用户上下文 → compact 结果 | SOUL.md → AGENTS.md → PLATFORM_HINTS → memory → skills | L1 索引 → L2 事实 → L3 SOP → `_get_anchor_prompt` 装配 | Config → Permission state → Agent selection |
 | **Step 4: 分组注入** | 系统 prompt（规则）+ 用户 prompt（任务）+ 工具输出 + 内存注入 | 按角色分层：灵魂 / 代理定义 / 平台 / 记忆 / 技能 | anchor_prompt 按层拼装，显式区分指令层级 | 规则 schema → 工具列表 → 对话历史 |
 
-**关键洞察**：
+**项目对照**：
 
-- **Claude Code 的三级上下文**：静态系统上下文（Git 仓库信息、规则文件）作为不变基础；动态用户上下文（内存文件、当前编辑）按需加载；自适应 compact 在窗口压力下自动压缩低优先级内容。这三级严格对应 Step 3 的优先级排序。
+- **Claude Code 的三级上下文**：静态系统上下文（Git 仓库信息、规则文件）作为不变基础；动态用户上下文（内存文件、当前编辑）按需加载；自适应 compact 在窗口压力下自动压缩低优先级内容。三级严格对应 Step 3 的优先级排序。
 - **Hermes 的五层注入**：SOUL.md（不变的角色定义）→ AGENTS.md（代理能力声明）→ PLATFORM_HINTS（运行时平台感知）→ memory_manager（持久化记忆）→ skills（可用技能），层级越靠后信任越低、变化越频繁。
-- **GenericAgent 的索引-事实-SOP 三级**：L1 索引仅 ~30 行，作为"目录"帮助 Agent 决定是否需要加载 L2 事实或 L3 SOP。这是 JIT 检索的极致实现——先看目录，按需翻书。
-- **OpenCode 的事件驱动装配**：Config 变更、Bus event、Permission 状态变化都会触发上下文重新装配，而不是只在会话开始时一次性加载。这使得 Context 层能实时响应环境变化。
+- **GenericAgent 的索引-事实-SOP 三级**：L1 索引仅 ~30 行，作为"目录"帮助 Agent 决定是否需要加载 L2 事实或 L3 SOP。这是 JIT 检索的极端实现：先查目录，按需加载全文。
+- **OpenCode 的事件驱动装配**：Config 变更、Bus event、Permission 状态变化都会触发上下文重新装配，而非只在会话开始时一次性加载，使 Context 层能实时响应环境变化。
 
 ---
 
@@ -205,7 +205,7 @@ flowchart LR
   4. 信任感知排序（高信任记忆优先注入）
 ```
 
-**关键约束**: 记忆注入不应占用超过 Context 窗口的 20-30%。Anthropic 建议使用"轻量标识符 + 运行时动态检索"（JIT 检索），而非将全部记忆加载到上下文中——类似人类使用索引而非记忆全文。
+**关键约束**: 记忆注入不应占用超过 Context 窗口的 20-30%。Anthropic 建议使用"轻量标识符 + 运行时动态检索"（JIT 检索），而非将全部记忆加载到上下文中。
 
 ### 流转协议 3: Context → Memory（持久化）
 
@@ -303,41 +303,41 @@ flowchart LR
 
 **表现**: 会话开始时将所有用户历史记忆加载到上下文窗口
 **数据**: 上下文窗口填充率 >70% 后准确率陡降；128K vs 8K 成本差 64x
-**修正**: JIT 检索——加载轻量标识符，仅在需要时检索完整记忆
+**修正**: 采用 JIT 检索：加载轻量标识符，仅在需要时检索完整记忆
 
 ### 错误 2: Compaction 不区分信息价值
 
 **表现**: Context Compaction 均匀压缩所有历史消息
 **风险**: 架构决策和安全约束被过度压缩，关键信息丢失
-**修正**: Compaction 应有保留优先级——安全约束 > 架构决策 > 关键发现 > 对话细节 > 工具原始输出
+**修正**: Compaction 应有保留优先级：安全约束 > 架构决策 > 关键发现 > 对话细节 > 工具原始输出
 
 ### 错误 3: 记忆注入不标注信任等级
 
 **表现**: 历史记忆注入上下文时不附带来源信息，Agent 将其视为系统指令
-**案例**: 记忆投毒攻击——投毒记忆在后续会话中作为系统指令自动注入（84.3% 攻击成功率）
+**案例**: 记忆投毒攻击，投毒记忆在后续会话中作为系统指令自动注入（84.3% 攻击成功率）
 **修正**: 所有 Memory → Context 流转必须附带来源标注和信任等级
 
 ### 错误 4: System Prompt 过度膨胀
 
 **表现**: 不断向 System Prompt 添加规则，导致 System Prompt 占用大量上下文窗口
-**数据**: "更聪明的模型需要更少的规定性工程"——过度规定反而降低模型表现
+**数据**: "更聪明的模型需要更少的规定性工程"，过度规定反而降低模型表现
 **修正**: System Prompt Goldilocks Zone + 将动态规则移至 Context/Memory 层
 
 ### 错误 5: 三层压缩策略不协调
 
 **表现**: Context Compaction 和 Memory Summarization 同时运行，产生重复摘要或信息丢失
 **风险**: 同一信息被两个系统同时压缩，一个保留了细节而另一个丢弃了
-**修正**: 定义明确的压缩职责边界——Context Compaction 负责会话内信息，Memory Summarization 负责跨会话信息
+**修正**: 定义明确的压缩职责边界：Context Compaction 负责会话内信息，Memory Summarization 负责跨会话信息
 
 ---
 
 ## 设计启发
 
-1. **Context Engineering 是架构选择，不是 Prompt 技巧**。信息的存储层、注入时机、压缩策略、淘汰规则——这些是架构级决策，不是 prompt 优化问题。
+1. **Context Engineering 是架构选择，不是 Prompt 技巧**。信息的存储层、注入时机、压缩策略、淘汰规则都属于架构级决策。
 2. **三层边界必须明确，但流转必须顺畅**。边界模糊导致安全策略不一致和成本重复；但过度隔离会阻碍信息流动。关键是定义清晰的流转协议和信任规则。
-3. **"做最简单的有效方案"**。Anthropic 的设计哲学适用于三层信息管理——避免过度工程化的记忆系统或过度复杂的 Context 管理。
-4. **JIT 检索是解决 Context Rot 的核心策略**。人类使用索引而非记忆全文——Agent 应同样使用轻量标识符 + 运行时检索，而非预载全部信息。
-5. **Compaction 是 Context 和 Memory 的桥梁**。Compaction 不仅是上下文压缩，更是"从短期工作记忆到长期记忆的选择性持久化"过程。
+3. **"做最简单的有效方案"**。Anthropic 的设计哲学适用于三层信息管理，应避免过度工程化的记忆系统或过度复杂的 Context 管理。
+4. **JIT 检索是解决 Context Rot 的核心策略**。Agent 应使用轻量标识符 + 运行时检索，而非预载全部信息。
+5. **Compaction 是 Context 和 Memory 的桥梁**。Compaction 的作用不限于上下文压缩，同时也是从短期工作记忆到长期记忆的选择性持久化过程。
 6. **信任等级在流转中只能降低，不能升高**。Prompting 层信息（Trusted）流入 Context 保持 Trusted；Memory 层信息（Semi-trusted）流入 Context 保持 Semi-trusted。
 7. **上下文窗口是昂贵的稀缺资源**。n^2 缩放意味着每增加 1 token 的边际成本在递增。信息管理的核心目标是"使期望结果概率最大化的最小高信号 token 集合"。
 8. **子 Agent 架构同时解决上下文和成本**。将长任务拆分为聚焦子任务，每个子 Agent 在短上下文中工作并返回精炼摘要（1000-2000 token），避免单一上下文膨胀。

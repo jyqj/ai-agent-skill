@@ -66,7 +66,7 @@ flowchart TD
 
 ## Agent-as-Contributor 模式
 
-Agent 不是"工具"而是"项目贡献者"，拥有明确的角色和权限边界：
+Agent 作为"项目贡献者"，拥有明确的角色和权限边界：
 
 ```yaml
 agent_contributor:
@@ -94,7 +94,7 @@ agent_contributor:
 - 需要审计轨迹的合规场景
 - 多 Agent 协作（spec 作为 Agent 间的契约）
 
-不适用于 hotfix、简单 bug 修复、探索性原型——这些场景 spec 的开销大于收益。
+不适用于 hotfix、简单 bug 修复、探索性原型，这些场景 spec 的开销大于收益。
 
 ## 与现有模式的关系
 
@@ -108,3 +108,22 @@ agent_contributor:
 
 - Warp Agent-as-Contributor 工作流
 - `../../projects/coding-agents/warp/` 相关文档
+
+## Spec Curation Gate (Trellis)
+
+> **Evidence**: Trellis — Phase 1.3 人工策展
+
+Trellis 的 spec-driven development 有一个关键区别：spec 注入是人工策展的，而非自动生成。
+
+**implement.jsonl / check.jsonl**：
+- 每行一条 JSON：`{"file": "<spec路径>", "reason": "<为什么需要>"}`
+- 主 agent 在 Phase 1.3 手动策展（删除 seed 行，添加真实 spec）
+- implement.jsonl 供 Phase 2.1 的 implement sub-agent 使用
+- check.jsonl 供 Phase 2.2 的 check sub-agent 使用
+
+**为什么不自动生成**：
+- 自动 glob + rank 会匹配错误的 spec（false positives）
+- "为什么选择这个 spec" 的 reason 字段是知识转移的关键
+- 人工判断确保 sub-agent 接收到最相关的约束
+
+**与自动化 Spec 注入的权衡**：人工策展更精准但有额外成本。适合团队规模的项目（spec 文件数十个），不适合 spec 很少或非常多的场景。

@@ -228,3 +228,8 @@
 ```
 
 相关文件：`../architecture/complexity-levels.md`、`../architecture/plane-interaction-matrix.md`、`../architecture/runtime-data-flow.md`、`../architecture/adrs/adr-template.md`。
+
+## 补充引用
+
+- **运行时契约检查表**：从 6 个参考项目提炼的运行时架构评审规则，见 [`../synthesis/local-agent-runtime-practices.md#运行时契约检查表`](../synthesis/local-agent-runtime-practices.md#运行时契约检查表)。
+- **项目证据卡**：每个参考项目 README 头部包含结构化证据卡摘要，按品类浏览见 [`../projects/README.md`](../projects/README.md)。

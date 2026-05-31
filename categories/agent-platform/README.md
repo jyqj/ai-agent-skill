@@ -2,7 +2,7 @@
 
 > **Evidence Status** — synthesized. LangGraph Platform、CrewAI、OpenAI Agents SDK、Temporal、MCP/A2A/ACP 协议生态。
 
-> **文档深度**：骨架级——提供设计维度清单和关键问题，不提供完整蓝图。详细设计需结合 `architecture/planes/` 和 `paradigms/` 自行组装。
+> **文档深度**：骨架级，提供设计维度清单和关键问题，不提供完整蓝图。详细设计需结合 `architecture/planes/` 和 `paradigms/` 自行组装。
 
 ## Core Job
 
@@ -43,6 +43,8 @@
 | OpenAI Agents SDK | hosted runtime、guardrails |
 | Temporal | durable execution |
 | MCP/A2A | 协议标准 |
+| Trellis | Multi-platform Agent Harness, 14 平台 configurator |
+| OpenClaw | Personal AI Gateway + plugin platform hybrid |
 
 ## 协议栈
 

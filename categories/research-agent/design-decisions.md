@@ -12,7 +12,7 @@
 
 ## 上下文策略
 
-Research Agent 的上下文中心不是“文档”，而是：
+Research Agent 的上下文以 claim 和 evidence 为中心进行组装：
 
 ```text
 question → claim → evidence → citation → unresolved gaps
@@ -44,7 +44,7 @@ question → claim → evidence → citation → unresolved gaps
 
 ## 控制策略
 
-Research Agent 的关键控制点不是审批按钮，而是：
+Research Agent 的关键控制点是以下四个 gate：
 
 - fabricated citation gate
 - freshness gate
@@ -110,7 +110,7 @@ Egnyte 的生产架构由五个专业化 Agent + Master 编排器组成：
 
 ### 引用链已知缺陷
 
-引用完整性仍有持续性问题——"正确引用附加到不被支持的主张上"等细微错误持续存在。多数系统依赖 LLM 推理能力评估信息质量，**缺乏形式化冲突解决协议**。事实核查被多篇论文标识为关键开放挑战。
+引用完整性仍有持续性问题："正确引用附加到不被支持的主张上"等细微错误持续存在。多数系统依赖 LLM 推理能力评估信息质量，**缺乏形式化冲突解决协议**。事实核查被多篇论文标识为关键开放挑战。
 
 ### Perplexity 19 模型编排架构
 

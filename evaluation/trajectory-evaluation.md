@@ -147,7 +147,7 @@ trajectory_scorecard:
 
 将 Agent 从不可预测的工具转化为可信赖、可问责的承包商。四大支柱：
 
-1. **Formalized Contract**：详细规范的单一信息源——不是"分析销售数据"，而是"20 页 PDF，欧洲 Q1 市场，5 个可视化，含同比对比，包括供应链风险评估"。
+1. **Formalized Contract**：详细规范的单一信息源，例如"20 页 PDF，欧洲 Q1 市场，5 个可视化，含同比对比，包括供应链风险评估"。
 2. **Dynamic Negotiation**：Agent 可分析合同条款、标记歧义/风险。执行前解决误解。
 3. **Quality-Focused Iterative Execution**：生成多方案 → 测试 → 评分 → 提交通过版本。优先正确性和质量，非低延迟。
 4. **Hierarchical Decomposition**：主合同 → 子合同（项目管理模式）。每个子合同独立完整，可分配给专特化 Agent。

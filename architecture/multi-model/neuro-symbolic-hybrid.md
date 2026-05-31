@@ -153,7 +153,7 @@ Policy Engine 的规则通常是:
 
 ## 5. 与 Tool Paradigms 的关系
 
-`code-as-tool` 模式本质上就是 LLM 调用符号计算：
+`code-as-tool` 模式的实质就是 LLM 调用符号计算：
 
 | Tool Paradigm | 神经-符号混合的体现 |
 |---|---|

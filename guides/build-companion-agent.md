@@ -33,7 +33,7 @@
 
 ### JTBD（Jobs to be Done）
 
-Companion Agent 的核心 job 不是"聊天"，而是：
+Companion Agent 的核心 job 是维持人格一致的长期关系体验：
 
 ```text
 维持一个可辨识的人格身份
@@ -65,7 +65,7 @@ Companion Agent 的核心 job 不是"聊天"，而是：
 
 ### Persona Description Card (PDC)
 
-人格通过六维结构化描述定义——不是一个 system prompt 字符串，而是可审计、可验证的多维对象：
+人格通过六维结构化描述定义，是可审计、可验证的多维对象（而非单一 system prompt 字符串）：
 
 ```yaml
 persona_card:
@@ -200,7 +200,7 @@ acquaintance → casual_friend → close_friend → trusted_companion
   trusted_companion: 直言不讳、长期规划讨论、危机支持
 
 阶段升级依据：
-  - 自我披露深度增加（不是 Agent 引导，而是用户自然展开）
+  - 自我披露深度增加（由用户自然展开，而非 Agent 引导）
   - 求助频率上升
   - 对话时长和频率增长
   - 用户主动分享负面情绪

@@ -6,7 +6,7 @@
 
 `category-cognitive-profiles.md` 提供了品类 x 认知维度的热力图（H/M/L），告诉你"Coding Agent 的工作记忆需求是 H"。但 H 意味着什么？具体应该组装哪些认知模块、如何配置双过程分配、监控什么元认知指标？
 
-本文为每个主要品类提供可操作的认知组装方案——从热力图到工程蓝图。
+本文为每个主要品类提供可操作的认知组装方案，将热力图转化为工程蓝图。
 
 ## 2. Skill 形式化定义
 
@@ -25,11 +25,11 @@ R — 可复用接口（Reusable Interface）
     如何被其他 skill 或上层控制调用？输入/输出合约
 ```
 
-**SkillsBench 关键发现**：经过人工筛选的 curated skills 使 Agent 通过率提升 16.2 个百分点。更重要的是，**小模型 + curated skills > 大模型 + 无 skills**——这意味着 skill 质量可以部分补偿模型能力的不足。
+**SkillsBench 关键发现**：经过人工筛选的 curated skills 使 Agent 通过率提升 16.2 个百分点。实验还表明 **小模型 + curated skills > 大模型 + 无 skills**，说明 skill 质量可以部分补偿模型能力的不足。
 
 ## 3. 三层认知架构：按波动性分层
 
-来自 Nurture-First (arXiv 2603.10808) 的设计原则——认知资产按变化频率分为三层：
+来自 Nurture-First (arXiv 2603.10808) 的设计原则：认知资产按变化频率分为三层：
 
 | 层 | 波动性 | 内容 | 修改频率 | 审批要求 |
 |---|---|---|---|---|
@@ -263,7 +263,7 @@ Diverge-Explore-Converge-Refine 循环
 
 | 原则 | 说明 | 来源 |
 |---|---|---|
-| 元认知必须存在 | 即使需求是 M，也不能完全没有元认知——所有品类都需要某种形式的自我监控 | 热力图中没有 L 的元认知 |
+| 元认知必须存在 | 即使需求是 M，也不能完全没有元认知，因为所有品类都需要某种形式的自我监控 | 热力图中没有 L 的元认知 |
 | 工作记忆是瓶颈 | 所有 H 工作记忆品类都需要显式的 compaction 和外化策略 | working-memory-dynamics.md |
 | Skill 质量 > 模型大小 | 16.2pp 的提升来自 skill 质量，不是模型参数 | SkillsBench |
 | 三层分离 | Constitutional / Skill / Experiential 的分层适用于所有品类 | Nurture-First |

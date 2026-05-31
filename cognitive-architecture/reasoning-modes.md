@@ -4,7 +4,7 @@
 
 ## 1. 为什么需要这篇
 
-`paradigms/reasoning-paradigms.md` 回答的是"用 ReAct 还是 Plan-Execute"——这是推理的**组织方式**。但一个 ReAct 循环内部，Agent 具体在做什么类型的推理？当 Agent 看到一个错误日志时，它是在做演绎（从规则推结论）还是溯因（从结果推原因）？这个区分直接影响 prompt 设计、evidence 要求和错误倾向。
+`paradigms/reasoning-paradigms.md` 回答的是"用 ReAct 还是 Plan-Execute"，这是推理的**组织方式**。但一个 ReAct 循环内部，Agent 具体在做什么类型的推理？当 Agent 看到一个错误日志时，它是在做演绎（从规则推结论）还是溯因（从结果推原因）？这个区分直接影响 prompt 设计、evidence 要求和错误倾向。
 
 ## 2. 六种推理模式
 
@@ -64,7 +64,7 @@
 
 - 特征：依赖于正确识别两个情境的结构性相似
 - LLM 表现：较强——大量训练数据提供了丰富的类比基础，但对领域特异性类比可能失效
-- 风险：表面相似但结构不同（false analogy）——模型尤其容易在跨领域类比中犯此错误
+- 风险：表面相似但结构不同（false analogy），模型尤其容易在跨领域类比中犯此错误
 
 ### 2.5 因果推理（Causal）
 
@@ -114,7 +114,7 @@ ReAct / Plan-Execute       演绎 / 溯因 / 类比 / ...
 选择循环结构               选择推理策略
 ```
 
-实际执行中，推理模式之间存在典型的切换路径——某种模式的输出往往触发下一种模式：
+实际执行中，推理模式之间存在典型的切换路径，某种模式的输出往往触发下一种模式：
 
 ```mermaid
 flowchart LR
@@ -190,7 +190,7 @@ Agent 是否在混用推理模式时保持了清晰的标记？
 
 ## 8. 推理技术的工程选择
 
-本文描述推理的认知基础（what）。LLM 推理技术的工程选择（how）——CoT、ToT、ReAct、PAL、CoD、GoD、MASS 等技术的适用场景和决策树——详见 `reasoning-technique-selection.md`。
+本文描述推理的认知基础（what）。LLM 推理技术的工程选择（how）：CoT、ToT、ReAct、PAL、CoD、GoD、MASS 等技术的适用场景和决策树，详见 `reasoning-technique-selection.md`。
 
 两者关系：
 - 演绎推理 → 适合 CoT（线性步骤链）

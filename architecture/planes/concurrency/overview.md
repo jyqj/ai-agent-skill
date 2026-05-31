@@ -6,7 +6,7 @@
 
 **Principle Refs**: BR-01, IS-03 — 预算约束按线程独立核算；并发状态可能彼此偏离导致竞态
 
-当多个工具调用、多个 Worker 或多个 Agent 同时运行时，并发控制（Concurrency）决定系统是否稳定——缺少它，重试风暴、竞态写入和丢失取消都会变成生产事故。
+当多个工具调用、多个 Worker 或多个 Agent 同时运行时，并发控制（Concurrency）决定系统是否稳定。缺少它，重试风暴、竞态写入和丢失取消都会变成生产事故。
 
 ## 1. 定义
 
@@ -37,7 +37,7 @@ concurrency_policy:
 | Policy block | 停止危险分支，保留安全分支 |
 | Budget exhausted | 停止高成本步骤，触发 budget_choice |
 | Parent task failed | 子任务收到 cancellation token |
-| Stale world state | 暂停写动作，先 refresh |
+| Stale world state（即 [Map-Territory Gap](../../../concepts/glossary.md#map-territory-gap)） | 暂停写动作，先 refresh |
 
 ## 4. 并发反模式
 
@@ -121,7 +121,7 @@ codex_concurrency:
 
 ### 6.1 Cooperative Cancellation
 
-Agent 系统的取消必须是协作式的——不能 kill 正在写外部系统的工具调用。
+Agent 系统的取消必须是协作式的，不能 kill 正在写外部系统的工具调用。
 
 ```text
 CancellationToken 传播链：
@@ -134,7 +134,7 @@ CancellationToken 传播链：
 
 ### 6.2 Timeout Propagation
 
-超时不是简单的"到时间就 kill"，需要分层传播：
+超时需要分层传播，而非到时间直接终止：
 
 | 层级 | 超时策略 | 示例 |
 |---|---|---|
@@ -174,7 +174,7 @@ CancellationToken 传播链：
 
 ### 7.3 死锁检测
 
-多 Agent 系统中死锁表现为循环等待——Agent A 等 Agent B 的输出，Agent B 等 Agent A 的确认。
+多 Agent 系统中死锁表现为循环等待：Agent A 等 Agent B 的输出，Agent B 等 Agent A 的确认。
 
 - **静态检测**：在 DAG 编排中分析依赖图，拒绝包含环的编排。
 - **运行时检测**：Orchestrator 维护等待图（wait-for graph），检测环后强制取消最低优先级的等待边。
@@ -192,7 +192,7 @@ CancellationToken 传播链：
 | 取消信号平均延迟 | **200-800ms** | 从用户取消到最深层工具调用停止的端到端延迟，取决于编排层数 |
 | 重试风暴触发阈值 | **>60% 失败率** | 当工具调用失败率超过 60% 时，无熔断的重试策略会在 3 轮内耗尽 token 预算 |
 
-**关键结论**：多 Agent 系统必须在架构层控制错误传播，仅靠单点重试和超时不足以保证稳定性。集中式 Orchestrator 是降低错误放大的最直接手段，但会引入单点瓶颈——需要在错误放大（17.2x → 4.4x）和吞吐之间权衡。
+多 Agent 系统必须在架构层控制错误传播，仅靠单点重试和超时不足以保证稳定性。集中式 Orchestrator 是降低错误放大的最直接手段，但会引入单点瓶颈，需要在错误放大（17.2x → 4.4x）和吞吐之间权衡。
 
 ## 9. 与知识库的映射
 

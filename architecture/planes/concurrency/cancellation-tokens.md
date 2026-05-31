@@ -4,7 +4,7 @@
 >
 > **Evidence Status** — synthesized. Temporal context.Done()、LangGraph Interrupt、Akka Supervision Stop、Swift CancellationToken proposal 等机制有各自生产实现，但 AI Agent 领域尚无统一的 CancellationToken 抽象。
 
-**Principle Refs**: BDI-03 — 意图跨故障持续存在且可修正；取消不是"杀死"，而是"协商停止"
+**Principle Refs**: BDI-03 — 意图跨故障持续存在且可修正；取消是"协商停止"而非"强制杀死"
 
 ## 1. 问题陈述
 
@@ -16,7 +16,7 @@ Agent 系统的取消比传统微服务更复杂：一次取消可能中断 LLM 
 
 ## 2. 协作式取消模型
 
-Agent 系统的取消必须是协作式（Cooperative）的——不能强制 kill 正在与外部世界交互的操作。
+Agent 系统的取消必须是协作式（Cooperative）的，不能强制 kill 正在与外部世界交互的操作。
 
 ```text
 CancellationToken 生命周期：
@@ -86,7 +86,7 @@ Workflow(deadline=120s)
 
 ### 3.2 LangGraph：Interrupt + Persist + Pause
 
-LangGraph 的 `interrupt()` 不是取消，而是暂停——将当前状态持久化到 Checkpointer，等待外部信号决定是继续还是终止。
+LangGraph 的 `interrupt()` 是暂停而非取消：将当前状态持久化到 Checkpointer，等待外部信号决定是继续还是终止。
 
 ```text
 Node_A → interrupt() → [状态持久化]
@@ -113,7 +113,7 @@ Supervisor.stop(child)
 
 ## 4. 结构化取消：带原因的取消
 
-不同取消原因需要不同的处理策略。"取消"不是一个布尔值，而是一个带语义的信号。
+不同取消原因需要不同的处理策略。"取消"是一个带语义的信号，而非简单的布尔值。
 
 | 取消原因 | 处理策略 | 部分结果 |
 |---|---|---|
@@ -126,7 +126,7 @@ Supervisor.stop(child)
 
 ## 5. 优雅关停协议
 
-生产环境中 Agent 服务的关停不是"收到 SIGTERM 立即退出"，而是一个多阶段协议。
+生产环境中 Agent 服务的关停是一个多阶段协议，而非收到 SIGTERM 立即退出。
 
 ```text
 阶段 1: 信号捕获

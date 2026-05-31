@@ -132,7 +132,7 @@ graph TB
 
 ### ACP 尚未广泛采用
 
-OpenCode 的 ACP 实现展示了会话级协议的价值——统一的状态机、权限模型、事件流——但目前只有单一实现。其他项目用各自的内部协议完成类似功能：
+OpenCode 的 ACP 实现展示了会话级协议的价值（统一的状态机、权限模型、事件流），但目前只有单一实现。其他项目用各自的内部协议完成类似功能：
 
 - Claude Code 用内部的 message/tool-result 循环
 - Codex 用 guardian 拦截 + 审批流
@@ -175,7 +175,7 @@ Warp 的 Harness Container 模式（见 `design-space/patterns/harness-container
 ## 仍未收敛的问题
 
 - **MCP 的会话化**：当前 MCP 是无状态的。如果 Tool 需要跨调用保持状态（如数据库事务），是扩展 MCP 还是在 Agent 侧管理？目前没有共识。
-- **权限模型的统一**：MCP 的能力分段、ACP 的调用级审批、Warp 的三层权限——这些能否统一成一个跨协议的权限模型？目前各自独立演化。
+- **权限模型的统一**：MCP 的能力分段、ACP 的调用级审批、Warp 的三层权限，这些能否统一成一个跨协议的权限模型？目前各自独立演化。
 - **Agent-to-Agent 的发现**：MCP 有能力发现机制（Client 查询 Server 的 Tool 列表）。Agent-to-Agent 层是否也需要类似的能力发现？A2A 协议提出了 Agent Card，但实际部署案例不足。
 - **性能与延迟**：MCP 的 JSON-RPC 通信在高频工具调用场景下的性能开销是否会成为瓶颈？目前未见系统性的性能评测数据。
 

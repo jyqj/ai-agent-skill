@@ -23,7 +23,7 @@
 | `verification_status` | 当前验证状态：pending / confirmed / failed / skipped |
 | `rollback_or_compensation` | 如果效果未达成，回滚或补偿方案是什么 |
 
-这不是事后审计用的日志，而是运行时的决策依据。Agent 在判断"是否继续下一步"时，应该检查 Effect Ledger 中前一步的 `verification_status`，而不是仅凭工具返回值。
+Effect Ledger 是运行时的决策依据，而非事后审计日志。Agent 在判断"是否继续下一步"时，应该检查 Effect Ledger 中前一步的 `verification_status`，而不是仅凭工具返回值。
 
 ## 三重角色
 

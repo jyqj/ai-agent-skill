@@ -82,7 +82,7 @@ flowchart TD
 | Create new umbrella | 多个小 Skill 覆盖同一主题的不同方面 | 创建新伞 Skill C，原 Skill 标记 `absorbed_into: C` |
 | Demote to references | Skill 质量不足以独立存在 | 降级为其他 Skill 的参考链接，原 Skill 标记 Retired |
 
-**absorbed_into 声明**。被合并的 Skill 不是静默消失，而是主动声明去向：`absorbed_into: <target_skill_name>`。这使得任何引用旧 Skill 的代码或记忆都能追溯到新位置，而非事后推断"那个 Skill 去哪了"。
+**absorbed_into 声明**。被合并的 Skill 主动声明去向：`absorbed_into: <target_skill_name>`。这使得任何引用旧 Skill 的代码或记忆都能追溯到新位置。
 
 ### Skill 运行时创建：SKILL.md 格式
 

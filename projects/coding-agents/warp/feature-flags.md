@@ -110,7 +110,7 @@ impl FeatureFlag {
 }
 ```
 
-**设计洞察**：
+**设计要点**：
 - `AtomicTriState` 自定义了三态原子类型（Unset/False/True），避免 `Option<AtomicBool>` 的开销
 - User preference 允许用户显式 opt-in/opt-out，覆盖全局状态
 - Test override 用 RAII guard + thread-local，确保测试隔离
@@ -196,7 +196,7 @@ pub fn runtime_flags_menu_items() -> Vec<MenuItem> {
 }
 ```
 
-RuntimeFeatureFlags 本身也是一个 flag — 只有 debug/dogfood 版本才能在运行时切换 flags。
+RuntimeFeatureFlags 本身也是一个 flag，只有 debug/dogfood 版本才能在运行时切换 flags。
 
 ## 与知识库的关联
 

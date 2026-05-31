@@ -17,7 +17,7 @@ categories/research-agent/README.md
 
 ## 为什么升级为目录
 
-Research Agent 不再只被视为“联网 + 摘要”的配方，而被显式拆成：
+Research Agent 已拆为独立的设计文档集：
 
 - question / task model
 - source / claim / citation representation

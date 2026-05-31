@@ -21,4 +21,4 @@
 - Codex 最强调执行安全和审批升级。
 - Claude Code / OpenCode 最强调 runtime 内部协同。
 - Hermes / VCP 更适合看 gateway、toolset、插件平台视角。
-- Warp 独特之处在于把 skill 作为元工具（不是 API 调用，而是可组合的指令文档），用 readiness label 做准入控制（不是运行时审批，而是任务级准入）。
+- Warp 独特之处在于把 skill 作为元工具（可组合的指令文档，而非 API 调用），用 readiness label 做任务级准入控制。

@@ -6,7 +6,7 @@
 
 ## 1. 目标
 
-这个 runner 不是替代真实 Agent，而是提供三件事：
+这个 runner 提供三件事（它是评估管道骨架，接入真实 Agent 需实现自定义 Adapter）：
 
 ```text
 1. 读取 YAML fixture（优先 PyYAML；无依赖环境使用内置简易解析器）

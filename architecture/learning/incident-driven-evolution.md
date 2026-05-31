@@ -37,10 +37,10 @@ failure_record:
 
 ### 3. 按分类路由修复
 
-- **模型能力** — 更新 Model Capability Profile 中的弱项标记，调整 routing 策略避开已知盲区，必要时切换到更适合的模型。
-- **工具故障** — 在工具注册表中添加已知故障模式，配置 retry 策略或 fallback 路径，更新 tool contract 版本。
-- **Harness 策略** — 修改 policy rule、调整 prompt 版本、增加或收紧 guard 条件。这是最常见的修复路径。
-- **表示不准确** — 更新 representation pipeline 的预处理逻辑，添加输出验证步骤，调整 embedding 参数或召回阈值。
+- **模型能力**：更新 Model Capability Profile 中的弱项标记，调整 routing 策略避开已知盲区，必要时切换到更适合的模型。
+- **工具故障**：在工具注册表中添加已知故障模式，配置 retry 策略或 fallback 路径，更新 tool contract 版本。
+- **Harness 策略**：修改 policy rule、调整 prompt 版本、增加或收紧 guard 条件。这是最常见的修复路径。
+- **表示不准确**：更新 representation pipeline 的预处理逻辑，添加输出验证步骤，调整 embedding 参数或召回阈值。
 
 ### 4. 生成 eval fixture
 

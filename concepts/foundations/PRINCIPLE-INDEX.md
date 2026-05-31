@@ -37,7 +37,7 @@
 
 ### BR-01 — Agent 必须在显式资源预算下运行
 
-> 步数、token、时间、成本——所有资源都有上限。无上限的 Agent 不是更强，而是更危险。
+> 步数、token、时间、成本，所有资源都有上限。无上限的 Agent 更危险而非更强。
 
 **运行时义务**
 - Harness **必须**在任务开始时注入 `ResourcePlan`，包含 `budget.max_cost`、`budget.max_tokens`、`budget.max_tool_calls`、`budget.max_latency_ms`。
@@ -213,7 +213,7 @@
 
 ### EM-01 — 工具是认知延伸，不是外部插件
 
-> 移除一个工具不是"少了一个功能"，而是"截断了一种认知能力"。工具不可用时 Agent 应评估影响并显式降级。
+> 移除一个工具就是截断一种认知能力。工具不可用时 Agent 应评估影响并显式降级。
 
 **运行时义务**
 - 工具不可用时 **必须**产生 `FailureRecord`（category: `tool_error`），而非静默跳过。

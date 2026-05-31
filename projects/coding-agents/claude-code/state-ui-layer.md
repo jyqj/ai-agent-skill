@@ -157,12 +157,12 @@ FocusManager {
 ### Ink 组件库
 
 **核心组件**：
-- `<Box>` — Flexbox 容器
-- `<Text>` — 文本节点
-- `<ScrollBox>` — 可滚动区域
-- `<AlternateScreen>` — Alt Screen 模式
-- `<Button>` — 可聚焦按钮
-- `<Link>` — OSC 8 超链接
+- `<Box>`：Flexbox 容器
+- `<Text>`：文本节点
+- `<ScrollBox>`：可滚动区域
+- `<AlternateScreen>`：Alt Screen 模式
+- `<Button>`：可聚焦按钮
+- `<Link>`：OSC 8 超链接
 
 **上下文提供者**：
 - `<TerminalSizeContext>`
@@ -200,12 +200,12 @@ function App({ getFpsMetrics, stats, initialState, children }) {
 
 ### 交互组件
 
-- **PromptInput** — 用户输入行
-- **QuickOpenDialog** — 快速打开对话框
-- **TagTabs** — 标签页导航
-- **Settings** — 配置 UI
-- **StatusLine** — 底部状态栏
-- **FullscreenLayout** — 全屏模式容器
+- **PromptInput**：用户输入行
+- **QuickOpenDialog**：快速打开对话框
+- **TagTabs**：标签页导航
+- **Settings**：配置 UI
+- **StatusLine**：底部状态栏
+- **FullscreenLayout**：全屏模式容器
 
 ---
 

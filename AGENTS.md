@@ -5,7 +5,7 @@
 
 ## 仓库目标
 
-这个仓库不是单一框架说明书，也不是代码框架仓库，而是一个长期演进的 Agent 架构知识库。进入本仓库工作时，优先维护：
+这个仓库是一个长期演进的 Agent 架构知识库，包含设计原则、运行时模块、项目证据和评审工具。进入本仓库工作时，优先维护：
 
 ```text
 稳定主干
@@ -20,7 +20,7 @@
 | 文件 | 一句话职责 |
 |------|-----------|
 | [README.md](README.md) | 仓库首页，指向 START-HERE |
-| [START-HERE.md](START-HERE.md) | 唯一 front door，按任务分流 |
+| [START-HERE.md](START-HERE.md) | 唯一入口，按任务分流 |
 | [SKILL.md](SKILL.md) | 核心速查卡，AI 路由入口 |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | 架构深度参考，非入口 |
 | [AGENTS.md](AGENTS.md)（本文件） | 仓库维护规则 |

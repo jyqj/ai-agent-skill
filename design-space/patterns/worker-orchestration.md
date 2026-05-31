@@ -2,7 +2,7 @@
 
 > **Evidence Status** — grounded. Augment 通过 7 个 LOCAL_TOOL_TYPE 实现了完整 Worker 生命周期管理；Claude Code 通过 Agent 工具 + subagent_type 参数实现类似能力。两者路径不同但模式趋同。
 
-当一个复杂任务需要拆分给多个 Agent 并行或串行执行时，核心问题不是"怎么拆"，而是"拆完之后怎么管"——主 Agent 如何启动、监控、收集结果、处理失败、清理资源。Worker Orchestration 就是这套生命周期管理机制。
+当一个复杂任务需要拆分给多个 Agent 并行或串行执行时，核心问题是拆完之后怎么管：主 Agent 如何启动、监控、收集结果、处理失败、清理资源。Worker Orchestration 就是这套生命周期管理机制。
 
 ## 生命周期工具
 
@@ -21,7 +21,7 @@ interface WorkerTools {
 }
 ```
 
-典型流程是：启动 Worker -> 等待完成 -> 审核编辑 -> 决定是否应用 -> 清理。其中"审核编辑"这一步是关键——主 Agent 对 Worker 产生的代码变更有最终决定权，而不是自动应用。
+典型流程是：启动 Worker -> 等待完成 -> 审核编辑 -> 决定是否应用 -> 清理。其中"审核编辑"这一步是关键：主 Agent 对 Worker 产生的代码变更有最终决定权，而非自动应用。
 
 ## 编排模式
 
@@ -55,7 +55,7 @@ Main (Supervisor)
 
 ## 权衡
 
-Worker 编排带来的最大收益是并行化和故障隔离——一个 Worker 失败不会污染其他 Worker 的上下文，主 Agent 可以决定重试或跳过。但代价也很实在：Worker 之间没有直接通信能力，所有协调必须经过主 Agent 中转，这在需要频繁交互的场景下会成为瓶颈。状态同步也存在延迟，readState 拿到的永远是某个时刻的快照而非实时状态。
+Worker 编排带来的最大收益是并行化和故障隔离：一个 Worker 失败不会污染其他 Worker 的上下文，主 Agent 可以决定重试或跳过。但代价也很实在：Worker 之间没有直接通信能力，所有协调必须经过主 Agent 中转，这在需要频繁交互的场景下会成为瓶颈。状态同步也存在延迟，readState 拿到的永远是某个时刻的快照而非实时状态。
 
 此外，资源管理不能掉以轻心。Worker 必须有超时机制（waitFor 的 timeout 参数），并且确保无论成功还是失败都会被清理（delete），否则长时间运行的 Agent 会积累僵尸 Worker。
 

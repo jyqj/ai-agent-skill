@@ -4,7 +4,7 @@
 
 ## 定义
 
-Multimodal Grounding 讨论的不是“模型能看图吗”，而是：
+Multimodal Grounding 讨论的核心问题是：
 
 ```text
 多个模态的观察，如何被绑定到同一个世界对象、同一个动作目标和同一个验证闭环上。

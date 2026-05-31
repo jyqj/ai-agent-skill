@@ -1,5 +1,34 @@
 # GenericAgent 参考实现
 
+## 证据卡
+
+**证明了什么**：~2K LOC 的极简 Agent 可以通过"消息不累积 + 9 工具约定 + Action-Verified 记忆"达到生产可用。
+
+**核心运行时对象**：
+
+| 对象 | 实现 | 对应 Plane |
+|------|------|-----------|
+| Agent Loop | 57 行核心循环，每轮只发最新消息 | kernel/agent-loop |
+| 工具发现 | `do_{tool_name}` 约定，零配置 | tools |
+| 四层记忆 | L1 导航 / L2 事实 / L3 SOP / L4 存档，Action-Verified-Only | memory |
+| Skill | 过程记忆（SOP），非函数调用 | learning-adaptation |
+| 流式处理 | Generator 链式级联，零缓冲 | dataflow |
+
+**可复用规则**：
+1. 消息不累积：每轮只发最新消息 + 摘要注入，上下文 <30K
+2. 工具数量下界 = "LLM 表达意图不需要联合调用"的最小集
+3. 记忆写入必须绑定工具执行成功（Action-Verified-Only）
+4. Skill 不是函数，是经过多次重试验证的过程记忆（SOP）
+5. 不做持久化是设计选择（单进程单任务），不是缺陷
+
+**不该照搬的**：
+- 无权限框架，所有工具一视同仁，多用户场景不安全
+- 工具硬串行，无并发调度，对 I/O 密集任务低效
+- 记忆依赖本地文件系统，多实例需手动同步
+
+**关键数值**：9 工具, ~2K LOC, 上下文 <30K, 四层记忆
+
+---
 
 > **Evidence Status** — grounded. 本目录下的 README 与源码观察摘录。
 
@@ -24,12 +53,12 @@
 
 ## 独特贡献
 
-GenericAgent 用 9 个原子工具 + ~100 行 agent loop 证明了一个反直觉的命题：**agent 的能力上限不取决于预置了多少工具，而取决于它能否从执行中学习**。成功路径自动固化为 Skill，能力随使用有机生长——这是”最小 viable agent”的极致表达。最新版本进一步扩展到**多 Agent 协作**（Agent BBS + Team Worker）和**全链路可观测性**（Langfuse 集成），从单实例工具走向分布式 Agent 生态。
+GenericAgent 用 9 个原子工具 + ~100 行 agent loop 证明了一个反直觉的命题：**agent 的能力上限不取决于预置了多少工具，而取决于它能否从执行中学习**。成功路径自动固化为 Skill，能力随使用有机生长，是”最小 viable agent”的极致表达。最新版本进一步扩展到**多 Agent 协作**（Agent BBS + Team Worker）和**全链路可观测性**（Langfuse 集成），从单实例工具走向分布式 Agent 生态。
 
 ## 关键发现
 
 - 能力边界可以动态生长：`code_run` 一个工具就能覆盖无限多的操作空间，关键在于学会后固化为 Skill。
-- “No Execution, No Memory”——记忆层只写入经过行动验证的信息，禁止存储推理过程和假设，直接避免了记忆污染。
+- “No Execution, No Memory”：记忆层只写入经过行动验证的信息，禁止存储推理过程和假设，直接避免了记忆污染。
 - 极简 runtime（~3K 行代码）也能展示完整 Agent 闭环，说明复杂性应在运行时生长而非编译时堆砌。
 - Agent BBS 分布式任务分发：多个 Agent 实例通过轻量 BBS 服务器异步协作，Team Worker 周期轮询接单 + 冷却机制防重复。
 - L4 会话归档自动化：原始日志 → 压缩摘要 → 月度 ZIP，支持跨会话长程回溯。
@@ -66,7 +95,7 @@ GenericAgent = 9 原子工具 + ~100 行 Agent Loop + 5 层记忆系统 + 自我
 | [frontend-adapter.md](frontend-adapter.md) | 多前端统一架构 |
 | [llm-adapter.md](llm-adapter.md) | 多模型适配层（5 后端 + Mixin） |
 
-## 关键洞察
+## 设计要点
 
 ### 1. 能力边界：不预设，靠进化
 

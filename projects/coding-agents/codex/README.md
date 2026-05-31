@@ -1,5 +1,33 @@
 # OpenAI Codex CLI
 
+## 证据卡
+
+**证明了什么**：Rust 类型系统可以将权限不可变性和状态一致性从"约定"变成"编译器保证"。
+
+**核心运行时对象**：
+
+| 对象 | 实现 | 对应 Plane |
+|------|------|-----------|
+| Submission Loop | Event-driven + bounded channel + drain timeout | kernel/agent-loop |
+| TurnContext | 不可变快照 + .with_*() 创建新版本 | state |
+| Guardian | 最小权限 sub-agent + 禁用所有副作用工具 | control, security |
+| Mailbox | 序号机制 + bounded channel(容量 32) | orchestration |
+| Rollout Trace | payload 外置 + watermark 防重复 | memory |
+
+**可复用规则**：
+1. 权限创建后不可修改（防 TOCTOU），用类型系统强制
+2. Guardian 禁用所有副作用工具，审查者自身不可被注入
+3. 事件用 bounded channel（容量 32），背压可控
+4. TurnContext 用 .with_*() 创建新版本，旧版本不可变
+5. transcript 作为证据而非指令，防止 prompt injection 攻击审批系统
+
+**不该照搬的**：
+- Arc+Weak 循环避免是 Rust 特有模式，GC 语言无需复刻
+- 三平台沙箱（Seatbelt/Landlock/Restricted Token）的维护成本对单平台 Agent 是过度投入
+
+**关键数值**：SUBMISSION_CHANNEL_CAPACITY=32, IO_DRAIN_TIMEOUT=2s, EXEC_TIMEOUT=10s
+
+---
 
 > **Evidence Status** — grounded. 本目录下的源码片段与架构分析。
 
@@ -37,7 +65,7 @@
 | state / resume | SessionState、previous turn settings、AgentControl | `agent-control.md` |
 | verification | sandbox outcome 不等于 effect verified，仍需测试/回读 | `orchestrator.md` |
 
-- 沙箱的设计质量直接决定 agent 可被授予的执行深度——执行环境是能力的前提条件。
+- 沙箱的设计质量直接决定 agent 可被授予的执行深度：执行环境是能力的前提条件。
 - 高风险 transcript 必须被视为"证据"而非"指令"，这一原则区分了安全的审批系统和可被注入的审批系统。
 - 多 agent 协作需要独立控制平面（AgentControl），否则子 agent 的状态、超时和权限会污染主循环。
 

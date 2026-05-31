@@ -32,7 +32,7 @@ Fork 子代理:      [system prompt][tool defs][history...][子任务指令]
                   复用 cache，只有尾部是新增内容
 ```
 
-这意味着 fork 子代理的 system prompt、工具定义、早期历史都不能被修改，否则 cache 失效，成本回到全量计算。这个约束反过来限制了 fork 层能做的事情——任何需要不同 system prompt 或不同工具集的子任务，应升级到 worktree 或 remote。
+这意味着 fork 子代理的 system prompt、工具定义、早期历史都不能被修改，否则 cache 失效，成本回到全量计算。这个约束反过来限制了 fork 层能做的事情：任何需要不同 system prompt 或不同工具集的子任务，应升级到 worktree 或 remote。
 
 ## 选择决策
 

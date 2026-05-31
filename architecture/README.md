@@ -45,13 +45,13 @@ External Reality
 
 五层分组对应 Agent 从"理解世界"到"改变世界"再到"约束自身"的递进关系，也决定了模块投入的优先级。
 
-**认知前端（Intake & Representation + Cognition & Continuity）** 是 Agent 对现实的理解能力。Intake 把原始信号编码为带信任度和时效的表示，Cognition 在这些表示上组装上下文、维持任务状态、做出决策。如果表示不可靠或上下文组装有缺陷，后续所有动作都建立在错误基础上——这两层是系统正确性的地基。
+**认知前端（Intake & Representation + Cognition & Continuity）** 是 Agent 对现实的理解能力。Intake 把原始信号编码为带信任度和时效的表示，Cognition 在这些表示上组装上下文、维持任务状态、做出决策。如果表示不可靠或上下文组装有缺陷，后续所有动作都建立在错误基础上。这两层是系统正确性的地基。
 
 **效果实现（Action & Effect）** 是 Agent 对外部世界的实际改变。工具调用、受控执行、效果验证构成从意图到现实的桥梁。这一层的质量直接决定 Agent 是否真正完成了任务，而不仅仅是"输出了看起来正确的文本"。
 
 **约束与学习（Governance & Evolution + Interaction & Collaboration）** 是 Agent 的可信性和演化能力。权限控制、安全边界、成本预算、故障恢复保证 Agent 在约束内运行；审计、回归、经验提炼保证 Agent 能从错误中改进。
 
-模块选择时应按这个顺序投入：先保证认知前端（表示和决策）的正确性，再建设效果实现层（工具和验证），最后补齐约束和学习。跳过前两层直接堆叠治理模块，等于在不稳定的地基上装护栏——护栏本身并不能让 Agent 做出正确决策。
+模块选择时应按这个顺序投入：先保证认知前端（表示和决策）的正确性，再建设效果实现层（工具和验证），最后补齐约束和学习。跳过前两层直接堆叠治理模块，等于在不稳定的地基上装护栏：护栏本身并不能让 Agent 做出正确决策。
 
 ## 与范式层的关系
 
@@ -67,7 +67,7 @@ External Reality
 
 ## 与品类层的关系
 
-通用模块是品类无关的。具体品类应在 `categories/<type>/` 中说明这些模块如何特化。例如 Coding Agent 的 Representation 不只是“表示层”，而是 RepoSnapshot、FileRef、SymbolRef、GitState、TestResult 等对象；详见 `../categories/coding-agent/representation.md`。
+通用模块是品类无关的。具体品类应在 `categories/<type>/` 中说明这些模块如何特化。例如 Coding Agent 的 Representation 特化为 RepoSnapshot、FileRef、SymbolRef、GitState、TestResult 等对象，详见 `../categories/coding-agent/representation.md`。
 
 
 ## 推荐补充入口

@@ -141,7 +141,7 @@ calibration_record:
 
 ### 与 Representation Plane
 
-`../planes/representation/observation-semantics.md` 处理多源观察的融合（如 API 返回值 vs DOM 快照 vs 日志）。多模型置信度聚合是另一个层次的融合 -- 不是数据源不同，而是"解释者"不同。
+`../planes/representation/observation-semantics.md` 处理多源观察的融合（如 API 返回值 vs DOM 快照 vs 日志）。多模型置信度聚合是另一个层次的融合：前者融合不同数据源，后者融合不同"解释者"的判断。
 
 两者适用相同的核心原则：
 

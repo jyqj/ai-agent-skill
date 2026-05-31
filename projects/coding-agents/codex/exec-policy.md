@@ -15,9 +15,9 @@ ExecPolicy 是 Codex 的确定性命令审批层，在 Guardian LLM 审批之前
 ## 三级判定
 
 每条规则返回三种判定之一，均附带 `justification` 说明理由：
-- **Allow** — 直接放行，不经 Guardian
-- **Prompt** — 需要用户/Guardian 确认
-- **Forbidden** — 直接拒绝，不可覆盖
+- **Allow**：直接放行，不经 Guardian
+- **Prompt**：需要用户/Guardian 确认
+- **Forbidden**：直接拒绝，不可覆盖
 
 ## 动态修订（ExecPolicyAmendment）
 
@@ -27,8 +27,8 @@ ExecPolicy 是 Codex 的确定性命令审批层，在 Guardian LLM 审批之前
 ## 危险命令启发式
 
 当无规则匹配时，fallback 到两个启发式函数：
-- `is_known_safe_command()` — 识别只读/无副作用命令（如 `ls`, `cat`）
-- `command_might_be_dangerous()` — 标记高危模式（如 `rm -rf`, `chmod 777`）
+- `is_known_safe_command()`：识别只读/无副作用命令（如 `ls`, `cat`）
+- `command_might_be_dangerous()`：标记高危模式（如 `rm -rf`, `chmod 777`）
 
 ## Banned Prefix
 

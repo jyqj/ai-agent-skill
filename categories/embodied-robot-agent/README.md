@@ -2,7 +2,7 @@
 
 > **Evidence Status** — synthesized. SayCan、Inner Monologue、RT-2、VLA 综述、Open X-Embodiment、ROS2。
 
-> **文档深度**：骨架级——提供设计维度清单和关键问题，不提供完整蓝图。详细设计需结合 `architecture/planes/` 和 `paradigms/` 自行组装。
+> **文档深度**：骨架级，提供设计维度清单和关键问题，不提供完整蓝图。详细设计需结合 `architecture/planes/` 和 `paradigms/` 自行组装。
 
 ## Core Job
 

@@ -27,9 +27,9 @@
 
 ## 与范式决策树的关系
 
-当前的范式选择决策树（见 `../paradigms/` 下的相关文件）假设范式效果与模型无关——选 ReAct 还是 DAG workflow，主要看任务结构和不确定性程度。但实际上，模型能力是范式选择的隐含前提：
+当前的范式选择决策树（见 `../paradigms/` 下的相关文件）假设范式效果与模型无关，选 ReAct 还是 DAG workflow 主要看任务结构和不确定性程度。但实际上，模型能力是范式选择的隐含前提：
 
-- **弱推理模型不适合 ReAct**。ReAct 依赖模型在每一步正确地推理"下一步该做什么"并生成合法的工具调用。reasoning_depth 不足的模型会在 3-5 步后开始跑偏——重复调用相同工具、遗忘之前的观察、编造不存在的工具参数。这类模型更适合 DAG workflow，由 Harness 预定义执行路径，模型只负责每个节点内的局部推理。
+- **弱推理模型不适合 ReAct**。ReAct 依赖模型在每一步正确地推理"下一步该做什么"并生成合法的工具调用。reasoning_depth 不足的模型会在 3-5 步后开始跑偏：重复调用相同工具、遗忘之前的观察、编造不存在的工具参数。这类模型更适合 DAG workflow，由 Harness 预定义执行路径，模型只负责每个节点内的局部推理。
 - **强推理模型可以用更少的 Harness 约束达到相同效果**。一个 reasoning_depth = deep 的模型可能只需要简单的 tool list + goal 描述就能完成任务，而同等任务交给 moderate 模型则需要 few-shot examples、structured output schema 和 step-by-step 指令。过度约束强模型反而可能降低其灵活性。
 - **同一 size class 内不同模型的 tool_call_reliability 差异可达 20%+**。这意味着不能用"70B 级别模型"这样的粗粒度分类来决定 Harness 策略，必须针对具体模型做 profiling。
 

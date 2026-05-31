@@ -1,6 +1,6 @@
 # Autonomy and Execution Depth
 
-> **Evidence Status** — synthesized. `concepts/autonomy-levels.md`、`architecture/controllers/execution-depth/overview.md`、Control/Interaction/Evaluation 模块。
+> **Evidence Status** — synthesized. `concepts/autonomy-levels.md`、`architecture/kernel/execution-depth-controller/overview.md`、Control/Interaction/Evaluation 模块。
 
 
 ## 自治等级 L0-L5
@@ -71,4 +71,4 @@ Goal Persistence × Representation Quality × State Continuity × Tool Chain Rel
 | D4 → D5 | 验证变长流程 | 需要 checkpoint、world state、恢复循环 |
 | D5 → D6 | 长流程变持续运营 | 有事件流、运维、回归和事故响应 |
 
-相关文件：`../../architecture/controllers/execution-depth/overview.md`、`../../architecture/planes/interaction/trust-escalation.md`、`../../architecture/planes/control/overview.md`。
+相关文件：`../../architecture/kernel/execution-depth-controller/overview.md`、`../../architecture/planes/interaction/trust-escalation.md`、`../../architecture/planes/control/overview.md`。

@@ -63,7 +63,7 @@ pub struct RequestInput {
 }
 ```
 
-**关键洞察**：
+**设计要点**：
 - 支持 **多任务并行**（`HashMap<TaskId, Vec<AIAgentInput>>`）
 - 支持 **多模型路由**（主模型、编码模型、CLI agent 模型、Computer Use 模型）
 - 支持 **共享会话**（`shared_session_response_initiator`）
@@ -160,9 +160,9 @@ impl BlocklistAIPermissions {
 }
 ```
 
-**设计洞察**：
+**设计要点**：
 - 权限是**带原因的枚举**（`Allowed(reason)` / `Denied(reason)`），支持审计和遥测
-- `AgentDecided` 出现在 allow 和 deny 两侧 — agent 可以自主决定
+- `AgentDecided` 出现在 allow 和 deny 两侧，agent 可以自主决定
 - `ProtectedPath` 是不可覆盖的安全硬限制
 - `RunToCompletion` 是"快进模式"下的特殊权限
 - 临时权限（`temporary_file_permissions`）绑定到对话生命周期
@@ -204,7 +204,7 @@ pub enum OrchestrationEventServiceEvent {
 }
 ```
 
-**设计洞察**：
+**设计要点**：
 - Orchestration 服务支持**多 Agent 间的消息传递和生命周期事件**
 - 事件有**重试机制**（最多 3 次）和**去重**
 - 生命周期事件支持订阅路由（`lifecycle_subscription_routes`）
@@ -276,7 +276,7 @@ pub trait HarnessRunner: Send {
 ### 注释
 - **validate → prepare → build_runner** 三阶段生命周期，每阶段可独立失败和重试。
 - 支持 Claude Code、Codex CLI、Gemini CLI 等外部 agent 作为 harness 运行。
-- HarnessRunner 是有状态的——持有子进程句柄、PTY 会话和输出缓冲区。
+- HarnessRunner 是有状态的，持有子进程句柄、PTY 会话和输出缓冲区。
 - `save_state()` 返回可序列化的 `HarnessState`，配合 `ResumePayload` 实现跨会话恢复。
 
 ---
@@ -463,7 +463,7 @@ pub struct QuestionOption {
 ### 独特贡献
 
 1. **带原因的权限枚举**：`Allowed(reason)` / `Denied(reason)` 取代 bool，支持审计
-2. **Agent 自主决策权限**：`AgentDecided` 同时出现在 allow/deny — agent 有自治权
+2. **Agent 自主决策权限**：`AgentDecided` 同时出现在 allow/deny，agent 有自治权
 3. **多模型路由**：一个请求可以指定不同场景使用不同模型
 4. **多任务并行**：`HashMap<TaskId, Vec<AIAgentInput>>` 支持并行任务
 5. **ProtectedPath 硬限制**：即使用户设置允许，系统文件也不可写

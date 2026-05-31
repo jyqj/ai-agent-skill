@@ -12,7 +12,7 @@ Agent 运行时维护两种状态：**Task State**（任务做到哪一步）和
 - Browser Agent 基于 DOM 快照规划点击序列，页面在执行前已被异步更新
 - Ops Agent 查询告警状态后制定修复方案，告警在修复执行前已自动恢复
 
-这些问题不是单纯的"过期缓存"问题——它们是 Task State 与 World State 之间的**一致性裂缝**。本文档系统性地识别这些裂缝的模式，提供一致性策略矩阵和缓解方案。
+这些问题不是单纯的"过期缓存"问题，而是 Task State 与 World State 之间的**一致性裂缝**。本文档系统性地识别这些裂缝的模式，提供一致性策略矩阵和缓解方案。
 
 ---
 
@@ -141,7 +141,7 @@ Step 2: Execute → Verify Effect → Checkpoint
 ### 错误 2: 把 Task State 的"已完成"等同于外部效果已达成
 
 **表现**: Agent 调用工具成功后立即标记步骤为完成，不做回读验证
-**后果**: Phantom Completion——任务显示 100% 完成，但外部对象状态未改变
+**后果**: Phantom Completion，即任务显示 100% 完成，但外部对象状态未改变
 **修正**: 步骤完成标记必须绑定 EffectRecord 的 verification_status，而非 ToolCall 的 success
 
 ### 错误 3: Checkpoint 恢复时不验证 world_refs
@@ -163,10 +163,10 @@ Step 2: Execute → Verify Effect → Checkpoint
 1. **Task State 和 World State 是两个独立的真相来源。** Task State 记录"Agent 认为自己做到了哪一步"，World State 记录"外部世界实际是什么样"。两者的不一致是常态，而非异常。
 2. **写操作是一致性裂缝的高发区。** 读操作容忍一定的陈旧度，但写操作基于错误前提可能造成不可逆后果。写前刷新是最小成本的安全网。
 3. **TTL 是必要但不充分的。** TTL 能检测已知的时间维度过期，但无法捕获 TTL 内的外部变更。高风险操作需要版本门控或锁。
-4. **Checkpoint 是时间胶囊——恢复时必须解冻。** checkpoint 中的 world_refs 是快照时间点的真相，恢复时必须重新验证。
+4. **Checkpoint 是时间胶囊，恢复时必须解冻。** checkpoint 中的 world_refs 是快照时间点的真相，恢复时必须重新验证。
 5. **乐观策略优先于悲观策略。** Agent 执行时间不可预测，持锁时间过长会成为瓶颈。大多数场景下，版本检查 + 冲突重试优于锁。
 6. **事件驱动优于轮询。** 当外部系统支持变更通知时，change-detection hooks 比定期刷新更及时、更节省资源。
-7. **多 Agent 场景下，共享对象是天然的竞争点。** 不要假设"Agent 不会同时操作同一对象"——设计时就要考虑并发写入的冲突路径。
+7. **多 Agent 场景下，共享对象是天然的竞争点。** 设计时就要考虑并发写入的冲突路径，不能假设"Agent 不会同时操作同一对象"。
 
 ---
 

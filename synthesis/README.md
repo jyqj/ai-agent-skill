@@ -20,3 +20,8 @@
 6. `runtime-vs-world-state.md` — 任务状态与外部状态的分离
 7. `tool-effect-verification.md` — 工具成功与任务完成的鸿沟
 8. `framework-comparison.md` — 本知识库如何补充主流框架
+9. `local-agent-runtime-practices.md` — 6 个参考项目共证的运行时契约（含[运行时契约检查表](#)，可直接用于架构评审）
+10. `agent-loop-patterns.md` — Agent Loop 的共性结构与变体
+11. `error-recovery-comparison.md` — 错误恢复策略的跨项目对比
+12. `cross-project-patterns.md` — 跨项目共识模式提炼
+13. `tool-boundary-comparison.md` — 工具边界与权限的横向对比

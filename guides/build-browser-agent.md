@@ -4,7 +4,7 @@
 
 ## 定位
 
-Browser Agent 的交付物不是“点击成功”，而是：
+Browser Agent 成功的判定标准是用户目标在网页/后端状态中确认达成：
 
 ```text
 用户目标已在网页/后端状态中达成，并有 DOM / screenshot / readback 证据

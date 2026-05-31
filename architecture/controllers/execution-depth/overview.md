@@ -170,7 +170,7 @@ def decide_next_action(task, state, policy):
 | Branch Budget | 最多并行分支或 worker 数 |
 | Freshness Budget | 多久必须刷新一次 world state |
 
-预算的目的不是让 Agent 变笨，而是避免“无限深入、无限修复、无限分支、无限 stale state”。
+预算用于避免”无限深入、无限修复、无限分支、无限 stale state”的失控场景。
 
 ## 6. 执行深度的 9 个瓶颈
 

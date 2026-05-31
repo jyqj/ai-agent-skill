@@ -68,7 +68,7 @@ prompt_contract:
 
 > **Evidence Status**: production-validated — Claude Code、GenericAgent 等系统的生产实现。
 
-上表是模式选择的理论框架。在生产系统中，推理模式不是孤立选择的——它被嵌入到一个多层 Prompt 结构中，每层有不同的生命周期和变更频率：
+上表是模式选择的理论框架。在生产系统中，推理模式被嵌入到一个多层 Prompt 结构中，每层有不同的生命周期和变更频率：
 
 ```mermaid
 graph TD
@@ -103,7 +103,7 @@ GenericAgent 的 `sys_prompt.txt` 模式，定义项目级元规则：
 - **行动原则**：具体的工作流约定（如"修改前先 Read"、"不主动创建文档文件"）。
 - **禁止项**：显式列出的不可做行为（如"不执行破坏性 git 命令"）。
 
-Claude Code 使用 `CLAUDE.md` 文件实现同一目的——项目根目录的 Markdown 文件被注入 session 上下文，作为半固定层规则。
+Claude Code 使用 `CLAUDE.md` 文件实现同一目的：项目根目录的 Markdown 文件被注入 session 上下文，作为半固定层规则。
 
 **L2/L3 Session & Turn Context — 动态层**
 
@@ -157,8 +157,8 @@ failure_guard: string
 
 Prompting 定义结构和策略，不知道当前窗口里具体有什么。详细的三层流转协议见 `../../cross-cutting/context-engineering-x-memory.md`。
 
-- Prompting **定义** `reasoning_mode` 和 `few_shot_policy`，但**不执行**示例选择——Context 按预算和相关性装配。
-- Prompting **定义** `output_contract`，但**不管理** trust lane——Context 在装配时标记。
+- Prompting **定义** `reasoning_mode` 和 `few_shot_policy`，但**不执行**示例选择，由 Context 按预算和相关性装配。
+- Prompting **定义** `output_contract`，但**不管理** trust lane，由 Context 在装配时标记。
 - PromptContract 应当**版本化管理**且在 compaction 中**不被压缩**。
 
 ## 8. 反模式

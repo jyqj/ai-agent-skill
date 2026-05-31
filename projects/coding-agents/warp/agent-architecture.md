@@ -56,7 +56,7 @@ Layer 2: SKILL.md body                  → skill 触发时加载
 Layer 3: references/ 子目录             → 按需加载具体参考文件
 ```
 
-**设计洞察**：这是 Progressive Disclosure 模式在 agent 知识管理中的实现。Skill 越复杂，越需要分层：
+这是 Progressive Disclosure 模式在 agent 知识管理中的应用。Skill 越复杂，越需要分层：
 
 - 简单 skill（≤200 行）：全部在 SKILL.md
 - 复杂 skill（>200 行）：核心工作流在 SKILL.md，详细参考在 `references/`
@@ -84,12 +84,12 @@ Layer 3: references/ 子目录             → 按需加载具体参考文件
 `write-product-spec` 的核心设计：
 
 - Product spec 的 Behavior 段必须是**编号的、可测试的不变量列表**
-- 不包含实现细节 — 那是 tech spec 的职责
+- 不包含实现细节，那是 tech spec 的职责
 - "用户" 不限于终端用户，可以是 API 调用方、数据模型消费方、CLI 用户
-- 包含 Figma mock 检查 — 强制可视化确认
+- 包含 Figma mock 检查，强制可视化确认
 - Behavior 段覆盖：默认行为、状态转换、输入响应、空/错误/加载状态、取消、竞态、可访问性
 
-**关键洞察**：spec 同时服务两个消费方 — 人类 reviewer 和 AI agent。编号不变量让 agent 能直接引用"不变量 7 的验证"。
+Spec 同时服务两个消费方：人类 reviewer 和 AI agent。编号不变量让 agent 能直接引用"不变量 7 的验证"。
 
 ### 模式 2：Review-as-Structured-Output
 
@@ -111,7 +111,7 @@ Layer 3: references/ 子目录             → 按需加载具体参考文件
 
 评论必须以标签开头：`🚨 [CRITICAL]`、`⚠️ [IMPORTANT]`、`💡 [SUGGESTION]`、`🧹 [NIT]`。
 
-**设计洞察**：将 review 行为和 review 发布解耦。Agent 只负责判断，不触碰 GitHub API — 发布由外层 workflow 控制。这是 Effect Ledger 模式的变体：agent 记录意图，环境执行效果。
+Review 行为和 review 发布解耦。Agent 只负责判断，不触碰 GitHub API，发布由外层 workflow 控制。这是 Effect Ledger 模式的变体：agent 记录意图，环境执行效果。
 
 ### 模式 3：Skill Specialization（特化继承）
 
@@ -127,7 +127,7 @@ description: Repo-specific triage guidance for warp-external.
 
 特化层只覆盖父 skill 允许覆盖的字段（label taxonomy、follow-up 模式、owner hints），不重新定义 schema 或安全规则。
 
-**设计洞察**：Skill 继承。核心 skill 定义通用逻辑，repo-specific skill 只做本地适配。这让同一个 agent 系统可以跨仓库复用。
+核心 skill 定义通用逻辑，repo-specific skill 只做本地适配，实现 Skill 继承。这让同一个 agent 系统可以跨仓库复用。
 
 ### 模式 4：Skill 互相引用
 
@@ -149,7 +149,7 @@ implement-specs
 └── → spec-driven-implementation
 ```
 
-**设计洞察**：Skills 是可组合的任务图。`spec-driven-implementation` 是编排 skill，自身不做实现，按阶段调用其他 skill。
+Skills 形成可组合的任务图。`spec-driven-implementation` 是编排 skill，自身不做实现，按阶段调用其他 skill。
 
 ### 模式 5：Agent 默认智能假设
 
@@ -157,7 +157,7 @@ implement-specs
 
 > **Default Assumption: Agent is Already Smart.** 只添加 agent 不已经知道的上下文。挑战每段内容："agent 真的需要这个解释吗？""这段话值这些 token 吗？"
 
-这导致 SKILL.md 极其精简 — 不解释 Git 是什么，不解释 PDF 是什么，直接给出操作步骤。
+这导致 SKILL.md 极其精简：不解释 Git 是什么，不解释 PDF 是什么，直接给出操作步骤。
 
 ## 与知识库的关联
 

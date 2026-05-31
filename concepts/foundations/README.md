@@ -19,7 +19,7 @@
 - **BDI + 主动推断把意向立场操作化为架构。** ORDA-VU 的六步循环（Observe → Represent → Decide → Act → Verify → Update）不是凭经验拼的，Represent 和 Verify 分别来自主动推断的"世界模型"和 BDI 的"信念约束意图"。这是知识库从 ReAct 到 ORDA-VU 的理论根基。
 - **元认知提供自我监控。** 有界理性告诉你"Agent 会犯错"，元认知告诉你"如何检测自己正在犯错并调整策略"。它是 paradigm-routing、置信度校准、反思-行动平衡的理论来源。
 - **价值对齐约束所有决策的方向。** 前四个基础解决"能不能做"和"怎么做"，价值对齐解决"该不该做"。安全是底线（不做危险的事），对齐是目标（做正确的事）。对 Companion 和 Creative Agent，这比效果验证更核心。
-- **具身认知打开纯符号之外的设计空间。** 工具不是附件而是认知能力的延伸，Agent 的能力由当前环境动态决定。这解释了为什么 Tool Plane 和 Interface Plane 在架构中的地位不低于推理核心。
+- **具身认知打开纯符号之外的设计空间。** 工具是认知能力的延伸而非附件，Agent 的能力由当前环境动态决定。这解释了为什么 Tools Plane 和 Interface Plane 在架构中的地位不低于推理核心。
 
 **每个基础对上层的关键影响：**
 
@@ -30,7 +30,7 @@
 | BDI + 主动推断 | ORDA-VU 循环结构、Represent/Verify 阶段的必要性论证 |
 | 元认知 | paradigm-routing 触发条件、Depth 判断、置信度校准机制 |
 | 价值对齐 | intent-alignment 设计、价值冲突解决优先级、Companion 安全边界 |
-| 具身认知 | 工具即认知延伸、Interface/Tool Plane 设计、环境感知策略 |
+| 具身认知 | 工具即认知延伸、Interface/Tools Plane 设计、环境感知策略 |
 
 ## 导航
 
@@ -41,7 +41,7 @@
 | `bdi-and-active-inference.md` | ORDA-VU 的认识论根基是什么？它比 ReAct 多了什么、为什么？ |
 | `metacognition.md` | Agent 如何知道自己不知道什么？如何动态调整策略？ |
 | `value-and-alignment.md` | 安全和对齐有什么区别？价值冲突怎么处理？ |
-| `embodiment-and-situation.md` | Agent 的"身体"是什么？为什么工具不是附件而是认知能力的延伸？ |
+| `embodiment-and-situation.md` | Agent 的"身体"是什么？工具作为认知能力的延伸意味着什么？ |
 
 ## 阅读建议
 

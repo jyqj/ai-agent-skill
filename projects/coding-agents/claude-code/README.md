@@ -1,5 +1,33 @@
 # Claude Code
 
+## 证据卡
+
+**证明了什么**：成熟的单 Agent coding assistant 需要精细的上下文管理、多层权限、流式工具执行和 Hook 可编程性。
+
+**核心运行时对象**：
+
+| 对象 | 实现 | 对应 Plane |
+|------|------|-----------|
+| Agent Loop | Generator/yield + 7 个恢复路径 + State.transition | kernel/agent-loop |
+| Context Engine | 五级压缩 + 13K buffer + microCompact | context |
+| Permission | 4 层管线（config→classifier→hook→user） | control, security |
+| Tool Orchestration | isConcurrencySafe + StreamingToolExecutor | tools |
+| Hook System | asyncRewake + interrupt + TaskOutput 管理 | interaction |
+
+**可复用规则**：
+1. 恢复策略必须有 circuit breaker（maxOutputTokensRecoveryCount=3）
+2. 压缩有安全缓冲（13K），micro 优先于 full
+3. 工具并发按 input 动态判定，非静态分类
+4. Hook 可中止整个 turn（interrupt），不只是拒绝单个工具
+5. Fallback 时清空已队列工具结果，防止跨模型状态泄漏
+
+**不该照搬的**：
+- Generator 模式与 Rust/Go 生态不兼容，选型需按语言特性
+- 200K 上下文窗口的压缩策略不适用于小窗口模型
+
+**关键数值**：13K buffer, maxRecovery=3, maxConcurrency=10, hookTimeout=600s/1.5s
+
+---
 
 > **Evidence Status** — grounded. 基于本目录下的源码分析、layer 文档与源码观察摘录。可信度高。
 
@@ -23,7 +51,7 @@
 
 ## 独特贡献
 
-上下文压缩、工具并发执行和 Hook 权限控制三者在 QueryEngine 内形成闭环联动——这让它成为少数真正把 runtime 当工程问题来解决的生产级 harness。
+上下文压缩、工具并发执行和 Hook 权限控制三者在 QueryEngine 内形成闭环联动。这使其成为少数真正把 runtime 当工程问题来解决的生产级 harness。
 
 ## 关键发现
 
@@ -39,7 +67,7 @@
 | verification | diff / test / readback 进入 stop gate | `query-loop.md` |
 
 - QueryEngine 是跨 turn 持久化状态、驱动压缩和工具编排的完整 runtime，而非简单的 API 包装器。
-- Hook 机制把控制层从”隐式约定”变成了”可声明、可拦截、可注入”的一等公民——这是大多数 agent 框架缺失的。
+- Hook 机制把控制层从”隐式约定”变成了”可声明、可拦截、可注入”的一等公民，这一点在大多数 agent 框架中是缺失的。
 - 上下文压缩是四层按阈值渐进触发的策略链（snip → micro → collapse → auto），每层独立可组合。
 
 ## 核心洞察
